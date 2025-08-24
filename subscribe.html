@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Subscribe to Sparksoil</title>
   <style>
-    /* --- base --- */
     * { box-sizing: border-box; }
     body{
       margin:0; padding:2rem;
@@ -17,41 +16,38 @@
     h1{ margin:0 0 .5rem }
     p.sub{ opacity:.9; margin:.2rem 0 1rem }
 
-    /* --- card/form --- */
+    /* Card/Form */
     form{
       max-width:28rem; margin:1.2rem auto; padding:1rem;
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.18);
       border-radius:.9rem;
-      overflow:hidden;                        /* ⟵ clips the big iOS outline */
-      backdrop-filter: saturate(120%);
+      overflow:hidden;                 /* clip any oversized focus ring */
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* --- controls --- */
+    /* Controls */
     input, button { font:inherit; -webkit-appearance:none; }
     .field{
-      width:100%; padding:.8rem 1rem; border-radius:.8rem;
+      width:100%; padding:.85rem 1rem; border-radius:.8rem;
       border:1px solid rgba(255,255,255,.30);
       background:rgba(0,0,0,.25); color:#fff;
-      outline:none;                            /* we'll draw our own focus */
+      outline:none;
     }
     .field:focus{
       border-color: rgba(255,255,255,.55);
-      box-shadow: 0 0 0 3px rgba(255,255,255,.18); /* subtle, stays inside */
+      box-shadow: 0 0 0 2px rgba(255,255,255,.18); /* smaller, inside card */
     }
 
     .btn{
       margin-top:.9rem; padding:.75rem 1.1rem; border-radius:.7rem;
       border:1px solid rgba(255,255,255,.30);
       background:rgba(255,200,120,.12); color:#fff; cursor:pointer;
-      outline:none; transition: background .15s ease, transform .08s ease;
+      outline:none; transition: background .15s ease, transform .08s ease, box-shadow .15s;
     }
     .btn:hover{ background:rgba(255,200,120,.22); }
     .btn:active{ transform: translateY(1px); }
-    .btn:focus{
-      box-shadow: 0 0 0 3px rgba(255,200,120,.28);
-      border-color: rgba(255,255,255,.55);
-    }
+    .btn:focus{ box-shadow: 0 0 0 2px rgba(255,200,120,.28); }
 
     small{ display:block; opacity:.75; margin-top:.6rem }
     .back{
@@ -66,11 +62,15 @@
   <h1>✨ Glimmer Mail</h1>
   <p class="sub"><em>Sometimes I send tiny true things.</em></p>
 
-  <form action="https://buttondown.com/sparksoilworld" method="post" target="_blank">
+  <!-- IMPORTANT: embed-subscribe endpoint -->
+  <form action="https://buttondown.com/api/emails/embed-subscribe/sparksoilworld"
+        method="post" target="_blank" rel="noopener">
     <input class="field" type="email" name="email" required placeholder="you@example.com" aria-label="Email">
     <button class="btn" type="submit">Subscribe</button>
     <small>No spam. Unsubscribe anytime.</small>
-    <input type="text" name="_gotcha" style="display:none"> <!-- honeypot -->
+
+    <!-- Honeypot to reduce spam bots -->
+    <input type="text" name="_gotcha" style="display:none">
   </form>
 
   <a class="back" href="index.html">← Back to Sparksoil</a>
