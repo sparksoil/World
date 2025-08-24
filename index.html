@@ -25,42 +25,49 @@
       transition: box-shadow 0.3s ease, transform 0.2s ease;
     }
 
-    /* Base focus/hover outline (keeps things accessible) */
+    /* Base focus/hover outline (accessibility) */
     .hot:focus,
     .hot:hover {
       outline:2px solid rgba(255,255,255,0.4);
       box-shadow:0 0 0 4px rgba(0,0,0,0.35);
     }
 
-    /* Left = Encouragemint (green glow) */
+    /* Per-door glow */
     .hot-left:hover, .hot-left:focus {
-      box-shadow:
-        0 0 20px rgba(100,255,100,0.9),
-        0 0 40px rgba(50,200,50,0.6);
+      box-shadow: 0 0 20px rgba(100,255,100,0.9),
+                  0 0 40px rgba(50,200,50,0.6);
       transform: scale(1.05);
     }
-
-    /* Center = Tea in Soft Time (lavender glow) */
     .hot-center:hover, .hot-center:focus {
-      box-shadow:
-        0 0 20px rgba(200,150,255,0.9),
-        0 0 40px rgba(150,100,200,0.5);
+      box-shadow: 0 0 20px rgba(200,150,255,0.9),
+                  0 0 40px rgba(150,100,200,0.5);
+      transform: scale(1.05);
+    }
+    .hot-right:hover, .hot-right:focus {
+      box-shadow: 0 0 20px rgba(255,200,120,0.9),
+                  0 0 40px rgba(200,120,50,0.5);
       transform: scale(1.05);
     }
 
-    /* Right = Pelican’s Progress (warm amber glow) */
-    .hot-right:hover, .hot-right:focus {
-      box-shadow:
-        0 0 20px rgba(255,200,120,0.9),
-        0 0 40px rgba(200,120,50,0.5);
-      transform: scale(1.05);
+    /* Tap shimmer animation */
+    @keyframes doorShimmer {
+      0%   { box-shadow:none; transform: scale(1); }
+      40%  { box-shadow: 0 0 20px rgba(255,255,200,0.9), 0 0 40px rgba(150,255,150,0.5); transform: scale(1.06); }
+      80%  { box-shadow: 0 0 10px rgba(255,255,200,0.6), 0 0 25px rgba(150,255,150,0.35); transform: scale(1.03); }
+      100% { box-shadow:none; transform: scale(1); }
+    }
+    .hot:active { transform: scale(1.03); }           /* instant feedback */
+    .hot.tap-shimmer { animation: doorShimmer 420ms ease-out; }
+
+    /* Respect prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      .hot, .hot:focus, .hot:active { transition:none !important; animation:none !important; }
     }
   </style>
 </head>
 <body>
 
 <div class="poster-wrap">
-  <!-- your poster image -->
   <img src="IMG_0536.png" alt="Sparksoil poster with three doors">
 
   <!-- left door hotspot -->
@@ -75,6 +82,26 @@
   <a class="hot hot-right" href="pelican.html" aria-label="Pelican’s Progress"
      style="left:72%; top:66%; width:16%; height:18%;"></a>
 </div>
+
+<script>
+  // Brief shimmer on tap/click/keyboard
+  function shimmerOnce(el){
+    el.classList.remove('tap-shimmer');
+    void el.offsetWidth;               // restart animation
+    el.classList.add('tap-shimmer');
+    setTimeout(()=>el.classList.remove('tap-shimmer'), 450);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.hot').forEach(el => {
+      el.addEventListener('click', () => shimmerOnce(el));
+      el.addEventListener('touchstart', () => shimmerOnce(el), {passive:true});
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') shimmerOnce(el);
+      });
+    });
+  });
+</script>
 
 </body>
 </html>
