@@ -14,47 +14,45 @@
     }
     a { color:inherit; text-decoration:none; }
 
-    /* Poster container + gentle bottom fade (blends short images) */
+    /* Poster container (no fade) */
     .poster-wrap { position:relative; max-width:100%; overflow:hidden; }
     .poster-wrap img { width:100%; display:block; height:auto; }
-    .poster-wrap::after{
-      content:"";
-      position:absolute; left:0; right:0; bottom:0;
-      height:18vh;  /* length of the fade; tweak if you want */
-      background:linear-gradient(to bottom, rgba(26,15,10,0) 0%, rgba(26,15,10,1) 100%);
-      pointer-events:none;
+
+    /* Arch-shaped hotspots that glow along the arch */
+    .hot{
+      position:absolute; display:block;
+      /* arch: larger curves on top, smaller on bottom */
+      border-radius: 44% 44% 10% 10% / 60% 60% 10% 10%;
+      --glow: rgba(255,255,200,.9);   /* default glow color, overridden per door */
+      transition: transform .2s ease, opacity .2s ease;
+      outline-offset: 2px; /* nicer focus outline offset */
     }
 
-    /* Clickable hotspots (doors) */
-    .hot{
-      position:absolute;
-      display:block;
-      border-radius:10px;
-      transition: box-shadow 0.3s ease, transform 0.2s ease;
+    /* draw glow on a pseudo-element so it follows the arch shape exactly */
+    .hot::before{
+      content:"";
+      position:absolute; inset:-6%;
+      border-radius: inherit;                 /* keep the arch shape */
+      box-shadow:
+        0 0 22px var(--glow),
+        0 0 46px rgba(255,255,255,0.15);      /* soft outer bloom */
+      opacity:0; pointer-events:none;
+      transition: opacity .2s ease;
     }
-    /* Base outline so keyboard users see focus */
+
+    /* Base focus/hover behavior */
     .hot:focus,
     .hot:hover{
-      outline:2px solid rgba(255,255,255,0.4);
-      box-shadow:0 0 0 4px rgba(0,0,0,0.35);
+      transform: scale(1.05);
+      outline:2px solid rgba(255,255,255,0.35); /* accessible focus hint */
     }
+    .hot:hover::before,
+    .hot:focus::before{ opacity:1; }
 
     /* Per-door glow colors */
-    .hot-left:hover, .hot-left:focus{
-      box-shadow: 0 0 20px rgba(100,255,100,0.9),
-                  0 0 40px rgba(50,200,50,0.6);
-      transform: scale(1.05);
-    }
-    .hot-center:hover, .hot-center:focus{
-      box-shadow: 0 0 20px rgba(200,150,255,0.9),
-                  0 0 40px rgba(150,100,200,0.5);
-      transform: scale(1.05);
-    }
-    .hot-right:hover, .hot-right:focus{
-      box-shadow: 0 0 20px rgba(255,200,120,0.9),
-                  0 0 40px rgba(200,120,50,0.5);
-      transform: scale(1.05);
-    }
+    .hot-left  { --glow: rgba(120,255,120,.9); }   /* mint */
+    .hot-center{ --glow: rgba(210,160,255,.9); }   /* lavender */
+    .hot-right { --glow: rgba(255,205,135,.9); }   /* amber */
 
     /* Tap shimmer animation (mobile-friendly) */
     @keyframes doorShimmer{
@@ -68,14 +66,15 @@
 
     /* Mobile positioning tweaks so boxes hug doors on phones */
     @media (max-width: 480px){
-      .hot-left  { left:10%; top:64%; width:21%; height:25%; }
-      .hot-center{ left:41%; top:64%; width:18%; height:25%; }
-      .hot-right { left:69%; top:64%; width:21%; height:25%; }
+      .hot-left  { left:12.2%; top:64%; width:18%; height:24%; }
+      .hot-center{ left:41.3%; top:64%; width:17%; height:24%; }
+      .hot-right { left:69.8%; top:64%; width:18%; height:24%; }
     }
 
     /* Respect reduced motion */
     @media (prefers-reduced-motion: reduce){
       .hot, .hot:focus, .hot:active { transition:none !important; animation:none !important; }
+      .hot::before{ transition:none !important; }
     }
   </style>
 </head>
@@ -87,13 +86,13 @@
 
     <!-- Default positions (desktop/tablet); mobile overrides are in CSS above -->
     <a class="hot hot-left"   href="encouragemint.html" aria-label="Encouragemint"
-       style="left:11%; top:63.5%; width:19%; height:24%; border-radius:14px;"></a>
+       style="left:11%; top:63.5%; width:19%; height:24%;"></a>
 
     <a class="hot hot-center" href="tea.html" aria-label="Tea in Soft Time"
-       style="left:41%; top:63.5%; width:18%; height:24%; border-radius:14px;"></a>
+       style="left:41%; top:63.5%; width:18%; height:24%;"></a>
 
     <a class="hot hot-right"  href="pelican.html" aria-label="Pelican’s Progress"
-       style="left:70%; top:63.5%; width:19%; height:24%; border-radius:14px;"></a>
+       style="left:70%; top:63.5%; width:19%; height:24%;"></a>
   </div>
 
   <script>
