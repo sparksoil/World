@@ -6,72 +6,54 @@
   <title>Sparksoil</title>
   <meta name="description" content="Serving glimmers, nervous system tea, and oddly specific metaphors.">
   <style>
-    :root {
-      --ink:#fff;
-      --bg:#1a0f0a;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
-    body{
+    body {
+      margin:0;
       font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;
-      color:var(--ink);
-      background:var(--bg);
+      background:#1a0f0a;
+      color:#fff;
     }
-    a{color:inherit;text-decoration:none}
-    .hero{
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-      text-align:center;
-      background:center/cover no-repeat url('IMG_0536.png');
+    a {color:inherit; text-decoration:none;}
+    .poster-wrap {
+      position:relative;
+      max-width:100%;
+      overflow:hidden;
     }
-    .panel{
-      background:rgba(0,0,0,.45);
-      padding:24px;
-      border-radius:14px;
-      max-width:42rem;
-      margin:24px;
+    .poster-wrap img {
+      width:100%;
+      display:block;
+      height:auto;
     }
-    h1{font-size:clamp(2rem,5vw,3rem);margin:.2em 0}
-    .hotwrap{position:relative;max-width:900px;margin:18px auto}
-    .hotwrap img{width:100%;display:block;border-radius:12px}
-    .hot{
+    /* clickable hotspots (the doors) */
+    .hot {
       position:absolute;
       display:block;
       border-radius:10px;
-      outline:none;
     }
-    .hot:focus,.hot:hover{
-      box-shadow:0 0 0 3px rgba(255,255,255,.8),0 0 0 6px rgba(0,0,0,.25);
+    .hot:focus,
+    .hot:hover {
+      outline:2px solid rgba(255,255,255,0.8);
+      box-shadow:0 0 0 4px rgba(0,0,0,0.4);
     }
   </style>
 </head>
 <body>
 
-<section class="hero" aria-label="Sparksoil poster">
-  <div class="panel">
-    <h1>Sparksoil</h1>
-    <p>Serving glimmers, nervous system tea, and oddly specific metaphors since whenever.</p>
-    <p><a href="#doors">↓ Choose a door</a></p>
-  </div>
+<div class="poster-wrap">
+  <!-- your poster image -->
+  <img src="IMG_0536.png" alt="Sparksoil poster with three doors">
 
-  <!-- Poster image with clickable doors -->
-  <div id="doors" class="hotwrap" aria-label="Choose a door">
-    <img src="IMG_0536.png" alt="Sparksoil poster with three doors">
+  <!-- left door hotspot -->
+  <a class="hot" href="encouragement.html" aria-label="Encouragemint"
+     style="left:12%; top:66%; width:16%; height:18%;"></a>
 
-    <!-- left door hotspot -->
-    <a class="hot" href="encouragement.html" aria-label="Encouragemint"
-       style="left:12%; top:66%; width:16%; height:18%;"></a>
+  <!-- center door hotspot -->
+  <a class="hot" href="tea.html" aria-label="Tea in Soft Time"
+     style="left:42%; top:66%; width:16%; height:18%;"></a>
 
-    <!-- center door hotspot -->
-    <a class="hot" href="tea.html" aria-label="Tea in Soft Time"
-       style="left:42%; top:66%; width:16%; height:18%;"></a>
-
-    <!-- right door hotspot -->
-    <a class="hot" href="pelican.html" aria-label="Pelican’s Progress"
-       style="left:72%; top:66%; width:16%; height:18%;"></a>
-  </div>
-</section>
+  <!-- right door hotspot -->
+  <a class="hot" href="pelican.html" aria-label="Pelican’s Progress"
+     style="left:72%; top:66%; width:16%; height:18%;"></a>
+</div>
 
 </body>
 </html>
