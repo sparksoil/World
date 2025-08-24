@@ -17,11 +17,11 @@
     }
     a { color:inherit; text-decoration:none; }
 
-    /* Poster container (no fade) */
+    /* Poster */
     .poster-wrap{ position:relative; max-width:100%; overflow:hidden; }
     .poster-wrap img{ width:100%; display:block; height:auto; }
 
-    /* Clickable hotspots (doors & buttons) */
+    /* Hotspots (doors & buttons) */
     .hot{
       position:absolute; display:block; z-index:5;
       border-radius:12px;
@@ -31,20 +31,27 @@
     .hot:focus { outline:2px solid rgba(255,255,255,.35); }
     .hot:hover  { transform:scale(1.02); } /* tiny hint on desktop */
 
-    /* Mobile positioning tweaks so boxes hug doors on phones */
+    /* --- Desktop/tablet default positions --- */
+    .hot-left      { left:11%; top:63.5%; width:19%;  height:24%; }
+    .hot-center    { left:41%; top:63.5%; width:18%;  height:24%; }
+    .hot-right     { left:70%; top:63.5%; width:19%;  height:24%; }
+    /* tighter subscribe capsule to the right of the email field */
+    .hot-subscribe { left:63.2%; top:54.4%; width:16.6%; height:5.8%; border-radius:10px; }
+
+    /* --- Mobile tweaks so boxes hug artwork on phones --- */
     @media (max-width:480px){
       .hot-left      { left:12.2%; top:64%; width:18%; height:24%; }
       .hot-center    { left:41.3%; top:64%; width:17%; height:24%; }
       .hot-right     { left:69.8%; top:64%; width:18%; height:24%; }
-      /* subscribe button hotspot (mobile) — tweak if needed */
-      .hot-subscribe { left:66%; top:55.5%; width:24%; height:6.5%; }
+      /* subscribe button hotspot (mobile) */
+      .hot-subscribe { left:66.4%; top:55.4%; width:22.8%; height:6.1%; border-radius:10px; }
     }
 
     /* ✨ Sparkles */
     .spark{
       position:absolute; z-index:6; pointer-events:none;
       font-size:clamp(12px, 4vw, 20px);
-      color: currentColor;                    /* takes color set from JS */
+      color: currentColor;
       opacity:0; transform: translate(-50%, -50%) scale(.6) rotate(-10deg);
       animation:pop 700ms ease-out forwards;
       filter: drop-shadow(0 0 10px rgba(255,240,200,.7));
@@ -55,7 +62,16 @@
       100% { opacity:0; transform: translate(-50%, -80%) scale(.9) rotate(15deg); }
     }
 
-    /* Respect reduced motion */
+    /* Text link row under the poster (always-works taps) */
+    .links {
+      text-align:center; margin:16px 0 28px;
+      font-size:15px; opacity:.95;
+    }
+    .links a { padding:0 .6rem; }
+    .links a.sub  { color:#ffd9a8; border-bottom:1px dotted rgba(255,255,255,.35); }
+    .links a.about{ color:#d9b7ff; border-bottom:1px dotted rgba(255,255,255,.35); }
+
+    /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
       .hot, .spark { transition:none !important; animation:none !important; }
     }
@@ -66,25 +82,27 @@
   <div class="poster-wrap" id="poster">
     <img src="IMG_0536.png?v=4" alt="Sparksoil poster with three doors">
 
-    <!-- Doors (desktop/tablet defaults; mobile overrides in CSS) -->
+    <!-- Doors -->
     <a class="hot hot-left" href="encouragemint.html" aria-label="Encouragemint"
-       data-spark="#9aff9a" data-sfx="sfx/left-door.mp3"
-       style="left:11%; top:63.5%; width:19%; height:24%;"></a>
+       data-spark="#9aff9a" data-sfx="sfx/left-door.mp3"></a>
 
     <a class="hot hot-center" href="tea.html" aria-label="Tea in Soft Time"
-       data-spark="#d9b7ff" data-sfx="sfx/center-door.mp3"
-       style="left:41%; top:63.5%; width:18%; height:24%;"></a>
+       data-spark="#d9b7ff" data-sfx="sfx/center-door.mp3"></a>
 
     <a class="hot hot-right" href="pelican.html" aria-label="Pelican’s Progress"
-       data-spark="#ffc878" data-sfx="sfx/right-door.mp3"
-       style="left:70%; top:63.5%; width:19%; height:24%;"></a>
+       data-spark="#ffc878" data-sfx="sfx/right-door.mp3"></a>
 
-    <!-- Subscribe button hotspot (desktop/tablet defaults) -->
-    <!-- These %s cover the "Subscribe" capsule drawn to the right of the email box. -->
+    <!-- Subscribe button hotspot -->
     <a class="hot hot-subscribe" href="subscribe.html" aria-label="Subscribe"
-       data-spark="#ffd9a8"
-       style="left:62%; top:54.2%; width:18.5%; height:6.2%; border-radius:10px;"></a>
+       data-spark="#ffd9a8"></a>
   </div>
+
+  <!-- Always-visible links (backup to hotspots) -->
+  <p class="links">
+    <a class="sub" href="subscribe.html">Subscribe</a>
+    <!-- If/when you add about.html, this will work too: -->
+    <!-- <a class="about" href="about.html">Who’s responsible for this?</a> -->
+  </p>
 
   <script>
     function burst(el){
@@ -101,7 +119,7 @@
       for(let i=0;i<n;i++){
         const s = document.createElement('span');
         s.className = 'spark';
-        s.style.color = color;             // per-hotspot sparkle color
+        s.style.color = color;
         s.textContent = glyphs[i % glyphs.length];
 
         const angle = (i / n) * Math.PI * 2 + (Math.random()*0.6 - 0.3);
@@ -113,15 +131,13 @@
         s.addEventListener('animationend', () => s.remove());
       }
     }
-
     function playSfx(el){
       const src = el.dataset.sfx;
       if (!src) return;
       const audio = new Audio(src);
       audio.volume = 0.45;
-      audio.play().catch(()=>{}); // ignore if browser blocks
+      audio.play().catch(()=>{});
     }
-
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.hot').forEach(el => {
         const fire = () => { burst(el); playSfx(el); };
