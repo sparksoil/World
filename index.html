@@ -6,66 +6,59 @@
   <title>Sparksoil</title>
   <meta name="description" content="Serving glimmers, nervous system tea, and oddly specific metaphors.">
   <style>
-    body {
+    body{
       margin:0;
       font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;
-      background:#1a0f0a;   /* cozy dark brown */
+      background:#1a0f0a;
       color:#fff;
     }
-    a { color:inherit; text-decoration:none; }
+    a{ color:inherit; text-decoration:none; }
 
-    /* Poster container (no fade) */
-    .poster-wrap { position:relative; max-width:100%; overflow:hidden; }
-    .poster-wrap img { width:100%; display:block; height:auto; }
+    /* Poster container (NO FADE) */
+    .poster-wrap{ position:relative; max-width:100%; overflow:hidden; }
+    .poster-wrap img{ width:100%; display:block; height:auto; }
 
     /* Arch-shaped hotspots that glow along the arch */
     .hot{
-      position:absolute; display:block;
-      /* arch: larger curves on top, smaller on bottom */
-      border-radius: 44% 44% 10% 10% / 60% 60% 10% 10%;
-      --glow: rgba(255,255,200,.9);   /* default glow color, overridden per door */
+      position:absolute; display:block; z-index:5;
+      /* arch: larger curve top, smaller bottom */
+      border-radius:44% 44% 10% 10% / 60% 60% 10% 10%;
+      --glow: rgba(255,255,200,.9);   /* overridden per door */
       transition: transform .2s ease, opacity .2s ease;
-      outline-offset: 2px; /* nicer focus outline offset */
+      outline-offset: 2px;
     }
-
-    /* draw glow on a pseudo-element so it follows the arch shape exactly */
+    /* draw glow on a pseudo-element so it follows the arch shape */
     .hot::before{
       content:"";
-      position:absolute; inset:-6%;
-      border-radius: inherit;                 /* keep the arch shape */
-      box-shadow:
-        0 0 22px var(--glow),
-        0 0 46px rgba(255,255,255,0.15);      /* soft outer bloom */
+      position:absolute; inset:-8%;
+      border-radius:inherit;
+      box-shadow: 0 0 24px var(--glow), 0 0 48px rgba(255,255,255,0.14);
       opacity:0; pointer-events:none;
-      transition: opacity .2s ease;
+      transition: opacity .18s ease;
     }
-
-    /* Base focus/hover behavior */
-    .hot:focus,
-    .hot:hover{
-      transform: scale(1.05);
-      outline:2px solid rgba(255,255,255,0.35); /* accessible focus hint */
+    .hot:focus, .hot:hover{
+      transform:scale(1.05);
+      outline:2px solid rgba(255,255,255,0.35);
     }
-    .hot:hover::before,
-    .hot:focus::before{ opacity:1; }
+    .hot:hover::before, .hot:focus::before{ opacity:1; }
 
-    /* Per-door glow colors */
-    .hot-left  { --glow: rgba(120,255,120,.9); }   /* mint */
-    .hot-center{ --glow: rgba(210,160,255,.9); }   /* lavender */
-    .hot-right { --glow: rgba(255,205,135,.9); }   /* amber */
+    /* Per-door colors */
+    .hot-left  { --glow: rgba(120,255,120,.92); }  /* mint */
+    .hot-center{ --glow: rgba(210,160,255,.92); }  /* lavender */
+    .hot-right { --glow: rgba(255,205,135,.92); }  /* amber */
 
-    /* Tap shimmer animation (mobile-friendly) */
+    /* Tap shimmer (mobile-friendly) */
     @keyframes doorShimmer{
-      0%   { box-shadow:none; transform:scale(1); }
-      40%  { box-shadow:0 0 20px rgba(255,255,200,0.9), 0 0 40px rgba(150,255,150,0.5); transform:scale(1.06); }
-      80%  { box-shadow:0 0 10px rgba(255,255,200,0.6), 0 0 25px rgba(150,255,150,0.35); transform:scale(1.03); }
-      100% { box-shadow:none; transform:scale(1); }
+      0%{ box-shadow:none; transform:scale(1); }
+      40%{ box-shadow:0 0 20px rgba(255,255,200,.9), 0 0 40px rgba(150,255,150,.5); transform:scale(1.06); }
+      80%{ box-shadow:0 0 10px rgba(255,255,200,.6), 0 0 25px rgba(150,255,150,.35); transform:scale(1.03); }
+      100%{ box-shadow:none; transform:scale(1); }
     }
-    .hot:active { transform:scale(1.03); }
-    .hot.tap-shimmer { animation: doorShimmer 420ms ease-out; }
+    .hot:active{ transform:scale(1.03); }
+    .hot.tap-shimmer{ animation:doorShimmer 420ms ease-out; }
 
     /* Mobile positioning tweaks so boxes hug doors on phones */
-    @media (max-width: 480px){
+    @media (max-width:480px){
       .hot-left  { left:12.2%; top:64%; width:18%; height:24%; }
       .hot-center{ left:41.3%; top:64%; width:17%; height:24%; }
       .hot-right { left:69.8%; top:64%; width:18%; height:24%; }
@@ -73,7 +66,7 @@
 
     /* Respect reduced motion */
     @media (prefers-reduced-motion: reduce){
-      .hot, .hot:focus, .hot:active { transition:none !important; animation:none !important; }
+      .hot, .hot:focus, .hot:active{ transition:none !important; animation:none !important; }
       .hot::before{ transition:none !important; }
     }
   </style>
@@ -81,8 +74,8 @@
 <body>
 
   <div class="poster-wrap">
-    <!-- your poster image -->
-    <img src="IMG_0536.png" alt="Sparksoil poster with three doors">
+    <!-- cache-busted image URL so Safari/CDN pulls the new CSS/HTML -->
+    <img src="IMG_0536.png?v=3" alt="Sparksoil poster with three doors">
 
     <!-- Default positions (desktop/tablet); mobile overrides are in CSS above -->
     <a class="hot hot-left"   href="encouragemint.html" aria-label="Encouragemint"
