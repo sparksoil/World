@@ -1,154 +1,138 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Sparksoil</title>
-  <meta name="description" content="Serving glimmers, nervous system tea, and oddly specific metaphors.">
-  <style>
-    /* Warm background to match your poster */
-    body{
-      margin:0;
-      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;
-      color:#fff;
-      background:
-        radial-gradient(120% 70% at 50% 0%, #3a1d12 0%, #2b160e 55%, #1a0f0a 100%);
-      background-color:#2b160e;
-    }
-    a { color:inherit; text-decoration:none; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sparksoil — Blooming in a time zone that hasn’t been mapped yet</title>
+<style>
+  :root{
+    --poster: url("SparksoilPoster.png");   /* your hero image file */
+    --debug: 0;                             /* set to 1 to see hotspot boxes */
 
-    /* Poster */
-    .poster-wrap{ position:relative; max-width:100%; overflow:hidden; }
-    .poster-wrap img{ width:100%; display:block; height:auto; }
+    /* sparkle tints per door */
+    --peach: 255,180,120;
+    --mint:  140,220,195;
+    --lilac: 190,160,220;
+    --blue:  150,180,255;
+  }
 
-    /* Hotspots (doors & buttons) */
-    .hot{
-      position:absolute; display:block; z-index:5;
-      border-radius:12px;
-      outline-offset:2px;
-      transition: transform .15s ease;
-    }
-    .hot:focus { outline:2px solid rgba(255,255,255,.35); }
-    .hot:hover  { transform:scale(1.02); } /* tiny hint on desktop */
+  /* layout */
+  body{margin:0;background:#efe9e2;font:400 18px/1.5 ui-serif,Georgia,serif;color:#2b221c}
+  .poster{
+    position:relative;
+    width:min(100vw,100dvw);
+    margin-inline:auto;
+    aspect-ratio:9/16;              /* tweak if your PNG ratio differs */
+    background-image:var(--poster);
+    background-size:cover; background-position:center;
+  }
 
-    /* --- Desktop/tablet default positions --- */
-    .hot-left      { left:11%; top:63.5%; width:19%;  height:24%; }
-    .hot-center    { left:41%; top:63.5%; width:18%;  height:24%; }
-    .hot-right     { left:70%; top:63.5%; width:19%;  height:24%; }
-    /* tighter subscribe capsule to the right of the email field */
-    .hot-subscribe { left:63.2%; top:54.4%; width:16.6%; height:5.8%; border-radius:10px; }
+  /* hotspots (invisible link zones) */
+  .hotspot{
+    position:absolute; display:block; transform:translate(-50%,-50%);
+    text-indent:-9999px; overflow:hidden; border-radius:12px;
+    outline: calc(var(--debug)*2px) dashed rgba(255,0,100,.7);
+  }
+  .door-1{left:35%; top:73%; width:10%; height:12%;}
+  .door-2{left:47%; top:73%; width:10%; height:12%;}
+  .door-3{left:59%; top:73%; width:10%; height:12%;} /* lilac → Ko-fi */
+  .door-4{left:71%; top:73%; width:10%; height:12%;}
+  .girl  {left:79%; top:81%; width:20%; height:20%; border-radius:50%;}
 
-    /* --- Mobile tweaks so boxes hug artwork on phones --- */
-    @media (max-width:480px){
-      .hot-left      { left:12.2%; top:64%; width:18%; height:24%; }
-      .hot-center    { left:41.3%; top:64%; width:17%; height:24%; }
-      .hot-right     { left:69.8%; top:64%; width:18%; height:24%; }
-      /* subscribe button hotspot (mobile) */
-      .hot-subscribe { left:66.4%; top:55.4%; width:22.8%; height:6.1%; border-radius:10px; }
-    }
+  /* ---------------- Sparkle effect ----------------
+     We draw tiny 4-point stars using conic-gradients in ::after and animate opacity/scale.
+     Accessible: appears on :hover, :focus-visible, and :active. Respects reduced motion.
+  --------------------------------------------------*/
+  .hotspot::after{
+    content:"";
+    position:absolute; inset:-10% -6%; border-radius:inherit; pointer-events:none;
+    opacity:0; transform:scale(.92);
+    /* star field: 7 small stars sprinkled around the box */
+    background:
+      /* star 1 */ conic-gradient(from 45deg, transparent 0 25%, currentColor 0 50%, transparent 0 100%) 10% 18%/8px 8px no-repeat,
+      /* star 2 */ conic-gradient(from 45deg, transparent 0 25%, currentColor 0 50%, transparent 0 100%) 78% 12%/10px 10px no-repeat,
+      /* star 3 */ conic-gradient(from 45deg, transparent 0 25%, currentColor 0 50%, transparent 0 100%) 50% 8%/7px 7px no-repeat,
+      /* star 4 */ conic-gradient(from 45deg, transparent 0 25%, currentColor 0 50%, transparent 0 100%) 18% 70%/9px 9px no-repeat,
+      /* star 5 */ conic-gradient(from 45deg, transparent 0 25%, currentColor 0 50%, transparent 0 100%) 86% 68%/7px 7px no-repeat,
+      /* star 6 */ conic-gradient(from 45deg, transparent 0 25%, currentColor 0 50%, transparent 0 100%) 40% 88%/8px 8px no-repeat,
+      /* star 7 */ conic-gradient(from 45deg, transparent 0 25%, currentColor 0 50%, transparent 0 100%) 62% 48%/6px 6px no-repeat;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,.55));
+    transition: opacity .22s ease, transform .22s ease;
+  }
 
-    /* ✨ Sparkles */
-    .spark{
-      position:absolute; z-index:6; pointer-events:none;
-      font-size:clamp(12px, 4vw, 20px);
-      color: currentColor;
-      opacity:0; transform: translate(-50%, -50%) scale(.6) rotate(-10deg);
-      animation:pop 700ms ease-out forwards;
-      filter: drop-shadow(0 0 10px rgba(255,240,200,.7));
-    }
-    @keyframes pop{
-      0%   { opacity:0; transform: translate(-50%, -50%) scale(.6) rotate(-10deg); }
-      20%  { opacity:1; transform: translate(-50%, -50%) scale(1.1) rotate(5deg); }
-      100% { opacity:0; transform: translate(-50%, -80%) scale(.9) rotate(15deg); }
-    }
+  /* tint per door */
+  .door-1{ color: rgba(var(--peach), .95); }
+  .door-2{ color: rgba(var(--mint),  .95); }
+  .door-3{ color: rgba(var(--lilac), .95); }
+  .door-4{ color: rgba(var(--blue),  .95); }
 
-    /* Text link row under the poster (always-works taps) */
-    .links {
-      text-align:center; margin:16px 0 28px;
-      font-size:15px; opacity:.95;
-    }
-    .links a { padding:0 .6rem; }
-    .links a.sub  { color:#ffd9a8; border-bottom:1px dotted rgba(255,255,255,.35); }
-    .links a.about{ color:#d9b7ff; border-bottom:1px dotted rgba(255,255,255,.35); }
+  /* show sparkles on interaction */
+  .hotspot:hover::after,
+  .hotspot:focus-visible::after,
+  .hotspot:active::after{ opacity:1; transform:scale(1); }
 
-    /* Reduced motion */
-    @media (prefers-reduced-motion: reduce){
-      .hot, .spark { transition:none !important; animation:none !important; }
-    }
-  </style>
+  /* gentle twinkle animation */
+  @keyframes twinkle{
+    0%,100% {opacity:.95; transform:scale(1)}
+    50%     {opacity:.55; transform:scale(.92)}
+  }
+  .hotspot:hover::after,
+  .hotspot:focus-visible::after{
+    animation: twinkle 1.2s ease-in-out infinite;
+  }
+
+  /* motion safety */
+  @media (prefers-reduced-motion: reduce){
+    .hotspot:hover::after,
+    .hotspot:focus-visible::after{ animation:none }
+  }
+
+  /* subscribe section */
+  #subscribe{padding:2.5rem 1rem 3rem; max-width:720px; margin:0 auto}
+  #subscribe h2{margin:0 0 .5rem; font-size:clamp(1.4rem,3.5vw,2rem)}
+  .signup{display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.75rem}
+  .signup input{
+    flex:1 1 280px; padding:.85rem 1rem; border-radius:.8rem;
+    border:1px solid #cbbfb4; background:#fff;
+  }
+  .signup button{
+    padding:.9rem 1.1rem; border:0; border-radius:.8rem;
+    background:#4a5e4b; color:#fff; cursor:pointer
+  }
+
+  footer{padding:1rem; color:#6b5d52; text-align:center}
+</style>
 </head>
 <body>
 
-  <div class="poster-wrap" id="poster">
-    <img src="IMG_0536.png?v=4" alt="Sparksoil poster with three doors">
-
-    <!-- Doors -->
-    <a class="hot hot-left" href="encouragemint.html" aria-label="Encouragemint"
-       data-spark="#9aff9a" data-sfx="sfx/left-door.mp3"></a>
-
-    <a class="hot hot-center" href="tea.html" aria-label="Tea in Soft Time"
-       data-spark="#d9b7ff" data-sfx="sfx/center-door.mp3"></a>
-
-    <a class="hot hot-right" href="pelican.html" aria-label="Pelican’s Progress"
-       data-spark="#ffc878" data-sfx="sfx/right-door.mp3"></a>
-
-    <!-- Subscribe button hotspot -->
-    <a class="hot hot-subscribe" href="subscribe.html" aria-label="Subscribe"
-       data-spark="#ffd9a8"></a>
+  <!-- POSTER HERO WITH HOTSPOTS -->
+  <div class="poster" role="img" aria-label="Sparksoil poster with pastel doors and spiral stairs">
+    <a class="hotspot door-1" href="/accidentally-real" aria-label="Open Accidentally Real">Accidentally Real</a>
+    <a class="hotspot door-2" href="/ottistic"          aria-label="Open Ottistic">Ottistic</a>
+    <a class="hotspot door-3" href="https://ko-fi.com/sparksoil" target="_blank" rel="noopener" aria-label="Support on Ko-fi">Ko-fi</a>
+    <a class="hotspot door-4" href="/wonder-window"     aria-label="Open Wonder Window Journal">Wonder Window</a>
+    <!-- Circle girl opens subscribe -->
+    <a class="hotspot girl"   href="#subscribe"         aria-label="Subscribe by email">Subscribe</a>
   </div>
 
-  <!-- Always-visible links (backup to hotspots) -->
-  <p class="links">
-    <a class="sub" href="subscribe.html">Subscribe</a>
-    <!-- If/when you add about.html, this will work too: -->
-    <!-- <a class="about" href="about.html">Who’s responsible for this?</a> -->
-  </p>
+  <!-- SUBSCRIBE (target of the girl click) -->
+  <section id="subscribe" aria-labelledby="sub-h">
+    <h2 id="sub-h">Get Sparksoil in your inbox</h2>
+    <p>Low-pressure notes, first peeks at doors opening, and gentle tools for Shoedays.</p>
+    <form class="signup" action="https://example.com/subscribe" method="post">
+      <label for="email" class="sr-only" style="position:absolute;left:-9999px">Email</label>
+      <input id="email" name="email" type="email" placeholder="you@email.com" required />
+      <button type="submit">Subscribe</button>
+    </form>
+  </section>
 
-  <script>
-    function burst(el){
-      const container = document.getElementById('poster');
-      const rectC = container.getBoundingClientRect();
-      const rectE = el.getBoundingClientRect();
-      const cx = rectE.left + rectE.width/2 - rectC.left;
-      const cy = rectE.top  + rectE.height/2 - rectC.top;
+  <footer>© <span id="y"></span> Sparksoil</footer>
 
-      const n = 6;
-      const color = el.dataset.spark || '#fff';
-      const glyphs = ['✨','✶','✦','★','✺','✷'];
-
-      for(let i=0;i<n;i++){
-        const s = document.createElement('span');
-        s.className = 'spark';
-        s.style.color = color;
-        s.textContent = glyphs[i % glyphs.length];
-
-        const angle = (i / n) * Math.PI * 2 + (Math.random()*0.6 - 0.3);
-        const r = Math.min(rectE.width, rectE.height) * (0.18 + Math.random()*0.12);
-        s.style.left = (cx + Math.cos(angle)*r) + 'px';
-        s.style.top  = (cy + Math.sin(angle)*r) + 'px';
-
-        container.appendChild(s);
-        s.addEventListener('animationend', () => s.remove());
-      }
-    }
-    function playSfx(el){
-      const src = el.dataset.sfx;
-      if (!src) return;
-      const audio = new Audio(src);
-      audio.volume = 0.45;
-      audio.play().catch(()=>{});
-    }
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.hot').forEach(el => {
-        const fire = () => { burst(el); playSfx(el); };
-        el.addEventListener('click', fire);
-        el.addEventListener('touchstart', fire, {passive:true});
-        el.addEventListener('keydown', e => {
-          if (e.key === 'Enter' || e.key === ' ') fire();
-        });
-      });
-    });
-  </script>
-
+<script>
+  document.getElementById('y').textContent = new Date().getFullYear();
+  if (new URLSearchParams(location.search).get('debug') === '1') {
+    document.documentElement.style.setProperty('--debug', 1);
+  }
+</script>
 </body>
 </html>
