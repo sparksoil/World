@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pelican’s Progress — Sparksoil</title>
+  <meta name="description" content="A living gallery where projects bloom in Soft Time." />
+
+  <!-- 👇 Base path so all relative links/images resolve from /World/ -->
+  <base href="/World/">
+
+  <style>
+    :root{
+      --parchment-0:#fefcf9;
+      --parchment-1:#f7f2eb;
+      --parchment-2:#ede4da;
+      --ink:#333;
+      --frame:#e8dccf;
+      --shadow:0 12px 28px rgba(0,0,0,.08);
+      --shadow-hover:0 16px 32px rgba(0,0,0,.12);
+      --card-bg:#fff;
+      --vine-fade:rgba(150,180,150,.25);
+    }
+    * { box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      margin:0;
+      font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, system-ui, Arial, sans-serif;
+      color:var(--ink);
+      /* soft parchment gradient base */
+      background: linear-gradient(180deg, var(--parchment-0) 0%, var(--parchment-1) 40%, var(--parchment-2) 100%);
+    }
+
+    /* Optional faint edge vines (provide your own PNGs if desired) */
+    body::before {
+      content:"";
+      position:fixed; inset:0;
+      background:
+        url('images/vine-border.png') top left repeat-y,
+        url('images/vine-border-right.png') top right repeat-y;
+      background-size:180px auto, 180px auto;
+      opacity:.22; pointer-events:none;
+    }
+    /* Optional growth rings / spiral center */
+    body::after {
+      content:"";
+      position:fixed; inset:0;
+      background: url('images/growth-rings.png') center center no-repeat;
+      background-size:80% auto;
+      opacity:.10; pointer-events:none;
+    }
+
+    header {
+      text-align:center;
+      padding:24px 16px 8px;
+    }
+    header h1 { margin:0 0 6px; font-size:clamp(1.4rem, 2vw + .6rem, 2rem); }
+    header p  { margin:0; opacity:.8; }
+    .back {
+      display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit;
+      padding:6px 10px; border-radius:8px;
+    }
+    .back:focus { outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
+
+    main.shelves {
+      display:flex; flex-direction:column; gap:4rem;
+      max-width:1200px; margin:2rem auto 4rem; padding:2rem;
+      background:rgba(255,255,255,.85);
+      border-radius:20px; box-shadow:var(--shadow);
+      backdrop-filter: blur(4px);
+      border:2px solid var(--frame);
+    }
+
+    /* each shelf = a branch */
+    .shelf {
+      display:flex; gap:2rem; justify-content:center; align-items:flex-start;
+      position:relative; padding:1rem 0;
+    }
+
+    /* subtle shelf line */
+    .shelf::before {
+      content:"";
+      position:absolute; left:3%; right:3%; top:50%; height:4px; border-radius:4px;
+      background: linear-gradient(90deg, transparent 0%, var(--vine-fade) 20%, var(--vine-fade) 80%, transparent 100%);
+      z-index:0;
+    }
+
+    /* cards = blossoms */
+    .card {
+      background:var(--card-bg);
+      border-radius:14px; overflow:hidden;
+      flex:1 1 260px; max-width:320px;
+      position:relative; z-index:1;
+      box-shadow:var(--shadow);
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .card:hover { transform:translateY(-6px) scale(1.03); box-shadow:var(--shadow-hover); }
+    .card img { width:100%; display:block; }
+    .card h3 { margin:12px 14px 4px; font-size:1.1rem; }
+    .card p  { margin:0 14px 16px; color:#444; font-size:.95rem; }
+
+    /* gentle stagger for organic sprouting */
+    .shelf:nth-child(odd)  .card:nth-child(2){ margin-top:40px; }
+    .shelf:nth-child(even) .card:nth-child(1){ margin-top:60px; }
+    .shelf:nth-child(even) .card:nth-child(3){ margin-top:20px; }
+
+    /* responsive niceties */
+    @media (max-width: 720px){
+      .shelf { flex-wrap:wrap; justify-content:flex-start; }
+      .shelf::before { left:0; right:0; }
+      .card { max-width:100%; flex:1 1 100%; }
+      .shelf .card { margin-top:0 !important; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .card { transition:none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="back" href="index.html">← Back to doors</a>
+    <h1>Pelican’s Progress</h1>
+    <p>A living gallery of projects blooming in Soft Time.</p>
+  </header>
+
+  <main class="shelves">
+    <!-- Shelf 1 -->
+    <section class="shelf" aria-label="Shelf one">
+      <article class="card">
+        <img src="images/accidentally-real-cover.jpg" alt="Accidentally Real cover">
+        <h3>Accidentally Real</h3>
+        <p>Novel • Kitty, Otter, and the sacred mending. (In progress)</p>
+      </article>
+
+      <article class="card">
+        <img src="images/sprinkles-after-the-storm.jpg" alt="Sprinkles After the Storm cover">
+        <h3>Sprinkles After the Storm</h3>
+        <p>Forward-memories journal — “Taste and see.”</p>
+      </article>
+    </section>
+
+    <!-- Shelf 2 -->
+    <section class="shelf" aria-label="Shelf two">
+      <article class="card">
+        <img src="images/ottistic-otter.jpg" alt="Ottistic picture-book artwork">
+        <h3>Ottistic (Picture Book)</h3>
+        <p>Wonder, thresholds, and softly rebellious doodles.</p>
+      </article>
+
+      <article class="card">
+        <img src="images/encouragemint.jpg" alt="Encouragemint artwork">
+        <h3>Encouragemint</h3>
+        <p>Mint’s threshold notes and sprinkles of clarity.</p>
+      </article>
+
+      <article class="card">
+        <img src="images/pelican-porch.jpg" alt="Pelican’s Porch artwork">
+        <h3>Pelican’s Porch</h3>
+        <p>A log of progress, feathers, and sideways timelines.</p>
+      </article>
+    </section>
+
+    <!-- Shelf 3 -->
+    <section class="shelf" aria-label="Shelf three">
+      <article class="card">
+        <img src="images/book-mockup-red.jpg" alt="Red book cover mockup">
+        <h3>Wordbaking</h3>
+        <p>Poems & parables passed warm, with crumbs.</p>
+      </article>
+
+      <article class="card">
+        <img src="images/wonder-window.jpg" alt="Wonder Window pages">
+        <h3>Wonder Window</h3>
+        <p>Daily pocket pages for soft noticing and sacred pause.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
