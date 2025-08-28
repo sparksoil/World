@@ -18,15 +18,15 @@
 
 <style>
   :root{
-    /* ▼ updated poster filename */
+    /* poster filename */
     --poster: url("SparksoilPoster-web.jpg");
     --debug: 0;
 
-    /* sparkle tints per door */
-    --peach: 255,180,120;
-    --mint:  140,220,195;
-    --lilac: 190,160,220;
-    --blue:  150,180,255;
+    /* sparkle/glow tints per door */
+    --peach: 255,180,120;  /* door 1 */
+    --mint:  140,220,195;  /* door 2 */
+    --lilac: 190,160,220;  /* door 3 */
+    --blue:  150,180,255;  /* door 4 */
   }
 
   /* layout */
@@ -47,13 +47,21 @@
     text-indent:-9999px; overflow:hidden; border-radius:12px;
     outline: calc(var(--debug)*2px) dashed rgba(255,0,100,.7);
   }
-  .door-1{left:35%; top:73%; width:10%; height:12%;}
-  .door-2{left:47%; top:73%; width:10%; height:12%;}
-  .door-3{left:59%; top:73%; width:10%; height:12%;}
-  .door-4{left:71%; top:73%; width:10%; height:12%;}
+
+  /* 🔼 moved up a smidge: top 73% → 71% */
+  .door-1{left:35%; top:71%; width:10%; height:12%;}
+  .door-2{left:47%; top:71%; width:10%; height:12%;}
+  .door-3{left:59%; top:71%; width:10%; height:12%;}
+  .door-4{left:71%; top:71%; width:10%; height:12%;}
   .girl  {left:79%; top:81%; width:20%; height:20%; border-radius:50%;}
 
-  /* sparkles */
+  /* per-door color */
+  .door-1{ color: rgba(var(--peach), .95); }
+  .door-2{ color: rgba(var(--mint),  .95); }
+  .door-3{ color: rgba(var(--lilac), .95); }
+  .door-4{ color: rgba(var(--blue),  .95); }
+
+  /* ✨ sparkles */
   .hotspot::after{
     content:"";
     position:absolute; inset:-10% -6%; border-radius:inherit; pointer-events:none;
@@ -69,16 +77,29 @@
     filter: drop-shadow(0 0 6px rgba(255,255,255,.55));
     transition: opacity .22s ease, transform .22s ease;
   }
-  .door-1{ color: rgba(var(--peach), .95); }
-  .door-2{ color: rgba(var(--mint),  .95); }
-  .door-3{ color: rgba(var(--lilac), .95); }
-  .door-4{ color: rgba(var(--blue),  .95); }
+
+  /* 🌟 soft color-matched glow (hover/focus/click) */
+  .hotspot::before{
+    content:"";
+    position:absolute; inset:-15%; border-radius:inherit; pointer-events:none;
+    opacity:0; transform:scale(.96);
+    background: radial-gradient(60% 60% at 50% 50%, currentColor 35%, transparent 60%);
+    filter: blur(14px);
+    transition: opacity .22s ease, transform .22s ease;
+  }
+
   .hotspot:hover::after,
   .hotspot:focus-visible::after,
   .hotspot:active::after{ opacity:1; transform:scale(1); }
+
+  .hotspot:hover::before,
+  .hotspot:focus-visible::before,
+  .hotspot:active::before{ opacity:.35; transform:scale(1); }
+
   @keyframes twinkle{ 0%,100%{opacity:.95;transform:scale(1)} 50%{opacity:.55;transform:scale(.92)} }
   .hotspot:hover::after,
   .hotspot:focus-visible::after{ animation: twinkle 1.2s ease-in-out infinite; }
+
   @media (prefers-reduced-motion: reduce){
     .hotspot:hover::after,
     .hotspot:focus-visible::after{ animation:none }
@@ -104,15 +125,12 @@
 
   <!-- POSTER HERO WITH HOTSPOTS -->
   <div class="poster" role="img" aria-label="Sparksoil poster with pastel doors and spiral stairs">
-    <!-- left two doors now go to pelican.html and encouragemint.html -->
-    <a class="hotspot door-1" href="pelican.html"       aria-label="Open Pelican">Pelican</a>
-    <a class="hotspot door-2" href="encouragemint.html" aria-label="Open Encouragemint">Encouragemint</a>
-    <!-- lilac door → Ko-fi -->
+    <!-- ✅ Pelican door now points to pelican-progress.html -->
+    <a class="hotspot door-1" href="pelican-progress.html" aria-label="Open Pelican">Pelican</a>
+    <a class="hotspot door-2" href="encouragemint.html"      aria-label="Open Encouragemint">Encouragemint</a>
     <a class="hotspot door-3" href="https://ko-fi.com/sparksoil" target="_blank" rel="noopener" aria-label="Support on Ko-fi">Ko-fi</a>
-    <!-- rightmost door -->
-    <a class="hotspot door-4" href="wonder-window/"     aria-label="Open Wonder Window Journal">Wonder Window</a>
-    <!-- Circle girl opens subscribe -->
-    <a class="hotspot girl"   href="#subscribe"         aria-label="Subscribe by email">Subscribe</a>
+    <a class="hotspot door-4" href="wonder-window/"          aria-label="Open Wonder Window Journal">Wonder Window</a>
+    <a class="hotspot girl"   href="#subscribe"              aria-label="Subscribe by email">Subscribe</a>
   </div>
 
   <!-- SUBSCRIBE (target of the girl click) -->
