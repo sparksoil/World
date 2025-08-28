@@ -18,8 +18,9 @@
 
 <style>
   :root{
-    --poster: url("SparksoilPoster.png");   /* your hero image file */
-    --debug: 0;                             /* set to 1 to see hotspot boxes */
+    /* ▼ updated poster filename */
+    --poster: url("SparksoilPoster-web.jpg");
+    --debug: 0;
 
     /* sparkle tints per door */
     --peach: 255,180,120;
@@ -29,13 +30,13 @@
   }
 
   /* layout */
-  html{scroll-behavior:smooth;} /* smooth jump to #subscribe */
+  html{scroll-behavior:smooth;}
   body{margin:0;background:#efe9e2;font:400 18px/1.5 ui-serif,Georgia,serif;color:#2b221c}
   .poster{
     position:relative;
     width:min(100vw,100dvw);
     margin-inline:auto;
-    aspect-ratio:9/16;              /* tweak if your PNG ratio differs */
+    aspect-ratio:9/16;              /* tweak if your image ratio differs */
     background-image:var(--poster);
     background-size:cover; background-position:center;
   }
@@ -48,11 +49,11 @@
   }
   .door-1{left:35%; top:73%; width:10%; height:12%;}
   .door-2{left:47%; top:73%; width:10%; height:12%;}
-  .door-3{left:59%; top:73%; width:10%; height:12%;} /* lilac → Ko-fi */
+  .door-3{left:59%; top:73%; width:10%; height:12%;}
   .door-4{left:71%; top:73%; width:10%; height:12%;}
   .girl  {left:79%; top:81%; width:20%; height:20%; border-radius:50%;}
 
-  /* ---------------- Sparkle effect ---------------- */
+  /* sparkles */
   .hotspot::after{
     content:"";
     position:absolute; inset:-10% -6%; border-radius:inherit; pointer-events:none;
@@ -68,24 +69,16 @@
     filter: drop-shadow(0 0 6px rgba(255,255,255,.55));
     transition: opacity .22s ease, transform .22s ease;
   }
-
-  /* tint per door */
   .door-1{ color: rgba(var(--peach), .95); }
   .door-2{ color: rgba(var(--mint),  .95); }
   .door-3{ color: rgba(var(--lilac), .95); }
   .door-4{ color: rgba(var(--blue),  .95); }
-
-  /* show sparkles on interaction */
   .hotspot:hover::after,
   .hotspot:focus-visible::after,
   .hotspot:active::after{ opacity:1; transform:scale(1); }
-
-  /* gentle twinkle animation */
-  @keyframes twinkle{ 0%,100% {opacity:.95; transform:scale(1)} 50% {opacity:.55; transform:scale(.92)} }
+  @keyframes twinkle{ 0%,100%{opacity:.95;transform:scale(1)} 50%{opacity:.55;transform:scale(.92)} }
   .hotspot:hover::after,
   .hotspot:focus-visible::after{ animation: twinkle 1.2s ease-in-out infinite; }
-
-  /* motion safety */
   @media (prefers-reduced-motion: reduce){
     .hotspot:hover::after,
     .hotspot:focus-visible::after{ animation:none }
@@ -111,10 +104,12 @@
 
   <!-- POSTER HERO WITH HOTSPOTS -->
   <div class="poster" role="img" aria-label="Sparksoil poster with pastel doors and spiral stairs">
-    <!-- NOTE: project-site friendly relative links (no leading /) -->
-    <a class="hotspot door-1" href="accidentally-real/" aria-label="Open Accidentally Real">Accidentally Real</a>
-    <a class="hotspot door-2" href="ottistic/"          aria-label="Open Ottistic">Ottistic</a>
+    <!-- left two doors now go to pelican.html and encouragemint.html -->
+    <a class="hotspot door-1" href="pelican.html"       aria-label="Open Pelican">Pelican</a>
+    <a class="hotspot door-2" href="encouragemint.html" aria-label="Open Encouragemint">Encouragemint</a>
+    <!-- lilac door → Ko-fi -->
     <a class="hotspot door-3" href="https://ko-fi.com/sparksoil" target="_blank" rel="noopener" aria-label="Support on Ko-fi">Ko-fi</a>
+    <!-- rightmost door -->
     <a class="hotspot door-4" href="wonder-window/"     aria-label="Open Wonder Window Journal">Wonder Window</a>
     <!-- Circle girl opens subscribe -->
     <a class="hotspot girl"   href="#subscribe"         aria-label="Subscribe by email">Subscribe</a>
@@ -134,15 +129,15 @@
   <footer>© <span id="y"></span> Sparksoil</footer>
 
 <script>
-  // 1) Footer year
+  // Footer year
   document.getElementById('y').textContent = new Date().getFullYear();
 
-  // 2) Optional debug boxes for hotspots
+  // Optional debug boxes for hotspots: add ?debug=1 to URL
   if (new URLSearchParams(location.search).get('debug') === '1') {
     document.documentElement.style.setProperty('--debug', 1);
   }
 
-  // 3) Keep page from loading at the bottom unless a hash is present
+  // Keep page from loading at the bottom unless a hash is present
   if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }
