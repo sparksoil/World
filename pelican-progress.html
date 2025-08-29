@@ -26,13 +26,13 @@
   html,body{height:100%}
 
   /* WALL: lilac wallpaper + glow + parchment
-     NOTE: leading slash so <base> doesn't break it */
+     Use relative path so <base> resolves to /World/ */
   body{
     margin:0; color:var(--ink);
     font-family: ui-sans-serif,-apple-system,"Segoe UI",Roboto,system-ui,Arial,sans-serif;
     background:
       linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.92)),
-      url("/lilac-wallpaper.jpg") center top / 520px auto repeat,
+      url("lilac-wallpaper.jpg") center top / 520px auto repeat,
       radial-gradient(1100px 520px at 52% -6%, rgba(var(--spark),.35), transparent 55%),
       radial-gradient(900px 520px at 80% 115%, rgba(var(--spark),.22), transparent 60%),
       linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
@@ -59,14 +59,12 @@
     position:relative;
     padding:2.2rem 1rem 1.8rem;
     display:grid;
-    grid-auto-flow: row;     /* keep DOM order left→right, then wrap */
+    grid-auto-flow: row;
     gap:1rem 1.2rem;
   }
-  /* columns: 2 on phones, 3 on larger screens */
   @media (max-width: 720px){ .shelf{ grid-template-columns: repeat(2, minmax(150px, 1fr)); } }
   @media (min-width: 721px){ .shelf{ grid-template-columns: repeat(3, minmax(170px, 1fr)); } }
 
-  /* plank under the row */
   .shelf::before{
     content:"";
     position:absolute; left:1rem; right:1rem; bottom:.55rem; height:16px;
@@ -76,18 +74,16 @@
     transform: skewX(-1.8deg) rotate(-.2deg);
     z-index:0;
   }
-  /* per-shelf wobble variants */
   .shelves > .shelf:nth-of-type(2)::before{ transform: skewX(2deg)  rotate(.35deg); }
   .shelves > .shelf:nth-of-type(3)::before{ transform: skewX(-2.6deg) rotate(-.4deg); }
 
-  /* BOOK OBJECTS (wonky, like a gentle dream) */
   .card{
-    --tilt: 0deg;  /* per-item tilt (set via nth-child) */
-    --bump: 0px;   /* per-item vertical offset */
-    --spot-rgb: 255,255,255;  /* spotlight color (class sets) */
-    --spot-a: 0;               /* 0 = off, class enables */
-    --spot-x: 50%;             /* spotlight center X */
-    --spot-y: 15%;             /* spotlight center Y */
+    --tilt: 0deg;
+    --bump: 0px;
+    --spot-rgb: 255,255,255;
+    --spot-a: 0;
+    --spot-x: 50%;
+    --spot-y: 15%;
     position:relative;
     background:transparent; border-radius:10px; overflow:visible;
     z-index:1;
@@ -110,7 +106,6 @@
   .card h3{ margin:10px 6px 2px; font-size:1.05rem; text-align:center; }
   .card p { margin:0 8px 0; color:#444; font-size:.95rem; text-align:center; }
 
-  /* whimsical per-item tilts/bumps */
   .shelf .card:nth-child(1){ --tilt:-2.2deg; --bump: 2px; }
   .shelf .card:nth-child(2){ --tilt: 1.4deg; --bump:-3px; }
   .shelf .card:nth-child(3){ --tilt:-1.0deg; --bump: 4px; }
@@ -118,7 +113,6 @@
   .shelf .card:nth-child(5){ --tilt:-1.8deg; --bump: 3px; }
   .shelf .card:nth-child(6){ --tilt: 0.8deg;  --bump:-4px; }
 
-  /* SPOTLIGHTS */
   .card::before{
     content:"";
     position:absolute; inset:-6% -4% -2%;
@@ -160,7 +154,7 @@
     body{
       background:
         linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.92)),
-        url("/lilac-wallpaper.jpg") center top / 640px auto repeat,
+        url("lilac-wallpaper.jpg") center top / 640px auto repeat,
         radial-gradient(1100px 520px at 52% -6%, rgba(255,242,200,.35), transparent 55%),
         radial-gradient(900px 520px at 80% 115%, rgba(255,242,200,.22), transparent 60%),
         linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
