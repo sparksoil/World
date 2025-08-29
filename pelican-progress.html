@@ -25,20 +25,18 @@
   *{box-sizing:border-box}
   html,body{height:100%}
 
-  /* WALL: lilac wallpaper + glow + parchment */
+  /* WALL: make the wallpaper read like a real wall */
   body{
     margin:0; color:var(--ink);
     font-family: ui-sans-serif,-apple-system,"Segoe UI",Roboto,system-ui,Arial,sans-serif;
 
-    /* Lowered white overlay to .60 so the wallpaper is present */
+    /* Stronger wallpaper: very light white veil (.25), multiply blend */
     background:
-      linear-gradient(rgba(255,255,255,.60), rgba(255,255,255,.60)),
-      url("lilac-wallpaper.jpg?v=3") center top / 640px auto repeat,
+      linear-gradient(rgba(255,255,255,.25), rgba(255,255,255,.25)),
+      url("lilac-wallpaper.jpg?v=5") center top / 560px auto repeat,
       radial-gradient(1100px 520px at 52% -6%, rgba(var(--spark),.35), transparent 55%),
       radial-gradient(900px 520px at 80% 115%, rgba(var(--spark),.22), transparent 60%),
       linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
-
-    /* Make the wallpaper blend with the glows instead of getting “creamed” */
     background-blend-mode: normal, multiply, soft-light, soft-light, normal;
   }
 
@@ -48,43 +46,54 @@
   .back{ display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
   .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
-  /* ROOM: framed pane */
+  /* ROOM: framed pane (crisp white so books pop) */
   main.shelves{
     display:flex; flex-direction:column; gap:3rem;
     max-width:1200px; margin:2rem auto 4rem; padding:2rem;
-
-    /* Make the pane itself white (no tint). Tweak the .95 to re-frost if desired. */
-    background: rgba(255,255,255,.95);
+    background:#fff;               /* no tint */
     border:2px solid var(--frame);
     border-radius:20px; box-shadow:0 12px 28px rgba(0,0,0,.08);
-
-    /* Frosted effect—kept subtle so it doesn’t wash the wallpaper */
-    backdrop-filter: blur(2px);
   }
 
-  /* SHELF: grid row with per-shelf wobble plank */
+  /* SHELF GRID */
   .shelf{
     position:relative;
-    padding:2.2rem 1rem 1.8rem;
+    padding:2.6rem 1rem 2.2rem;    /* room for the plank */
     display:grid;
     grid-auto-flow: row;
     gap:1rem 1.2rem;
+    z-index:0; /* wall */
   }
   @media (max-width: 720px){ .shelf{ grid-template-columns: repeat(2, minmax(150px, 1fr)); } }
   @media (min-width: 721px){ .shelf{ grid-template-columns: repeat(3, minmax(170px, 1fr)); } }
 
+  /* REAL PLANK with wood grain + depth */
   .shelf::before{
     content:"";
-    position:absolute; left:1rem; right:1rem; bottom:.55rem; height:16px;
-    border-radius:6px;
-    background:linear-gradient(180deg, rgba(var(--vine),.22), rgba(var(--vine),.48));
-    box-shadow: inset 0 1px rgba(255,255,255,.6), 0 8px 16px rgba(0,0,0,.12);
-    transform: skewX(-1.8deg) rotate(-.2deg);
-    z-index:0;
+    position:absolute; left:1rem; right:1rem; bottom:.65rem; height:22px;
+    border-radius:8px;
+    background:
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,.04) 0px, rgba(0,0,0,.04) 2px,
+        rgba(255,255,255,.03) 2px, rgba(255,255,255,.03) 6px),
+      linear-gradient(180deg, #cdb79d, #a38768);
+    box-shadow:
+      inset 0 1px rgba(255,255,255,.5),
+      inset 0 -2px rgba(0,0,0,.12),
+      0 8px 18px rgba(0,0,0,.20);   /* cast to wall */
+    z-index:1;
   }
-  .shelves > .shelf:nth-of-type(2)::before{ transform: skewX(2deg)  rotate(.35deg); }
-  .shelves > .shelf:nth-of-type(3)::before{ transform: skewX(-2.6deg) rotate(-.4deg); }
+  /* Front lip for depth */
+  .shelf::after{
+    content:"";
+    position:absolute; left:1rem; right:1rem; bottom:.45rem; height:6px;
+    border-radius:6px;
+    background: linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.18));
+    filter: blur(.2px);
+    z-index:2;
+  }
 
+  /* BOOK OBJECTS (transparent PNGs respected) */
   .card{
     --tilt: 0deg;
     --bump: 0px;
@@ -93,27 +102,39 @@
     --spot-x: 50%;
     --spot-y: 15%;
     position:relative;
-    background:transparent; border-radius:10px; overflow:visible;
-    z-index:1;
+    background:transparent; border-radius:0; overflow:visible;
+    z-index:3; /* above plank + lip */
     transform-origin: bottom center;
     animation: sprout .8s ease-out both;
   }
 
-  .frame{ width:100%; aspect-ratio: 2 / 3; display:block; }
+  .frame{ width:100%; aspect-ratio: 2 / 3; display:block; background:none; }
   .card img{
-    width:100%; height:auto; display:block; border-radius:8px;
-    box-shadow:0 8px 18px rgba(0,0,0,.16);
+    width:100%; height:auto; display:block;
+    background:transparent; border-radius:0;
+    box-shadow: 0 6px 14px rgba(0,0,0,.18);  /* form shadow */
     transform: translateY(var(--bump)) rotate(var(--tilt));
-    transition: transform .3s ease, box-shadow .3s ease;
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  /* Contact shadow onto the plank */
+  .card::after{
+    content:"";
+    position:absolute; left:14%; right:14%; bottom:6px; height:10px;
+    border-radius:999px;
+    background: radial-gradient(ellipse at center,
+                rgba(0,0,0,.28) 0%,
+                rgba(0,0,0,.20) 40%,
+                rgba(0,0,0,0) 80%);
+    filter: blur(2px);
+    z-index:-1; pointer-events:none;
   }
   .card:hover img{
-    transform: translateY(calc(var(--bump) - 8px)) rotate(calc(var(--tilt) - 1deg)) scale(1.03);
-    box-shadow:0 16px 32px rgba(0,0,0,.18);
+    transform: translateY(calc(var(--bump) - 6px)) rotate(calc(var(--tilt) - 1deg)) scale(1.03);
+    box-shadow: 0 14px 26px rgba(0,0,0,.22);
   }
+  .card:hover::after{ transform: scale(.95,.85); opacity:.9; }
 
-  .card h3{ margin:10px 6px 2px; font-size:1.05rem; text-align:center; }
-  .card p { margin:0 8px 0; color:#444; font-size:.95rem; text-align:center; }
-
+  /* whimsical per-item tilts/bumps */
   .shelf .card:nth-child(1){ --tilt:-2.2deg; --bump: 2px; }
   .shelf .card:nth-child(2){ --tilt: 1.4deg; --bump:-3px; }
   .shelf .card:nth-child(3){ --tilt:-1.0deg; --bump: 4px; }
@@ -121,10 +142,10 @@
   .shelf .card:nth-child(5){ --tilt:-1.8deg; --bump: 3px; }
   .shelf .card:nth-child(6){ --tilt: 0.8deg;  --bump:-4px; }
 
+  /* Soft spotlights (unchanged) */
   .card::before{
     content:"";
-    position:absolute; inset:-6% -4% -2%;
-    pointer-events:none;
+    position:absolute; inset:-6% -4% -2%; pointer-events:none;
     border-radius:12px;
     background:
       radial-gradient(220px 180px at var(--spot-x) var(--spot-y),
@@ -132,15 +153,13 @@
         rgba(var(--spot-rgb), calc(var(--spot-a) * .45)) 35%,
         transparent 70%);
     mix-blend-mode: soft-light;
-    filter: blur(2px);
-    opacity:1;
+    filter: blur(2px); opacity:1;
     animation: breathe 4.5s ease-in-out infinite;
   }
   @keyframes breathe{
-    0%,100%{ transform:translateY(0) scale(1);   opacity:1; }
+    0%,100%{ transform:translateY(0) scale(1); opacity:1; }
     50%    { transform:translateY(-2px) scale(1.02); opacity:.92; }
   }
-
   .spot-rose{ --spot-rgb: var(--rose); --spot-a:.55; --spot-x:48%; --spot-y:18%; }
   .spot-teal{ --spot-rgb: var(--teal); --spot-a:.48; --spot-x:52%; --spot-y:20%; }
   .spot-blue{ --spot-rgb: var(--blue); --spot-a:.50; --spot-x:50%; --spot-y:16%; }
@@ -157,20 +176,17 @@
     .card::before{ animation:none; }
   }
 
-  /* Phone wallpaper size + slightly stronger texture on small screens */
+  /* Phone: stronger wallpaper texture so it reads on small screens */
   @media (max-width: 720px){
     body{
       background:
-        linear-gradient(rgba(255,255,255,.60), rgba(255,255,255,.60)),
-        url("lilac-wallpaper.jpg?v=3") center top / 700px auto repeat,
+        linear-gradient(rgba(255,255,255,.25), rgba(255,255,255,.25)),
+        url("lilac-wallpaper.jpg?v=5") center top / 700px auto repeat,
         radial-gradient(1100px 520px at 52% -6%, rgba(255,242,200,.35), transparent 55%),
         radial-gradient(900px 520px at 80% 115%, rgba(255,242,200,.22), transparent 60%),
         linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
       background-blend-mode: normal, multiply, soft-light, soft-light, normal;
     }
-
-    /* Whiter pane on phones too */
-    main.shelves{ background: rgba(255,255,255,.96); backdrop-filter: blur(2px); }
   }
 </style>
 </head>
@@ -182,7 +198,7 @@
   </header>
 
   <main class="shelves">
-    <!-- Shelf 1 (Accidentally Real → Ottistic → Sprinkles) -->
+    <!-- Shelf 1 -->
     <section class="shelf" aria-label="Shelf one">
       <article class="card spot-gold">
         <div class="frame">
