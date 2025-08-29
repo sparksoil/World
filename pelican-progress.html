@@ -25,14 +25,15 @@
   *{box-sizing:border-box}
   html,body{height:100%}
 
-  /* WALL: lilac wallpaper + glow + parchment
-     Use relative path so <base> resolves to /World/ */
+  /* WALL: lilac wallpaper + glow + parchment */
   body{
     margin:0; color:var(--ink);
     font-family: ui-sans-serif,-apple-system,"Segoe UI",Roboto,system-ui,Arial,sans-serif;
     background:
-      linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.92)),
-      url("lilac-wallpaper.jpg") center top / 520px auto repeat,
+      /* lowered from .92 so wallpaper peeks through */
+      linear-gradient(rgba(255,255,255,.8), rgba(255,255,255,.8)),
+      /* relative path + cache-buster so it resolves under /World/ and refreshes */
+      url("lilac-wallpaper.jpg?v=2") center top / 520px auto repeat,
       radial-gradient(1100px 520px at 52% -6%, rgba(var(--spark),.35), transparent 55%),
       radial-gradient(900px 520px at 80% 115%, rgba(var(--spark),.22), transparent 60%),
       linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
@@ -153,8 +154,8 @@
   @media (max-width: 720px){
     body{
       background:
-        linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.92)),
-        url("lilac-wallpaper.jpg") center top / 640px auto repeat,
+        linear-gradient(rgba(255,255,255,.8), rgba(255,255,255,.8)),
+        url("lilac-wallpaper.jpg?v=2") center top / 640px auto repeat,
         radial-gradient(1100px 520px at 52% -6%, rgba(255,242,200,.35), transparent 55%),
         radial-gradient(900px 520px at 80% 115%, rgba(255,242,200,.22), transparent 60%),
         linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
