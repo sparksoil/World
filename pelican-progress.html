@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pelican’s Progress — Sparksoil</title>
   <meta name="description" content="A living gallery of projects blooming in Soft Time.">
-  <!-- If your site lives at /World/, keep this: -->
   <base href="/World/">
 
   <style>
@@ -38,11 +37,16 @@
     .back{ display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
     .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
-    /* main pane */
+    /* shelves pane WITH lilac wallpaper */
     main.shelves{
       display:flex; flex-direction:column; gap:4rem;
       max-width:1200px; margin:2rem auto 4rem; padding:2rem;
-      background:rgba(255,255,255,.88);
+
+      /* wallpaper + a soft white veil for readability */
+      background:
+        linear-gradient(rgba(255,255,255,.88), rgba(255,255,255,.88)),
+        url("images/lilac-wallpaper.jpg") center top / 520px auto repeat;
+
       border:2px solid var(--frame);
       border-radius:20px; box-shadow:var(--shadow);
       backdrop-filter: blur(4px);
@@ -54,27 +58,25 @@
       display:flex; gap:2rem; justify-content:center; align-items:flex-start;
       padding:1.25rem 0;
     }
-    /* Make the shelf line VERY visible; adjust opacity later if you want subtler */
     .shelf::before{
       content:"";
       position:absolute; left:2%; right:2%; top:50%; height:6px; border-radius:999px;
       background:
         linear-gradient(90deg,
           transparent 0%,
-          rgba(var(--vine),.55) 10%,
-          rgba(var(--vine),.65) 50%,
-          rgba(var(--vine),.55) 90%,
+          rgba(var(--vine),.50) 10%,
+          rgba(var(--vine),.60) 50%,
+          rgba(var(--vine),.50) 90%,
           transparent 100%);
       filter: blur(.3px);
       z-index:0;
     }
-    /* tiny curl hint so it feels organic, still pure CSS */
     .shelf::after{
       content:"";
       position:absolute; width:46px; height:46px; top:calc(50% - 23px); left:1%;
       background:
-        radial-gradient(circle at 68% 36%, rgba(var(--vine),.6) 0 6px, transparent 7px),
-        conic-gradient(from -20deg, rgba(var(--vine),.5) 0 100deg, transparent 100deg 360deg);
+        radial-gradient(circle at 68% 36%, rgba(var(--vine),.55) 0 6px, transparent 7px),
+        conic-gradient(from -20deg, rgba(var(--vine),.45) 0 100deg, transparent 100deg 360deg);
       border-radius:50%;
       filter: blur(.4px);
       opacity:.8;
@@ -86,7 +88,6 @@
       flex:1 1 260px; max-width:320px; z-index:1;
       box-shadow:var(--shadow);
       transition:transform .22s ease, box-shadow .22s ease;
-      /* gentle entrance */
       animation: sprout .5s ease-out both;
     }
     .card:hover{ transform:translateY(-6px) scale(1.03); box-shadow:var(--shadow2); }
@@ -119,10 +120,16 @@
 
     /* responsive */
     @media (max-width: 720px){
+      main.shelves{
+        /* slightly larger wallpaper tiles on small screens so it’s not too busy */
+        background:
+          linear-gradient(rgba(255,255,255,.88), rgba(255,255,255,.88)),
+          url("images/lilac-wallpaper.jpg") center top / 640px auto repeat;
+      }
       .shelf{ flex-wrap:wrap; justify-content:flex-start; }
       .shelf::before{ left:0; right:0; }
       .card{ max-width:100%; flex:1 1 100%; }
-      .shelf .card{ margin-top:0 !important; } /* remove stagger on narrow screens */
+      .shelf .card{ margin-top:0 !important; }
     }
     @media (prefers-reduced-motion: reduce){
       .card{ animation:none; transition:none; }
