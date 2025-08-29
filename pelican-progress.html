@@ -12,10 +12,14 @@
     --ink:#2b221c;
     --paper-0:#fefcf9; --paper-1:#f7f2eb; --paper-2:#ede4da;
     --frame:#e8dccf;
-    --shadow:0 12px 28px rgba(0,0,0,.08);
-    --shadow2:0 18px 36px rgba(0,0,0,.12);
     --vine:120,160,130;
     --spark:255,242,200;
+
+    /* spotlight palettes */
+    --rose: 255,192,205;
+    --teal: 120,210,200;
+    --blue: 160,180,255;
+    --gold: 255,220,150;
   }
 
   *{box-sizing:border-box}
@@ -44,84 +48,113 @@
   main.shelves{
     display:flex; flex-direction:column; gap:3rem;
     max-width:1200px; margin:2rem auto 4rem; padding:2rem;
-    background:transparent; /* let the wall show through; frame supplies contrast */
+    background:transparent; /* let the wall show through */
     border:2px solid var(--frame);
-    border-radius:20px; box-shadow:var(--shadow); backdrop-filter: blur(4px);
+    border-radius:20px; box-shadow:0 12px 28px rgba(0,0,0,.08);
+    backdrop-filter: blur(4px);
   }
 
-  /* SHELF: thin plank with a little depth */
+  /* SHELF: grid row with per-shelf wobble plank */
   .shelf{
     position:relative;
-    display:flex; gap:1.25rem; justify-content:center; align-items:flex-end;
-    padding:2.2rem 1rem 1.4rem;
-    flex-wrap:wrap;
+    padding:2.2rem 1rem 1.8rem;
+    display:grid;
+    grid-auto-flow: row;     /* keep DOM order left→right, then wrap */
+    gap:1rem 1.2rem;
   }
+  /* columns: 2 on phones, 3 on larger screens */
+  @media (max-width: 720px){ .shelf{ grid-template-columns: repeat(2, minmax(150px, 1fr)); } }
+  @media (min-width: 721px){ .shelf{ grid-template-columns: repeat(3, minmax(170px, 1fr)); } }
+
+  /* plank under the row */
   .shelf::before{
     content:"";
-    position:absolute; left:1rem; right:1rem; bottom:.5rem; height:14px;
+    position:absolute; left:1rem; right:1rem; bottom:.55rem; height:16px;
     border-radius:6px;
     background:linear-gradient(180deg, rgba(var(--vine),.22), rgba(var(--vine),.48));
-    box-shadow: inset 0 1px rgba(255,255,255,.6), 0 6px 14px rgba(0,0,0,.10);
+    box-shadow: inset 0 1px rgba(255,255,255,.6), 0 8px 16px rgba(0,0,0,.12);
+    transform: skewX(-1.8deg) rotate(-.2deg);
     z-index:0;
   }
+  /* per-shelf wobble variants */
+  .shelves > .shelf:nth-of-type(2)::before{ transform: skewX(2deg)  rotate(.35deg); }
+  .shelves > .shelf:nth-of-type(3)::before{ transform: skewX(-2.6deg) rotate(-.4deg); }
 
-  /* BOOK OBJECTS */
+  /* BOOK OBJECTS (wonky, like a gentle dream) */
   .card{
+    --tilt: 0deg;  /* per-item tilt (set via nth-child) */
+    --bump: 0px;   /* per-item vertical offset */
+    --spot-rgb: 255,255,255;  /* spotlight color (class sets) */
+    --spot-a: 0;               /* 0 = off, class enables */
+    --spot-x: 50%;             /* spotlight center X */
+    --spot-y: 15%;             /* spotlight center Y */
+    position:relative;
     background:transparent; border-radius:10px; overflow:visible;
-    flex:0 1 200px; max-width:220px; z-index:1;
+    z-index:1;
     transform-origin: bottom center;
     animation: sprout .8s ease-out both;
   }
-  /* natural stagger per row */
-  .shelf .card:nth-child(2){ animation-delay:.07s }
-  .shelf .card:nth-child(3){ animation-delay:.14s }
-  .shelf .card:nth-child(4){ animation-delay:.21s }
 
-  .frame{
-    width:100%;
-    aspect-ratio: 2 / 3;
-    display:block;
-  }
+  .frame{ width:100%; aspect-ratio: 2 / 3; display:block; }
   .card img{
     width:100%; height:auto; display:block; border-radius:8px;
     box-shadow:0 8px 18px rgba(0,0,0,.16);
-    transform:translateY(0) rotate(0deg);
-    transition:transform .3s ease, box-shadow .3s ease;
+    transform: translateY(var(--bump)) rotate(var(--tilt));
+    transition: transform .3s ease, box-shadow .3s ease;
   }
   .card:hover img{
-    transform:translateY(-8px) rotate(-1deg) scale(1.03);
+    transform: translateY(calc(var(--bump) - 8px)) rotate(calc(var(--tilt) - 1deg)) scale(1.03);
     box-shadow:0 16px 32px rgba(0,0,0,.18);
   }
 
   .card h3{ margin:10px 6px 2px; font-size:1.05rem; text-align:center; }
   .card p { margin:0 8px 0; color:#444; font-size:.95rem; text-align:center; }
 
-  /* blooming entrance */
-  @keyframes sprout{
-    0%   { opacity:0; transform:translateY(16px) scale(.94) rotate(-1deg); }
-    70%  { opacity:1; transform:translateY(-4px) scale(1.02) rotate(.6deg); }
-    100% {           transform:translateY(0) scale(1) rotate(0); }
+  /* whimsical per-item tilts/bumps; tweak to taste */
+  .shelf .card:nth-child(1){ --tilt:-2.2deg; --bump: 2px; }
+  .shelf .card:nth-child(2){ --tilt: 1.4deg; --bump:-3px; }
+  .shelf .card:nth-child(3){ --tilt:-1.0deg; --bump: 4px; }
+  .shelf .card:nth-child(4){ --tilt: 2.1deg;  --bump:-2px; }
+  .shelf .card:nth-child(5){ --tilt:-1.8deg; --bump: 3px; }
+  .shelf .card:nth-child(6){ --tilt: 0.8deg;  --bump:-4px; }
+
+  /* SPOTLIGHTS: soft colored beam above each book */
+  .card::before{
+    content:"";
+    position:absolute; inset:-6% -4% -2%;
+    pointer-events:none;
+    border-radius:12px;
+    background:
+      radial-gradient(220px 180px at var(--spot-x) var(--spot-y),
+        rgba(var(--spot-rgb), var(--spot-a)) 0%,
+        rgba(var(--spot-rgb), calc(var(--spot-a) * .45)) 35%,
+        transparent 70%);
+    mix-blend-mode: soft-light;     /* gentle colorizing */
+    filter: blur(2px);
+    opacity:1;
+    animation: breathe 4.5s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{ transform:translateY(0) scale(1);   opacity:1; }
+    50%    { transform:translateY(-2px) scale(1.02); opacity:.92; }
   }
 
-  /* responsive: two per row on phones */
-  @media (max-width: 720px){
-    body{
-      background:
-        linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.92)),
-        url("lilac-wallpaper.jpg") center top / 640px auto repeat,
-        radial-gradient(1100px 520px at 52% -6%, rgba(255,242,200,.35), transparent 55%),
-        radial-gradient(900px 520px at 80% 115%, rgba(255,242,200,.22), transparent 60%),
-        linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
-    }
-    .card{ flex:1 1 calc(50% - 1rem); max-width:calc(50% - 1rem); }
-  }
-  /* three per row on larger screens */
-  @media (min-width: 721px){
-    .card{ flex:1 1 calc(33.33% - 1.2rem); max-width:calc(33.33% - 1.2rem); }
+  /* spotlight presets (apply as classes to .card) */
+  .spot-rose{ --spot-rgb: var(--rose); --spot-a:.55; --spot-x:48%; --spot-y:18%; }
+  .spot-teal{ --spot-rgb: var(--teal); --spot-a:.48; --spot-x:52%; --spot-y:20%; }
+  .spot-blue{ --spot-rgb: var(--blue); --spot-a:.50; --spot-x:50%; --spot-y:16%; }
+  .spot-gold{ --spot-rgb: var(--gold); --spot-a:.58; --spot-x:50%; --spot-y:14%; }
+
+  /* blooming entrance */
+  @keyframes sprout{
+    0%   { opacity:0; transform:translateY(16px) scale(.94) rotate(-0.6deg); }
+    70%  { opacity:1; transform:translateY(-4px) scale(1.02) rotate(.4deg); }
+    100% {           transform:translateY(0) scale(1) rotate(0); }
   }
 
   @media (prefers-reduced-motion: reduce){
     .card{ animation:none; transition:none; }
+    .card::before{ animation:none; }
   }
 </style>
 </head>
@@ -133,20 +166,29 @@
   </header>
 
   <main class="shelves">
-    <!-- Shelf 1 -->
+    <!-- Shelf 1 (ORDER: Accidentally Real → Ottistic → Sprinkles) -->
     <section class="shelf" aria-label="Shelf one">
-      <article class="card">
+      <article class="card spot-gold">
         <div class="frame">
-          <img src="accidentally-real-shelf.png?v=2" alt="Accidentally Real cover" loading="lazy" decoding="async"
+          <img src="accidentally-real-shelf.png?v=5" alt="Accidentally Real cover" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Accidentally Real</h3>
         <p>Novel • Kitty, Otter, and the sacred mending. (In progress)</p>
       </article>
 
-      <article class="card">
+      <article class="card spot-rose">
         <div class="frame">
-          <img src="sprinkles-shelf.png?v=2" alt="Sprinkles After the Storm cover" loading="lazy" decoding="async"
+          <img src="ottistic-shelf.png?v=5" alt="Ottistic picture-book artwork" loading="lazy" decoding="async"
+               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
+        </div>
+        <h3>Ottistic (Picture Book)</h3>
+        <p>A story about sideways thinking, soft friends, and words that are realer than real.</p>
+      </article>
+
+      <article class="card spot-teal">
+        <div class="frame">
+          <img src="sprinkles-shelf.png?v=5" alt="Sprinkles After the Storm cover" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Sprinkles After the Storm</h3>
@@ -156,48 +198,39 @@
 
     <!-- Shelf 2 -->
     <section class="shelf" aria-label="Shelf two">
-      <article class="card">
+      <article class="card spot-blue">
         <div class="frame">
-          <img src="ottistic-shelf.png?v=2" alt="Ottistic picture-book artwork" loading="lazy" decoding="async"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
-        </div>
-        <h3>Ottistic (Picture Book)</h3>
-        <p>A story about sideways thinking, soft friends, and words that are realer than real.</p>
-      </article>
-
-      <article class="card">
-        <div class="frame">
-          <img src="encouragemint.jpg?v=2" alt="Encouragemint artwork" loading="lazy" decoding="async"
+          <img src="encouragemint.jpg?v=5" alt="Encouragemint artwork" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Encouragemint</h3>
         <p>Mint’s threshold notes and sprinkles of clarity.</p>
       </article>
 
-      <article class="card">
+      <article class="card spot-gold">
         <div class="frame">
-          <img src="pelican-porch.jpg?v=2" alt="Pelican’s Porch artwork" loading="lazy" decoding="async"
+          <img src="pelican-porch.jpg?v=5" alt="Pelican’s Porch artwork" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Pelican’s Porch</h3>
         <p>A log of progress, feathers, and sideways timelines.</p>
       </article>
-    </section>
 
-    <!-- Shelf 3 -->
-    <section class="shelf" aria-label="Shelf three">
-      <article class="card">
+      <article class="card spot-rose">
         <div class="frame">
-          <img src="book-mockup-red.jpg?v=2" alt="Wordbaking cover mockup" loading="lazy" decoding="async"
+          <img src="book-mockup-red.jpg?v=5" alt="Wordbaking cover mockup" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Wordbaking</h3>
         <p>Poems &amp; parables passed warm, with crumbs.</p>
       </article>
+    </section>
 
-      <article class="card">
+    <!-- Shelf 3 -->
+    <section class="shelf" aria-label="Shelf three">
+      <article class="card spot-teal">
         <div class="frame">
-          <img src="wonder-window.jpg?v=2" alt="Wonder Window pages" loading="lazy" decoding="async"
+          <img src="wonder-window.jpg?v=5" alt="Wonder Window pages" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Wonder Window</h3>
