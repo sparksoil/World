@@ -29,14 +29,17 @@
   body{
     margin:0; color:var(--ink);
     font-family: ui-sans-serif,-apple-system,"Segoe UI",Roboto,system-ui,Arial,sans-serif;
+
+    /* Lowered white overlay to .60 so the wallpaper is present */
     background:
-      /* lowered from .92 so wallpaper peeks through */
-      linear-gradient(rgba(255,255,255,.8), rgba(255,255,255,.8)),
-      /* relative path + cache-buster so it resolves under /World/ and refreshes */
-      url("lilac-wallpaper.jpg?v=2") center top / 520px auto repeat,
+      linear-gradient(rgba(255,255,255,.60), rgba(255,255,255,.60)),
+      url("lilac-wallpaper.jpg?v=3") center top / 640px auto repeat,
       radial-gradient(1100px 520px at 52% -6%, rgba(var(--spark),.35), transparent 55%),
       radial-gradient(900px 520px at 80% 115%, rgba(var(--spark),.22), transparent 60%),
       linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
+
+    /* Make the wallpaper blend with the glows instead of getting “creamed” */
+    background-blend-mode: normal, multiply, soft-light, soft-light, normal;
   }
 
   header{ text-align:center; padding:24px 16px 8px; }
@@ -49,10 +52,14 @@
   main.shelves{
     display:flex; flex-direction:column; gap:3rem;
     max-width:1200px; margin:2rem auto 4rem; padding:2rem;
-    background:transparent; /* let the wall show through */
+
+    /* Make the pane itself white (no tint). Tweak the .95 to re-frost if desired. */
+    background: rgba(255,255,255,.95);
     border:2px solid var(--frame);
     border-radius:20px; box-shadow:0 12px 28px rgba(0,0,0,.08);
-    backdrop-filter: blur(4px);
+
+    /* Frosted effect—kept subtle so it doesn’t wash the wallpaper */
+    backdrop-filter: blur(2px);
   }
 
   /* SHELF: grid row with per-shelf wobble plank */
@@ -150,16 +157,20 @@
     .card::before{ animation:none; }
   }
 
-  /* Phone wallpaper size */
+  /* Phone wallpaper size + slightly stronger texture on small screens */
   @media (max-width: 720px){
     body{
       background:
-        linear-gradient(rgba(255,255,255,.8), rgba(255,255,255,.8)),
-        url("lilac-wallpaper.jpg?v=2") center top / 640px auto repeat,
+        linear-gradient(rgba(255,255,255,.60), rgba(255,255,255,.60)),
+        url("lilac-wallpaper.jpg?v=3") center top / 700px auto repeat,
         radial-gradient(1100px 520px at 52% -6%, rgba(255,242,200,.35), transparent 55%),
         radial-gradient(900px 520px at 80% 115%, rgba(255,242,200,.22), transparent 60%),
         linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
+      background-blend-mode: normal, multiply, soft-light, soft-light, normal;
     }
+
+    /* Whiter pane on phones too */
+    main.shelves{ background: rgba(255,255,255,.96); backdrop-filter: blur(2px); }
   }
 </style>
 </head>
