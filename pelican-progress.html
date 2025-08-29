@@ -25,14 +25,14 @@
   *{box-sizing:border-box}
   html,body{height:100%}
 
-  /* WALL: lilac wallpaper behind everything + glow + parchment gradient */
+  /* WALL: lilac wallpaper + glow + parchment
+     NOTE: leading slash so <base> doesn't break it */
   body{
     margin:0; color:var(--ink);
     font-family: ui-sans-serif,-apple-system,"Segoe UI",Roboto,system-ui,Arial,sans-serif;
     background:
-      /* soft veil so the pattern doesn’t shout */
       linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.92)),
-      url("lilac-wallpaper.jpg") center top / 520px auto repeat,
+      url("/lilac-wallpaper.jpg") center top / 520px auto repeat,
       radial-gradient(1100px 520px at 52% -6%, rgba(var(--spark),.35), transparent 55%),
       radial-gradient(900px 520px at 80% 115%, rgba(var(--spark),.22), transparent 60%),
       linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
@@ -110,7 +110,7 @@
   .card h3{ margin:10px 6px 2px; font-size:1.05rem; text-align:center; }
   .card p { margin:0 8px 0; color:#444; font-size:.95rem; text-align:center; }
 
-  /* whimsical per-item tilts/bumps; tweak to taste */
+  /* whimsical per-item tilts/bumps */
   .shelf .card:nth-child(1){ --tilt:-2.2deg; --bump: 2px; }
   .shelf .card:nth-child(2){ --tilt: 1.4deg; --bump:-3px; }
   .shelf .card:nth-child(3){ --tilt:-1.0deg; --bump: 4px; }
@@ -118,7 +118,7 @@
   .shelf .card:nth-child(5){ --tilt:-1.8deg; --bump: 3px; }
   .shelf .card:nth-child(6){ --tilt: 0.8deg;  --bump:-4px; }
 
-  /* SPOTLIGHTS: soft colored beam above each book */
+  /* SPOTLIGHTS */
   .card::before{
     content:"";
     position:absolute; inset:-6% -4% -2%;
@@ -129,7 +129,7 @@
         rgba(var(--spot-rgb), var(--spot-a)) 0%,
         rgba(var(--spot-rgb), calc(var(--spot-a) * .45)) 35%,
         transparent 70%);
-    mix-blend-mode: soft-light;     /* gentle colorizing */
+    mix-blend-mode: soft-light;
     filter: blur(2px);
     opacity:1;
     animation: breathe 4.5s ease-in-out infinite;
@@ -139,13 +139,11 @@
     50%    { transform:translateY(-2px) scale(1.02); opacity:.92; }
   }
 
-  /* spotlight presets (apply as classes to .card) */
   .spot-rose{ --spot-rgb: var(--rose); --spot-a:.55; --spot-x:48%; --spot-y:18%; }
   .spot-teal{ --spot-rgb: var(--teal); --spot-a:.48; --spot-x:52%; --spot-y:20%; }
   .spot-blue{ --spot-rgb: var(--blue); --spot-a:.50; --spot-x:50%; --spot-y:16%; }
   .spot-gold{ --spot-rgb: var(--gold); --spot-a:.58; --spot-x:50%; --spot-y:14%; }
 
-  /* blooming entrance */
   @keyframes sprout{
     0%   { opacity:0; transform:translateY(16px) scale(.94) rotate(-0.6deg); }
     70%  { opacity:1; transform:translateY(-4px) scale(1.02) rotate(.4deg); }
@@ -155,6 +153,18 @@
   @media (prefers-reduced-motion: reduce){
     .card{ animation:none; transition:none; }
     .card::before{ animation:none; }
+  }
+
+  /* Phone wallpaper size */
+  @media (max-width: 720px){
+    body{
+      background:
+        linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.92)),
+        url("/lilac-wallpaper.jpg") center top / 640px auto repeat,
+        radial-gradient(1100px 520px at 52% -6%, rgba(255,242,200,.35), transparent 55%),
+        radial-gradient(900px 520px at 80% 115%, rgba(255,242,200,.22), transparent 60%),
+        linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
+    }
   }
 </style>
 </head>
@@ -166,7 +176,7 @@
   </header>
 
   <main class="shelves">
-    <!-- Shelf 1 (ORDER: Accidentally Real → Ottistic → Sprinkles) -->
+    <!-- Shelf 1 (Accidentally Real → Ottistic → Sprinkles) -->
     <section class="shelf" aria-label="Shelf one">
       <article class="card spot-gold">
         <div class="frame">
