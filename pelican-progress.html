@@ -24,7 +24,6 @@
       margin:0; color:var(--ink);
       font-family: ui-sans-serif,-apple-system,"Segoe UI",Roboto,system-ui,Arial,sans-serif;
 
-      /* parchment & glow (pure CSS) */
       background:
         radial-gradient(1100px 520px at 52% -6%, rgba(var(--spark),.35), transparent 55%),
         radial-gradient(900px 520px at 80% 115%, rgba(var(--spark),.22), transparent 60%),
@@ -37,22 +36,19 @@
     .back{ display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
     .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
-    /* shelves pane WITH lilac wallpaper */
     main.shelves{
       display:flex; flex-direction:column; gap:4rem;
       max-width:1200px; margin:2rem auto 4rem; padding:2rem;
 
-      /* wallpaper + a soft white veil for readability */
       background:
         linear-gradient(rgba(255,255,255,.88), rgba(255,255,255,.88)),
-        url("images/lilac-wallpaper.jpg") center top / 520px auto repeat;
+        url("lilac-wallpaper.jpg") center top / 520px auto repeat;
 
       border:2px solid var(--frame);
       border-radius:20px; box-shadow:var(--shadow);
       backdrop-filter: blur(4px);
     }
 
-    /* each shelf = CSS “branch” behind cards */
     .shelf{
       position:relative;
       display:flex; gap:2rem; justify-content:center; align-items:flex-start;
@@ -61,28 +57,11 @@
     .shelf::before{
       content:"";
       position:absolute; left:2%; right:2%; top:50%; height:6px; border-radius:999px;
-      background:
-        linear-gradient(90deg,
-          transparent 0%,
-          rgba(var(--vine),.50) 10%,
-          rgba(var(--vine),.60) 50%,
-          rgba(var(--vine),.50) 90%,
-          transparent 100%);
+      background:linear-gradient(90deg, transparent 0%, rgba(var(--vine),.50) 10%, rgba(var(--vine),.60) 50%, rgba(var(--vine),.50) 90%, transparent 100%);
       filter: blur(.3px);
       z-index:0;
     }
-    .shelf::after{
-      content:"";
-      position:absolute; width:46px; height:46px; top:calc(50% - 23px); left:1%;
-      background:
-        radial-gradient(circle at 68% 36%, rgba(var(--vine),.55) 0 6px, transparent 7px),
-        conic-gradient(from -20deg, rgba(var(--vine),.45) 0 100deg, transparent 100deg 360deg);
-      border-radius:50%;
-      filter: blur(.4px);
-      opacity:.8;
-    }
 
-    /* cards = blossoms */
     .card{
       background:#fff; border-radius:14px; overflow:hidden;
       flex:1 1 260px; max-width:320px; z-index:1;
@@ -92,7 +71,6 @@
     }
     .card:hover{ transform:translateY(-6px) scale(1.03); box-shadow:var(--shadow2); }
 
-    /* image area with graceful fallback */
     .frame{
       aspect-ratio:3/4; width:100%;
       background:linear-gradient(180deg,#f9f5ee,#efe6db);
@@ -103,12 +81,10 @@
     .card h3{ margin:12px 14px 4px; font-size:1.1rem; }
     .card p { margin:0 14px 16px; color:#444; font-size:.95rem; }
 
-    /* stagger for organic feel */
     .shelf:nth-child(odd)  .card:nth-child(2){ margin-top:40px; }
     .shelf:nth-child(even) .card:nth-child(1){ margin-top:60px; }
     .shelf:nth-child(even) .card:nth-child(3){ margin-top:20px; }
 
-    /* subtle page-load sprout */
     @keyframes sprout{
       0% { opacity:0; transform: translateY(12px) scale(.98); }
       100%{ opacity:1; transform: translateY(0)    scale(1);   }
@@ -118,13 +94,11 @@
     .shelf:nth-child(3) .card{ animation-delay:.14s; }
     .shelf:nth-child(3) .card:nth-child(2){ animation-delay:.21s; }
 
-    /* responsive */
     @media (max-width: 720px){
       main.shelves{
-        /* slightly larger wallpaper tiles on small screens so it’s not too busy */
         background:
           linear-gradient(rgba(255,255,255,.88), rgba(255,255,255,.88)),
-          url("images/lilac-wallpaper.jpg") center top / 640px auto repeat;
+          url("lilac-wallpaper.jpg") center top / 640px auto repeat;
       }
       .shelf{ flex-wrap:wrap; justify-content:flex-start; }
       .shelf::before{ left:0; right:0; }
@@ -148,9 +122,7 @@
     <section class="shelf" aria-label="Shelf one">
       <article class="card">
         <div class="frame">
-          <img src="images/accidentally-real-cover.jpg"
-               alt="Accidentally Real cover"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
+          <img src="accidentally-real-cover.jpg" alt="Accidentally Real cover" onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Accidentally Real</h3>
         <p>Novel • Kitty, Otter, and the sacred mending. (In progress)</p>
@@ -158,9 +130,7 @@
 
       <article class="card">
         <div class="frame">
-          <img src="images/sprinkles-after-the-storm.jpg"
-               alt="Sprinkles After the Storm cover"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
+          <img src="sprinkles-after-the-storm.jpg" alt="Sprinkles After the Storm cover" onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Sprinkles After the Storm</h3>
         <p>Forward-memories journal — “Taste and see.”</p>
@@ -171,9 +141,7 @@
     <section class="shelf" aria-label="Shelf two">
       <article class="card">
         <div class="frame">
-          <img src="images/ottistic-otter.jpg"
-               alt="Ottistic picture-book artwork"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
+          <img src="ottistic-otter.jpg" alt="Ottistic picture-book artwork" onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Ottistic (Picture Book)</h3>
         <p>Wonder, thresholds, and softly rebellious doodles.</p>
@@ -181,9 +149,7 @@
 
       <article class="card">
         <div class="frame">
-          <img src="images/encouragemint.jpg"
-               alt="Encouragemint artwork"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
+          <img src="encouragemint.jpg" alt="Encouragemint artwork" onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Encouragemint</h3>
         <p>Mint’s threshold notes and sprinkles of clarity.</p>
@@ -191,9 +157,7 @@
 
       <article class="card">
         <div class="frame">
-          <img src="images/pelican-porch.jpg"
-               alt="Pelican’s Porch artwork"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
+          <img src="pelican-porch.jpg" alt="Pelican’s Porch artwork" onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Pelican’s Porch</h3>
         <p>A log of progress, feathers, and sideways timelines.</p>
@@ -204,9 +168,7 @@
     <section class="shelf" aria-label="Shelf three">
       <article class="card">
         <div class="frame">
-          <img src="images/book-mockup-red.jpg"
-               alt="Wordbaking cover mockup"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
+          <img src="book-mockup-red.jpg" alt="Wordbaking cover mockup" onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Wordbaking</h3>
         <p>Poems & parables passed warm, with crumbs.</p>
@@ -214,9 +176,7 @@
 
       <article class="card">
         <div class="frame">
-          <img src="images/wonder-window.jpg"
-               alt="Wonder Window pages"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
+          <img src="wonder-window.jpg" alt="Wonder Window pages" onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Wonder Window</h3>
         <p>Daily pocket pages for soft noticing and sacred pause.</p>
