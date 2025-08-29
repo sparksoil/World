@@ -102,26 +102,26 @@
     animation: sprout .8s ease-out both;
   }
 
-  /* kill the white box behind */
-  .frame {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    display: block;
-    background: none !important;
+  /* IMPORTANT: give multiply something non-white behind the image area only */
+  .frame{
+    width:100%;
+    aspect-ratio:2 / 3;
+    display:block;
+    background-color:#F6F0E6; /* whisper parchment so multiply hides white boxes */
   }
 
-  .card img {
-    width: 100%;
-    height: auto;
-    display: block;
-    background: transparent !important;
-    border-radius: 0 !important;
-    box-shadow: 0 6px 14px rgba(0,0,0,.18);
-    transform: translateY(calc(var(--bump) + 4px)) rotate(var(--tilt)); /* seat them lower */
-    transition: transform .25s ease, box-shadow .25s ease;
+  .card img{
+    width:100%;
+    height:auto;
+    display:block;
+    background:transparent !important;
+    border-radius:0 !important;
+    box-shadow:0 6px 14px rgba(0,0,0,.18);
+    transform:translateY(calc(var(--bump) + 4px)) rotate(var(--tilt)); /* seat them lower */
+    transition:transform .25s ease, box-shadow .25s ease;
 
-    /* TEMP fix for baked-in whites */
-    mix-blend-mode: multiply;
+    /* TEMP fix for baked-in whites in PNGs */
+    mix-blend-mode:multiply;
   }
 
   .card::after{
