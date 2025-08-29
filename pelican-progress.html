@@ -102,12 +102,12 @@
     animation: sprout .8s ease-out both;
   }
 
-  /* IMPORTANT: give multiply something non-white behind the image area only */
+  /* NO panel behind images — transparent */
   .frame{
     width:100%;
     aspect-ratio:2 / 3;
     display:block;
-    background-color:#F6F0E6; /* whisper parchment so multiply hides white boxes */
+    background:transparent !important;
   }
 
   .card img{
@@ -120,7 +120,7 @@
     transform:translateY(calc(var(--bump) + 4px)) rotate(var(--tilt)); /* seat them lower */
     transition:transform .25s ease, box-shadow .25s ease;
 
-    /* TEMP fix for baked-in whites in PNGs */
+    /* keep for now, harmless even if PNGs are fixed later */
     mix-blend-mode:multiply;
   }
 
