@@ -46,35 +46,57 @@
   .back{ display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
   .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
-  /* MAIN GALLERY — no beige frame, no shelves */
+  /* MAIN GALLERY */
   main.gallery{ max-width:1200px; margin:1.2rem auto 4rem; padding:0 1rem 3rem; }
 
-  /* GRID: 1 per row mobile, 2 per row desktop */
-  .grid{ display:grid; gap:2.4rem 2rem; grid-template-columns:1fr; }
-  @media (min-width:760px){ .grid{ grid-template-columns:1fr 1fr; gap:2.8rem 2.2rem; } }
+  /* GRID: staggered on mobile, 2-col on desktop */
+  .grid{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3.4rem;
+  }
 
-  /* POD (each book) */
   .pod{
-    --beam: 255,220,150; /* default gold; overridden by color classes below */
+    --beam: 255,220,150;
     position:relative;
     padding:3.2rem 1rem 1.6rem;
     display:flex; flex-direction:column; align-items:center; gap:.6rem;
     isolation:isolate;
-    animation:sprout .9s ease-out both;
+    animation: sprout .9s ease-out both, wiggle 6s ease-in-out infinite;
+  }
+  .pod:nth-child(2){ animation-delay:.5s; }
+  .pod:nth-child(3){ animation-delay:1s; }
+
+  /* staggered offsets mobile */
+  .pod:nth-child(1){ margin-left:-8%; transform:rotate(-1.6deg) translateY(-6%); }
+  .pod:nth-child(2){ margin-right:-6%; transform:rotate(2.2deg) translateY(4%); }
+  .pod:nth-child(3){ margin-left:-4%; transform:rotate(-1.3deg) translateY(2%); }
+
+  @media (min-width:760px){
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:3.2rem 2.8rem;
+      justify-items:center;
+    }
+    .pod:nth-child(1){ transform:rotate(-1.4deg) translate(-8%,-4%); margin:0; }
+    .pod:nth-child(2){ transform:rotate(2deg) translate(8%,6%); margin:0; }
+    .pod:nth-child(3){ grid-column: span 2; transform:rotate(-1.6deg) translateY(12%); margin:0; }
   }
 
-  /* Spotlight glow ONLY (no lamp element) */
+  /* Spotlight glow */
   .pod::before{
     content:"";
     position:absolute; top:-8%; left:50%; transform:translateX(-50%);
     width:72%; height:48%;
     pointer-events:none; z-index:-1;
     background:
-      radial-gradient(ellipse at 50% 12%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.0) 55%),
+      radial-gradient(ellipse at 50% 12%, rgba(255,255,255,.75) 0%, rgba(255,255,255,.0) 55%),
       radial-gradient(ellipse at 50% 0%,
-        rgba(var(--beam), .45) 0%,
-        rgba(var(--beam), .26) 35%,
-        rgba(var(--beam), .08) 65%,
+        rgba(var(--beam), .5) 0%,
+        rgba(var(--beam), .28) 35%,
+        rgba(var(--beam), .1) 65%,
         transparent 85%);
     filter: blur(6px);
     mix-blend-mode:screen;
@@ -88,21 +110,12 @@
     animation:breathe 5.2s ease-in-out infinite;
   }
 
-  /* extra wobbly (Seuss-y) */
-  .pod:nth-child(odd)  { transform: rotate(-1.6deg); }
-  .pod:nth-child(even) { transform: rotate(1.7deg); }
-  .pod:nth-child(3n)   { transform: rotate(-2.1deg); }
-  .pod:nth-child(5n)   { transform: rotate(1.9deg); }
-
-  /* BIG book image */
+  /* BIG book */
   .book{
     width:clamp(260px, 78vw, 420px);
     display:block; background:transparent!important; border-radius:0!important;
     filter: drop-shadow(0 10px 18px rgba(0,0,0,.20));
-    transform: translateY(2px) rotate(var(--tilt,0deg));
     transition: transform .25s ease, filter .25s ease;
-    /* If any PNG still has a white matte, temporarily uncomment: */
-    /* mix-blend-mode:multiply; */
   }
   .pod:hover .book{
     transform: translateY(-4px) rotate(calc(var(--tilt,0deg) - .6deg)) scale(1.02);
@@ -113,12 +126,11 @@
     margin:.55rem 0 0; font-weight:800; font-size:1.28rem; text-align:center;
     color:#2b221c; text-shadow:0 1px 0 rgba(255,255,255,.75);
   }
-  .desc {
+  .desc{
     margin:.2rem 0 0; text-align:center; opacity:.9; color:#3b2f27;
     text-shadow:0 1px 0 rgba(255,255,255,.65);
   }
 
-  /* color sets (glow color) */
   .gold{ --beam: var(--gold); }
   .rose{ --beam: var(--rose); }
   .teal{ --beam: var(--teal); }
@@ -132,6 +144,10 @@
     0%,100%{ opacity:.85; transform:translateY(0) }
     50%{ opacity:.95; transform:translateY(-3px) }
   }
+  @keyframes wiggle{
+    0%,100%{ transform:translateY(0) rotate(var(--tilt,0deg)); }
+    50%{ transform:translateY(-2px) rotate(calc(var(--tilt,0deg) + .4deg)); }
+  }
   @media (prefers-reduced-motion:reduce){ .pod{animation:none} .pod::after{animation:none} }
 </style>
 </head>
@@ -144,26 +160,20 @@
 
   <main class="gallery">
     <div class="grid">
-      <!-- Gold glow -->
-      <article class="pod gold" style="--tilt:-1.6deg">
-        <img class="book" src="accidentally-real-shelf.png?v=8" alt="Accidentally Real cover" loading="lazy" decoding="async"
-             onerror="this.replaceWith(document.createTextNode('Image coming soon'));">
+      <article class="pod gold">
+        <img class="book" src="accidentally-real-shelf.png?v=8" alt="Accidentally Real cover" loading="lazy">
         <h3 class="title">Accidentally Real</h3>
         <p class="desc">Novel • Kitty, Otter, and the sacred mending. (In progress)</p>
       </article>
 
-      <!-- Rose glow -->
-      <article class="pod rose" style="--tilt:1.8deg">
-        <img class="book" src="sprinkles-shelf.png?v=8" alt="Sprinkles After the Storm cover" loading="lazy" decoding="async"
-             onerror="this.replaceWith(document.createTextNode('Image coming soon'));">
+      <article class="pod rose">
+        <img class="book" src="sprinkles-shelf.png?v=8" alt="Sprinkles After the Storm cover" loading="lazy">
         <h3 class="title">Sprinkles After the Storm</h3>
         <p class="desc">Forward-memories journal — “Taste and see.”</p>
       </article>
 
-      <!-- Teal glow -->
-      <article class="pod teal" style="--tilt:-2deg">
-        <img class="book" src="ottistic-shelf.png?v=8" alt="Ottistic picture-book artwork" loading="lazy" decoding="async"
-             onerror="this.replaceWith(document.createTextNode('Image coming soon'));">
+      <article class="pod teal">
+        <img class="book" src="ottistic-shelf.png?v=8" alt="Ottistic picture-book artwork" loading="lazy">
         <h3 class="title">Ottistic (Picture Book)</h3>
         <p class="desc">A story about sideways thinking, soft friends, and words that are realer than real.</p>
       </article>
