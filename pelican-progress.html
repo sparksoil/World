@@ -52,8 +52,9 @@
     position:relative;
     display:flex; flex-direction:column; align-items:center;
     gap:.2rem; margin:0 auto 0; max-width:92%;
-    isolation:isolate; /* makes its own stacking context so transforms don't leak */
+    isolation:isolate; /* its own stacking context */
   }
+
   /* soft bloom behind PNG */
   .title-block::before{
     content:"";
@@ -69,9 +70,9 @@
   /* Pelican hero — centered above the title */
   .pelican-hero{
     position:absolute; left:50%; transform:translateX(-50%);
-    bottom:calc(100% + 8px); /* snuggled just above the logo */
-    width: clamp(120px, 22vw, 240px); /* ~3–4× bigger than before */
-    z-index:2; pointer-events:none; opacity:0;
+    bottom:calc(100% + 8px);
+    width: clamp(120px, 22vw, 240px);
+    z-index:2; pointer-events:none; opacity:0; display:block;
     filter:
       drop-shadow(0 0 10px rgba(255,220,150,.65))
       drop-shadow(0 0 20px rgba(255,192,205,.45))
@@ -154,9 +155,7 @@
   main.gallery{ max-width:1200px; margin:.25rem auto 4rem; padding:0 1rem 3rem; }
   @media (min-width:760px){ main.gallery{ margin:.6rem auto 4rem; } }
 
-  .grid{
-    display:flex; flex-direction:column; align-items:center; gap:3rem;
-  }
+  .grid{ display:flex; flex-direction:column; align-items:center; gap:3rem; }
 
   /* TRANSFORM-COMPOSED PODS */
   .pod{
@@ -256,8 +255,8 @@
     <a class="back" href="index.html">← Back to doors</a>
 
     <div class="title-block" aria-label="Pelican’s Progress title">
-      <!-- Pelican image lives here (exact path/case) -->
-      <img class="pelican-hero" src="pelican-charecter.PNG" alt="">
+      <!-- Pelican image (absolute path + cache-buster, exact case) -->
+      <img class="pelican-hero" src="/World/pelican-charecter.PNG?v=1" alt="" loading="eager" decoding="async" fetchpriority="high">
       <!-- Title PNG -->
       <img class="title-logo" src="pelicans-progress-title.png" alt="Pelican’s Progress">
       <!-- Subtitle -->
