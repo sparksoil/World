@@ -27,24 +27,97 @@
       linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
     background-blend-mode: normal, multiply, soft-light, normal;
   }
+  @media (max-width:720px){
+    body{
+      background:
+        linear-gradient(rgba(255,255,255,.22), rgba(255,255,255,.22)),
+        url("lilac-wallpaper.jpg?v=8") center top / 680px auto repeat,
+        radial-gradient(1200px 520px at 50% -6%, rgba(var(--spark),.30), transparent 55%),
+        linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
+      background-blend-mode: normal, multiply, soft-light, normal;
+    }
+  }
 
-  header{ text-align:center; padding:12px; position:relative; z-index:1; }
+  /* HEADER */
+  header{
+    text-align:center;
+    padding:16px 16px 4px;
+    position:relative; z-index:1;
+  }
   .back{ display:inline-block; margin:0 0 6px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
+  .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
   /* TITLE BLOCK */
   .title-block{
     position:relative;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:.25rem; /* tighter */
-    margin:0 auto;
-    max-width:92%;
+    display:flex; flex-direction:column; align-items:center;
+    gap:.2rem; margin:0 auto 0; max-width:92%;
+    isolation:isolate; /* makes its own stacking context so transforms don't leak */
+  }
+  /* soft bloom behind PNG */
+  .title-block::before{
+    content:"";
+    position:absolute; inset:auto 0 -12px 0;
+    margin:auto; width:min(680px, 88vw); height:44%;
+    background:
+      radial-gradient(closest-side, rgba(255,230,180,.55), rgba(255,230,180,0) 66%),
+      radial-gradient(closest-side, rgba(255,205,220,.25), rgba(255,205,220,0) 70%);
+    filter: blur(10px);
+    z-index:0; pointer-events:none;
   }
 
+  /* Pelican hero — centered above the title */
+  .pelican-hero{
+    position:absolute; left:50%; transform:translateX(-50%);
+    bottom:calc(100% + 8px); /* snuggled just above the logo */
+    width: clamp(120px, 22vw, 240px); /* ~3–4× bigger than before */
+    z-index:2; pointer-events:none; opacity:0;
+    filter:
+      drop-shadow(0 0 10px rgba(255,220,150,.65))
+      drop-shadow(0 0 20px rgba(255,192,205,.45))
+      drop-shadow(0 0 28px rgba(140,210,200,.40));
+    animation: pelicanPop 900ms ease-out 200ms forwards;
+  }
+  /* sparkle burst behind Pelican */
+  .pelican-hero::after{
+    content:"";
+    position:absolute; inset:0; margin:auto;
+    width:140%; height:140%;
+    background:
+      radial-gradient(circle, rgba(255,235,190,.75), rgba(255,235,190,0) 55%),
+      conic-gradient(from 0deg,
+        rgba(255,235,190,.9) 0 6deg, transparent 6deg 30deg,
+        rgba(255,235,190,.9) 30deg 36deg, transparent 36deg 60deg,
+        rgba(255,235,190,.9) 60deg 66deg, transparent 66deg 90deg,
+        rgba(255,235,190,.9) 90deg 96deg, transparent 96deg 120deg,
+        rgba(255,235,190,.9) 120deg 126deg, transparent 126deg 150deg,
+        rgba(255,235,190,.9) 150deg 156deg, transparent 156deg 180deg,
+        rgba(255,235,190,.9) 180deg 186deg, transparent 186deg 210deg,
+        rgba(255,235,190,.9) 210deg 216deg, transparent 216deg 240deg,
+        rgba(255,235,190,.9) 240deg 246deg, transparent 246deg 270deg,
+        rgba(255,235,190,.9) 270deg 276deg, transparent 276deg 300deg,
+        rgba(255,235,190,.9) 300deg 306deg, transparent 306deg 330deg,
+        rgba(255,235,190,.9) 330deg 336deg, transparent 336deg 360deg);
+    mix-blend-mode:screen; border-radius:50%;
+    transform:scale(.6); opacity:0; z-index:-1;
+    animation: sparkle 900ms ease-out 260ms forwards;
+    pointer-events:none;
+  }
+  @keyframes pelicanPop{
+    0%   { transform:translateX(-50%) translateY(8px) scale(.72); opacity:0; }
+    60%  { transform:translateX(-50%) translateY(-2px) scale(1.06); opacity:1; }
+    100% { transform:translateX(-50%) translateY(0)    scale(1.00); opacity:1; }
+  }
+  @keyframes sparkle{
+    0%   { transform:scale(.4); opacity:0; filter:blur(6px); }
+    50%  { transform:scale(1);  opacity:1; filter:blur(2px); }
+    100% { transform:scale(1.1);opacity:.0; filter:blur(10px); }
+  }
+
+  /* heavier glow on PNG title */
   .title-logo{
     position:relative; z-index:1;
-    max-width:520px; width:100%; height:auto;
+    max-width:560px; width:100%; height:auto;
     filter:
       drop-shadow(0 0 12px rgba(255,220,150,.75))
       drop-shadow(0 0 28px rgba(255,220,150,.55))
@@ -52,70 +125,142 @@
       drop-shadow(0 0 44px rgba(140,210,200,.40));
   }
 
+  /* subtitle */
+  @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap");
   .subtitle-line{
-    margin:.2rem 0 .4rem; /* pulled up + trimmed */
+    margin:.1rem 0 0;
     font-family: "Cormorant Garamond", Georgia, serif;
     font-weight:600;
     font-size: clamp(1.2rem, 1.4vw + 1rem, 1.8rem);
-    color:#fff;
-    text-align:center;
+    letter-spacing:.3px;
+    color:#fff; text-align:center;
     text-shadow:
-      0 0 8px rgba(255,220,150,.70),
+      0 0 8px  rgba(255,220,150,.70),
       0 0 18px rgba(255,220,150,.55),
       0 0 26px rgba(255,192,205,.45),
       0 0 34px rgba(140,210,200,.40);
   }
 
-  /* Pelican mascot — hero size */
-  .pelican-hero {
-    position:absolute;
-    top:-110px;              /* closer snuggle */
-    left:50%;
-    transform:translateX(-50%);
-    width:min(220px, 40vw);  /* 3–4x bigger */
-    filter:
-      drop-shadow(0 0 10px rgba(255,220,150,.65))
-      drop-shadow(0 0 20px rgba(255,192,205,.45))
-      drop-shadow(0 0 28px rgba(140,210,200,.40));
-    pointer-events:none;
-    opacity:0;
-    animation: pelicanIn 1.6s ease-out forwards;
+  /* soft veil just for header */
+  header::after{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(120% 90% at 50% 10%, rgba(255,255,255,.22), transparent 60%),
+      linear-gradient(to bottom, rgba(255,255,255,.16), transparent 60%);
+    pointer-events:none; z-index:0;
   }
 
-  @keyframes pelicanIn {
-    0%   { opacity:0; transform:translateX(-50%) scale(0.6) rotate(-8deg); filter:blur(6px); }
-    70%  { opacity:1; transform:translateX(-50%) scale(1.05) rotate(2deg); filter:blur(0); }
-    100% { opacity:1; transform:translateX(-50%) scale(1) rotate(0); }
+  /* MAIN GALLERY */
+  main.gallery{ max-width:1200px; margin:.25rem auto 4rem; padding:0 1rem 3rem; }
+  @media (min-width:760px){ main.gallery{ margin:.6rem auto 4rem; } }
+
+  .grid{
+    display:flex; flex-direction:column; align-items:center; gap:3rem;
   }
 
-  .pelican-hero::after {
-    content:"✨";
-    position:absolute; top:10%; right:8%;
-    font-size:1.4rem;
-    opacity:0;
-    animation: sparkle .9s ease-out .4s forwards;
+  /* TRANSFORM-COMPOSED PODS */
+  .pod{
+    --tx:0px; --ty:0px; --rot:0deg;
+    --wiggle:0px; --wrot:0deg;
+    --sproutY:0px; --sproutScale:1; --sproutRot:0deg;
+
+    transform:
+      translate(var(--tx), calc(var(--ty) + var(--wiggle) + var(--sproutY)))
+      scale(var(--sproutScale))
+      rotate(calc(var(--rot) + var(--wrot) + var(--sproutRot)));
+
+    animation: sprout .9s ease-out both, wiggle 6s ease-in-out infinite;
+    position:relative;
+    padding:2.2rem 1rem 1.4rem;
+    display:flex; flex-direction:column; align-items:center; gap:.6rem;
+    isolation:isolate; will-change: transform;
   }
-  @keyframes sparkle {
-    0%{ opacity:0; transform:scale(0.2) rotate(-30deg); }
-    50%{ opacity:1; transform:scale(1.4) rotate(10deg); }
-    100%{ opacity:0; transform:scale(0.8) rotate(0); }
+  .pod:first-child{ padding-top:1rem; }
+
+  /* staggered offsets */
+  .pod:nth-child(1){ --tx:-8%; --ty:-6%; --rot:-1.6deg; }
+  .pod:nth-child(2){ --tx: 6%; --ty: 4%; --rot: 2.2deg; }
+  .pod:nth-child(3){ --tx:-4%; --ty: 2%; --rot:-1.3deg; }
+
+  @media (min-width:760px){
+    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:3.2rem 2.4rem; justify-items:center; }
+    .pod:nth-child(1){ --tx:-8%; --ty:-4%; --rot:-1.4deg; }
+    .pod:nth-child(2){ --tx: 8%; --ty: 6%; --rot: 2deg; }
+    .pod:nth-child(3){ --tx: 0%; --ty:12%; --rot:-1.6deg; grid-column:span 2; }
   }
 
-  /* MAIN GALLERY tighter */
-  main.gallery{ max-width:1200px; margin:.4rem auto 2.5rem; padding:0 1rem 2.5rem; }
-  .grid{ display:flex; flex-direction:column; align-items:center; gap:2.4rem; } /* gap trimmed */
+  /* glow halos behind pods */
+  .pod::before{
+    content:"";
+    position:absolute; top:-8%; left:50%; transform:translateX(-50%);
+    width:72%; height:48%;
+    pointer-events:none; z-index:-1;
+    background:
+      radial-gradient(ellipse at 50% 12%, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 55%),
+      radial-gradient(ellipse at 50% 0%,
+        rgba(var(--beam), .5) 0%,
+        rgba(var(--beam), .28) 35%,
+        rgba(var(--beam), .1) 65%,
+        transparent 85%);
+    filter:blur(6px); mix-blend-mode:screen; border-radius:50%;
+  }
+  .pod::after{
+    content:"";
+    position:absolute; inset:-10% -8% auto -8%; height:58%;
+    background: radial-gradient(180px 140px at 50% 68%, rgba(var(--beam),.16), transparent 72%);
+    mix-blend-mode:soft-light; pointer-events:none; z-index:-2;
+    animation:breathe 5.2s ease-in-out infinite;
+  }
 
-  /* POD trim top padding */
-  .pod{ padding:1.6rem 1rem 1.2rem; }
-  .pod:first-child{ padding-top:.6rem; }
+  .book{
+    width:clamp(260px,78vw,420px);
+    display:block; background:transparent!important; border-radius:0!important;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,.20));
+    transition:transform .25s ease, filter .25s ease;
+  }
+  .pod:hover .book{
+    transform:translateY(-4px) scale(1.02);
+    filter: drop-shadow(0 18px 28px rgba(0,0,0,.24));
+  }
+
+  .title{ margin:.55rem 0 0; font-weight:800; font-size:1.28rem; text-align:center; color:#2b221c; text-shadow:0 1px 0 rgba(255,255,255,.75);}
+  .desc { margin:.2rem 0 0; text-align:center; opacity:.9; color:#3b2f27; text-shadow:0 1px 0 rgba(255,255,255,.65); }
+
+  .gold{ --beam: var(--gold); }
+  .rose{ --beam: var(--rose); }
+  .teal{ --beam: var(--teal); }
+
+  @keyframes sprout{
+    0%   { opacity:0; --sproutY:18px; --sproutScale:.94; --sproutRot:-1deg; }
+    70%  { opacity:1; --sproutY:-4px; --sproutScale:1.02; --sproutRot:.4deg; }
+    100% { opacity:1; --sproutY:0px;  --sproutScale:1;    --sproutRot:0deg; }
+  }
+  @keyframes breathe{
+    0%,100%{ opacity:.85; transform:translateY(0) }
+    50%{ opacity:.95; transform:translateY(-3px) }
+  }
+  @keyframes wiggle{
+    0%,100%{ --wiggle:0px; --wrot:0deg; }
+    50%    { --wiggle:-2px; --wrot:.4deg; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .pod{ animation:none }
+    .pod::after{ animation:none }
+    .pelican-hero, .pelican-hero::after{ animation:none; opacity:1; }
+  }
 </style>
 </head>
 <body>
   <header>
     <a class="back" href="index.html">← Back to doors</a>
+
     <div class="title-block" aria-label="Pelican’s Progress title">
-      <img class="pelican-hero" src="pelican-charecter.PNG?v=4" alt="">
+      <!-- Pelican image lives here (exact path/case) -->
+      <img class="pelican-hero" src="pelican-charecter.PNG" alt="">
+      <!-- Title PNG -->
       <img class="title-logo" src="pelicans-progress-title.png" alt="Pelican’s Progress">
+      <!-- Subtitle -->
       <p class="subtitle-line">A living gallery of projects blooming in Soft Time.</p>
     </div>
   </header>
@@ -126,6 +271,18 @@
         <img class="book" src="accidentally-real-shelf.png?v=8" alt="Accidentally Real cover" loading="lazy">
         <h3 class="title">Accidentally Real</h3>
         <p class="desc">Novel • Kitty, Otter, and the sacred mending. (In progress)</p>
+      </article>
+
+      <article class="pod rose">
+        <img class="book" src="sprinkles-shelf.png?v=8" alt="Sprinkles After the Storm cover" loading="lazy">
+        <h3 class="title">Sprinkles After the Storm</h3>
+        <p class="desc">Forward-memories journal — “Taste and see.”</p>
+      </article>
+
+      <article class="pod teal">
+        <img class="book" src="ottistic-shelf.png?v=8" alt="Ottistic picture-book artwork" loading="lazy">
+        <h3 class="title">Ottistic (Picture Book)</h3>
+        <p class="desc">A story about sideways thinking, soft friends, and words that are realer than real.</p>
       </article>
     </div>
   </main>
