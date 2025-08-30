@@ -40,8 +40,13 @@
     }
   }
 
-  header{ text-align:center; padding:24px 16px 8px; position:relative; z-index:1; }
-  .back{ display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
+  /* HEADER */
+  header{
+    text-align:center;
+    padding:14px 16px 2px;   /* tighter */
+    position:relative; z-index:1;
+  }
+  .back{ display:inline-block; margin:0 0 6px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
   .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
   /* TITLE BLOCK */
@@ -50,15 +55,14 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:.4rem;
-    margin:0 auto 8px;
+    gap:.2rem;                /* tighter */
+    margin:0 auto 0;          /* no extra bottom margin */
     max-width:92%;
   }
-
   /* soft bloom behind PNG */
   .title-block::before{
     content:"";
-    position:absolute; inset:auto 0 -18px 0;
+    position:absolute; inset:auto 0 -12px 0; /* closer */
     margin:auto; width:min(680px, 88vw); height:44%;
     background:
       radial-gradient(closest-side, rgba(255,230,180,.55), rgba(255,230,180,0) 66%),
@@ -66,7 +70,6 @@
     filter: blur(10px);
     z-index:0; pointer-events:none;
   }
-
   /* heavier glow on PNG */
   .title-logo{
     position:relative; z-index:1;
@@ -81,7 +84,7 @@
   /* subtitle line */
   @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap");
   .subtitle-line{
-    margin:.4rem 0 0;
+    margin:.1rem 0 0;         /* pulled up */
     font-family: "Cormorant Garamond", Georgia, serif;
     font-weight:600;
     font-size: clamp(1.2rem, 1.4vw + 1rem, 1.8rem);
@@ -99,8 +102,9 @@
   .pelican-side {
     position:absolute;
     right:-24px;
-    bottom:8px;
+    bottom:6px;
     width:min(84px,18vw);
+    max-height:96px;
     filter:
       drop-shadow(0 0 8px rgba(255,220,150,.65))
       drop-shadow(0 0 18px rgba(255,192,205,.45))
@@ -108,7 +112,7 @@
     pointer-events:none;
   }
   @media (max-width:520px){
-    .pelican-side{ right:-12px; bottom:4px; width:64px; }
+    .pelican-side{ right:-12px; bottom:2px; width:64px; max-height:72px; }
   }
 
   /* soft veil just for header */
@@ -122,14 +126,15 @@
   }
 
   /* MAIN GALLERY */
-  main.gallery{ max-width:1200px; margin:1.2rem auto 4rem; padding:0 1rem 3rem; }
+  main.gallery{ max-width:1200px; margin:.1rem auto 4rem; padding:0 1rem 3rem; } /* tighter top margin */
+  @media (min-width:760px){ main.gallery{ margin:.4rem auto 4rem; } }
 
   /* stagger + wiggle grid */
   .grid{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:3.4rem;
+    gap:3rem;                  /* a bit tighter */
   }
 
   /* TRANSFORM-COMPOSED PODS */
@@ -145,18 +150,21 @@
 
     animation: sprout .9s ease-out both, wiggle 6s ease-in-out infinite;
     position:relative;
-    padding:3.2rem 1rem 1.6rem;
+    padding:2rem 1rem 1.2rem;   /* trimmed top padding */
     display:flex; flex-direction:column; align-items:center; gap:.6rem;
     isolation:isolate;
     will-change: transform;
   }
+  /* extra trim for the first pod to close gap further */
+  .pod:first-child{ padding-top:.8rem; }
 
+  /* staggered offsets */
   .pod:nth-child(1){ --tx:-8%; --ty:-6%; --rot:-1.6deg; }
   .pod:nth-child(2){ --tx:6%;  --ty:4%;  --rot:2.2deg; }
   .pod:nth-child(3){ --tx:-4%; --ty:2%;  --rot:-1.3deg; }
 
   @media (min-width:760px){
-    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:3.2rem 2.8rem; justify-items:center; }
+    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:3.2rem 2.4rem; justify-items:center; }
     .pod:nth-child(1){ --tx:-8%; --ty:-4%; --rot:-1.4deg; }
     .pod:nth-child(2){ --tx:8%;  --ty:6%; --rot:2deg; }
     .pod:nth-child(3){ --tx:0%;  --ty:12%; --rot:-1.6deg; grid-column:span 2; }
@@ -206,17 +214,16 @@
   .rose{ --beam: var(--rose); }
   .teal{ --beam: var(--teal); }
 
+  /* animations modify variables only, so they compose nicely */
   @keyframes sprout{
     0%   { opacity:0; --sproutY:18px; --sproutScale:.94; --sproutRot:-1deg; }
     70%  { opacity:1; --sproutY:-4px; --sproutScale:1.02; --sproutRot:.4deg; }
     100% { opacity:1; --sproutY:0px;  --sproutScale:1;    --sproutRot:0deg; }
   }
-
   @keyframes breathe{
     0%,100%{ opacity:.85; transform:translateY(0) }
     50%{ opacity:.95; transform:translateY(-3px) }
   }
-
   @keyframes wiggle{
     0%,100%{ --wiggle:0px; --wrot:0deg; }
     50%    { --wiggle:-2px; --wrot:.4deg; }
@@ -235,7 +242,8 @@
     <div class="title-block" aria-label="Pelican’s Progress title">
       <img class="title-logo" src="pelicans-progress-title.png" alt="Pelican’s Progress">
       <p class="subtitle-line">A living gallery of projects blooming in Soft Time.</p>
-      <img class="pelican-side" src="pelican-character.png" alt="">
+      <!-- Corrected filename -->
+      <img class="pelican-side" src="pelican-character.PNG" alt="">
     </div>
   </header>
 
