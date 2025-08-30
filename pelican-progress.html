@@ -8,6 +8,9 @@
 <base href="/World/">
 
 <style>
+  /* pretty serif for subtitle */
+  @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap");
+
   :root{
     --ink:#2b221c;
     --paper-0:#fefcf9; --paper-1:#f7f2eb; --paper-2:#ede4da;
@@ -44,128 +47,163 @@
   .back{ display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
   .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
+  /* HEADER VEIL: moodier edges, bright center, lamps still pop */
+  header::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(120% 95% at 50% 12%, rgba(255,255,255,.28), rgba(255,255,255,0) 60%),
+      radial-gradient(140% 120% at 50% 10%, rgba(0,0,0,.14), rgba(0,0,0,0) 55%),
+      linear-gradient(to bottom, rgba(0,0,0,.08), transparent 60%);
+    pointer-events:none; z-index:0;
+  }
+  /* soft window above first shelf so the lamp area glows */
+  header::before{
+    content:"";
+    position:absolute; left:50%; top:58%;
+    transform:translateX(-50%);
+    width:60vw; max-width:520px; height:26vh; max-height:240px;
+    background: radial-gradient(closest-side, rgba(255,245,220,.36), rgba(255,245,220,0) 70%);
+    filter: blur(8px);
+    pointer-events:none; z-index:0;
+  }
+
   /* TITLE PNG + SUBTITLE */
   .title-block{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:.4rem;
-    margin:0 auto 8px;
-    max-width:92%;
     position:relative;
-    z-index:1;
+    display:flex; flex-direction:column; align-items:center;
+    gap:.15rem;
+    margin:0 auto 6px; max-width:92%;
   }
-  /* veil only behind title block */
-  .title-block::after{
+  /* glow behind the logo */
+  .title-block::before{
     content:"";
-    position:absolute;
-    left:50%; top:50%;
-    transform:translate(-50%,-50%);
-    width:min(760px,92vw);
-    height:clamp(140px,28vw,260px);
-    pointer-events:none; z-index:0;
+    position:absolute; left:50%; top:8px; transform:translateX(-50%);
+    width:min(720px, 92vw); height:48%;
     background:
-      radial-gradient(80% 70% at 50% 45%, rgba(255,255,255,.22), transparent 70%),
-      radial-gradient(120% 90% at 50% 10%, rgba(255,255,255,.12), transparent 70%);
-    mask: radial-gradient(90% 80% at 50% 50%, #000 60%, transparent 100%);
+      radial-gradient(closest-side, rgba(255,230,180,.65), rgba(255,230,180,0) 68%),
+      radial-gradient(closest-side, rgba(255,205,220,.35), rgba(255,205,220,0) 72%);
+    filter: blur(12px);
+    z-index:0; pointer-events:none;
   }
-
   .title-logo{
-    max-width:560px;
-    width:100%; height:auto;
     position:relative; z-index:1;
+    max-width:560px; width:100%; height:auto;
     filter:
-      drop-shadow(0 0 14px rgba(255,220,150,.8))
-      drop-shadow(0 0 30px rgba(255,220,150,.6))
-      drop-shadow(0 0 38px rgba(255,192,205,.5))
-      drop-shadow(0 0 48px rgba(140,210,200,.45));
+      drop-shadow(0 0 14px rgba(255,220,150,.85))
+      drop-shadow(0 0 30px rgba(255,220,150,.65))
+      drop-shadow(0 0 40px rgba(255,192,205,.55))
+      drop-shadow(0 0 52px rgba(140,210,200,.45));
   }
-
-  @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap");
   .subtitle-line{
-    margin:.35rem 0 0;
+    margin:.05rem 0 0;
+    transform:translateY(-10px);
     font-family:"Cormorant Garamond", Georgia, serif;
-    font-weight:600;
-    font-size:clamp(1.2rem, 1.4vw + 1rem, 1.7rem);
-    letter-spacing:.3px;
-    color:#fff;
-    text-align:center;
+    font-weight:700;
+    font-size:clamp(1.2rem, 1.4vw + 1.1rem, 1.9rem);
+    letter-spacing:.2px;
+    color:#fff; text-align:center;
     text-shadow:
-      0 0 8px  rgba(255,220,150,.70),
-      0 0 18px rgba(255,220,150,.55),
-      0 0 26px rgba(255,192,205,.45),
-      0 0 34px rgba(140,210,200,.40);
+      0 0 10px rgba(255,220,150,.82),
+      0 0 24px rgba(255,220,150,.62),
+      0 0 36px rgba(255,192,205,.52),
+      0 0 48px rgba(140,210,200,.46);
   }
 
   /* MAIN GALLERY */
   main.gallery{ max-width:1200px; margin:1.2rem auto 4rem; padding:0 1rem 3rem; }
 
   /* GRID: staggered on mobile, 2-col on desktop */
-  .grid{ display:flex; flex-direction:column; align-items:center; gap:3.4rem; }
+  .grid{
+    display:flex; flex-direction:column; align-items:center; gap:3.4rem;
+  }
 
+  /* Stagger + wiggle using composed transforms */
   .pod{
+    --beam: 255,220,150;
     --tx:0px; --ty:0px; --rot:0deg; --wiggle:0px; --wrot:0deg;
-    transform: translate(var(--tx), calc(var(--ty) + var(--wiggle)))
-               rotate(calc(var(--rot) + var(--wrot)));
-    animation: sprout .9s ease-out both, wiggle 6s ease-in-out infinite;
-    --beam:255,220,150;
     position:relative;
     padding:3.2rem 1rem 1.6rem;
     display:flex; flex-direction:column; align-items:center; gap:.6rem;
     isolation:isolate;
+    transform: translate(var(--tx), calc(var(--ty) + var(--wiggle)))
+               rotate(calc(var(--rot) + var(--wrot)));
+    animation: sprout .9s ease-out both, wiggle 5.2s ease-in-out infinite;
   }
-  .pod:nth-child(1){ --tx:-8%; --ty:-6%; --rot:-1.6deg; }
-  .pod:nth-child(2){ --tx: 6%; --ty: 4%; --rot: 2.2deg; animation-delay:.5s; }
-  .pod:nth-child(3){ --tx:-4%; --ty: 2%; --rot:-1.3deg; animation-delay:1s; }
+  .pod:nth-child(1){ --tx:-10%; --ty:-7%; --rot:-2deg; }
+  .pod:nth-child(2){ --tx:  8%; --ty:  6%; --rot: 2.4deg; animation-delay:.4s; }
+  .pod:nth-child(3){ --tx: -5%; --ty:  3%; --rot:-1.8deg; animation-delay:.8s; }
 
   @media (min-width:760px){
     .grid{ display:grid; grid-template-columns:1fr 1fr; gap:3.2rem 2.8rem; justify-items:center; }
-    .pod:nth-child(1){ --tx:-8%; --ty:-4%; --rot:-1.4deg; }
-    .pod:nth-child(2){ --tx: 8%; --ty: 6%; --rot: 2deg;   }
-    .pod:nth-child(3){ --tx:0%; --ty:12%; --rot:-1.6deg; grid-column:span 2; }
+    .pod:nth-child(1){ --tx:-10%; --ty:-5%; --rot:-1.8deg; }
+    .pod:nth-child(2){ --tx: 10%; --ty:  8%; --rot: 2.2deg; }
+    .pod:nth-child(3){ --tx:  0%; --ty: 12%; --rot:-2deg; grid-column:span 2; }
   }
 
   /* Spotlight glow */
   .pod::before{
-    content:"";
-    position:absolute; top:-8%; left:50%; transform:translateX(-50%);
-    width:72%; height:48%;
-    pointer-events:none; z-index:-1;
+    content:""; position:absolute; top:-8%; left:50%; transform:translateX(-50%);
+    width:72%; height:48%; pointer-events:none; z-index:-1;
     background:
       radial-gradient(ellipse at 50% 12%, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 55%),
-      radial-gradient(ellipse at 50% 0%, rgba(var(--beam),.5) 0%, rgba(var(--beam),.28) 35%, rgba(var(--beam),.1) 65%, transparent 85%);
-    filter:blur(6px); mix-blend-mode:screen; border-radius:50%;
+      radial-gradient(ellipse at 50% 0%,
+        rgba(var(--beam), .5) 0%,
+        rgba(var(--beam), .28) 35%,
+        rgba(var(--beam), .1) 65%,
+        transparent 85%);
+    filter: blur(6px);
+    mix-blend-mode:screen; border-radius:50%;
   }
   .pod::after{
-    content:"";
-    position:absolute; inset:-10% -8% auto -8%; height:58%;
-    background:radial-gradient(180px 140px at 50% 68%, rgba(var(--beam),.16), transparent 72%);
+    content:""; position:absolute; inset:-10% -8% auto -8%; height:58%;
+    background: radial-gradient(180px 140px at 50% 68%, rgba(var(--beam),.16), transparent 72%);
     mix-blend-mode:soft-light; pointer-events:none; z-index:-2;
     animation:breathe 5.2s ease-in-out infinite;
   }
 
+  /* BIG book */
   .book{
-    width:clamp(260px,78vw,420px);
+    width:clamp(260px, 78vw, 420px);
     display:block; background:transparent!important; border-radius:0!important;
-    filter:drop-shadow(0 10px 18px rgba(0,0,0,.20));
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,.20));
     transition: transform .25s ease, filter .25s ease;
   }
   .pod:hover .book{
-    transform:translateY(-4px) scale(1.02);
-    filter:drop-shadow(0 18px 28px rgba(0,0,0,.24));
+    transform: translateY(-4px) rotate(.2deg) scale(1.02);
+    filter: drop-shadow(0 18px 28px rgba(0,0,0,.24));
   }
 
-  .title{ margin:.55rem 0 0; font-weight:800; font-size:1.28rem; text-align:center; color:#2b221c; text-shadow:0 1px 0 rgba(255,255,255,.75); }
-  .desc{ margin:.2rem 0 0; text-align:center; opacity:.9; color:#3b2f27; text-shadow:0 1px 0 rgba(255,255,255,.65); }
+  .title{
+    margin:.55rem 0 0; font-weight:800; font-size:1.28rem; text-align:center;
+    color:#2b221c; text-shadow:0 1px 0 rgba(255,255,255,.75);
+  }
+  .desc{
+    margin:.2rem 0 0; text-align:center; opacity:.9; color:#3b2f27;
+    text-shadow:0 1px 0 rgba(255,255,255,.65);
+  }
 
   .gold{ --beam: var(--gold); }
   .rose{ --beam: var(--rose); }
   .teal{ --beam: var(--teal); }
 
-  @keyframes sprout{0%{opacity:0;transform:translateY(18px) scale(.94) rotate(-1deg);}70%{opacity:1;transform:translateY(-4px) scale(1.02) rotate(.4deg);}100%{transform:translateY(0) scale(1) rotate(0);} }
-  @keyframes breathe{0%,100%{opacity:.85;transform:translateY(0)}50%{opacity:.95;transform:translateY(-3px)}}
-  @keyframes wiggle{0%,100%{--wiggle:0px;--wrot:0deg;}50%{--wiggle:-2px;--wrot:.4deg;}}
-  @media (prefers-reduced-motion:reduce){ .pod{animation:none} .pod::after{animation:none} }
+  @keyframes sprout{
+    0%{ opacity:0; transform:translateY(18px) scale(.94) rotate(-1deg); }
+    70%{ opacity:1; transform:translateY(-4px) scale(1.02) rotate(.4deg); }
+    100%{ transform:translateY(0) scale(1) rotate(0); }
+  }
+  @keyframes breathe{
+    0%,100%{ opacity:.85; transform:translateY(0) }
+    50%{ opacity:.95; transform:translateY(-3px) }
+  }
+  @keyframes wiggle{
+    0%,100%{ --wiggle:0px; --wrot:0deg; }
+    50%    { --wiggle:-4px; --wrot:.6deg; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .pod{animation:none; transform:translate(var(--tx), var(--ty)) rotate(var(--rot));}
+    .pod::after{animation:none}
+  }
 </style>
 </head>
 <body>
@@ -173,7 +211,9 @@
     <a class="back" href="index.html">← Back to doors</a>
 
     <div class="title-block" aria-label="Pelican’s Progress title">
+      <!-- Title PNG -->
       <img class="title-logo" src="pelicans-progress-title.png" alt="Pelican’s Progress">
+      <!-- Straight, bigger subtitle -->
       <p class="subtitle-line">A living gallery of projects blooming in Soft Time.</p>
     </div>
   </header>
