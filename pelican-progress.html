@@ -41,10 +41,47 @@
   }
 
   header{ text-align:center; padding:24px 16px 8px; }
-  header h1{ margin:.1rem 0 6px; font-size:clamp(1.6rem,2.2vw + .8rem,2.3rem); }
-  header p{ margin:0; opacity:.85; }
   .back{ display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
   .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
+
+  /* TITLE PNG + CURVED SUBTITLE */
+  .title-block{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.4rem;
+    margin:0 auto 8px;
+    max-width:92%;
+  }
+  .title-logo{
+    max-width:560px; /* roomy on desktop */
+    width:100%;
+    height:auto;
+    filter:
+      drop-shadow(0 0 10px rgba(255,220,150,.55))
+      drop-shadow(0 0 18px rgba(255,192,205,.40))
+      drop-shadow(0 0 24px rgba(140,210,200,.35));
+  }
+  .subtitle-svg{
+    width:100%;
+    max-width:520px;
+    height:92px;
+    overflow:visible;
+  }
+  .subtitle{
+    font-size:clamp(1rem, 1.2vw + .8rem, 1.2rem);
+    font-weight:600;
+    letter-spacing:.7px;
+    fill:#ffffff;
+    filter: drop-shadow(0 0 6px rgba(255,220,150,.65))
+            drop-shadow(0 0 12px rgba(255,192,205,.45))
+            drop-shadow(0 0 18px rgba(120,210,200,.40));
+    animation: subtitleGlow 6s ease-in-out infinite;
+  }
+  @keyframes subtitleGlow{
+    0%,100%{ opacity:1 }
+    50%{ opacity:.88 }
+  }
 
   /* MAIN GALLERY */
   main.gallery{ max-width:1200px; margin:1.2rem auto 4rem; padding:0 1rem 3rem; }
@@ -92,7 +129,7 @@
     width:72%; height:48%;
     pointer-events:none; z-index:-1;
     background:
-      radial-gradient(ellipse at 50% 12%, rgba(255,255,255,.75) 0%, rgba(255,255,255,.0) 55%),
+      radial-gradient(ellipse at 50% 12%, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 55%),
       radial-gradient(ellipse at 50% 0%,
         rgba(var(--beam), .5) 0%,
         rgba(var(--beam), .28) 35%,
@@ -154,8 +191,24 @@
 <body>
   <header>
     <a class="back" href="index.html">← Back to doors</a>
-    <h1>Pelican’s Progress</h1>
-    <p>A living gallery of projects blooming in Soft Time.</p>
+
+    <div class="title-block" aria-label="Pelican’s Progress title">
+      <!-- Title PNG -->
+      <img class="title-logo" src="pelicans-progress-title.png" alt="Pelican’s Progress">
+
+      <!-- Curved subtitle (real text) -->
+      <svg viewBox="0 0 500 120" class="subtitle-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="false" role="img">
+        <defs>
+          <!-- gentle smile curve -->
+          <path id="subtitle-curve" d="M 50 80 Q 250 120 450 80" />
+        </defs>
+        <text class="subtitle">
+          <textPath href="#subtitle-curve" startOffset="50%" text-anchor="middle">
+            A living gallery of projects blooming in Soft Time.
+          </textPath>
+        </text>
+      </svg>
+    </div>
   </header>
 
   <main class="gallery">
