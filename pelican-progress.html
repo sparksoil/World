@@ -11,151 +11,126 @@
   :root{
     --ink:#2b221c;
     --paper-0:#fefcf9; --paper-1:#f7f2eb; --paper-2:#ede4da;
-    --frame:#e8dccf;
-    --vine:120,160,130;
     --spark:255,242,200;
-
-    --rose:255,192,205; --teal:120,210,200; --blue:160,180,255; --gold:255,220,150;
+    --gold:255,220,150; --rose:255,192,205; --teal:140,210,200;
   }
 
   *{box-sizing:border-box}
   html,body{height:100%}
 
-  /* WALL: strong wallpaper */
+  /* LILAC WALLPAPER */
   body{
     margin:0; color:var(--ink);
     font-family: ui-sans-serif,-apple-system,"Segoe UI",Roboto,system-ui,Arial,sans-serif;
     background:
-      linear-gradient(rgba(255,255,255,.25), rgba(255,255,255,.25)),
-      url("lilac-wallpaper.jpg?v=7") center top / 560px auto repeat,
-      radial-gradient(1100px 520px at 52% -6%, rgba(var(--spark),.35), transparent 55%),
-      radial-gradient(900px 520px at 80% 115%, rgba(var(--spark),.22), transparent 60%),
+      linear-gradient(rgba(255,255,255,.22), rgba(255,255,255,.22)),
+      url("lilac-wallpaper.jpg?v=8") center top / 560px auto repeat,
+      radial-gradient(1200px 520px at 50% -6%, rgba(var(--spark),.30), transparent 55%),
       linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
-    background-blend-mode: normal, multiply, soft-light, soft-light, normal;
+    background-blend-mode: normal, multiply, soft-light, normal;
+  }
+  @media (max-width:720px){
+    body{
+      background:
+        linear-gradient(rgba(255,255,255,.22), rgba(255,255,255,.22)),
+        url("lilac-wallpaper.jpg?v=8") center top / 680px auto repeat,
+        radial-gradient(1200px 520px at 50% -6%, rgba(var(--spark),.30), transparent 55%),
+        linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
+      background-blend-mode: normal, multiply, soft-light, normal;
+    }
   }
 
   header{ text-align:center; padding:24px 16px 8px; }
-  header h1{ margin:.1rem 0 6px; font-size:clamp(1.4rem,2vw + .6rem,2rem); }
+  header h1{ margin:.1rem 0 6px; font-size:clamp(1.6rem,2.2vw + .8rem,2.3rem); }
   header p{ margin:0; opacity:.8; }
   .back{ display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
   .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
-  /* ROOM FRAME: no white fill */
-  main.shelves{
-    display:flex; flex-direction:column; gap:3rem;
-    max-width:1200px; margin:2rem auto 4rem; padding:2rem;
+  /* MAIN GALLERY — no beige frame, no white box */
+  main.gallery{ max-width:1200px; margin:1.2rem auto 4rem; padding:0 1rem 3rem; }
 
-    background: transparent;                 /* ⬅️ no big white panel */
-    border:2px solid var(--frame);
-    border-radius:20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,.06);  /* softer so it doesn’t read as a white box */
-    backdrop-filter: blur(1px);               /* optional micro frost; set to none if you want zero */
-  }
+  /* GRID: 1 per row mobile, 2 per row desktop */
+  .grid{ display:grid; gap:2.4rem 2rem; grid-template-columns:1fr; }
+  @media (min-width:760px){ .grid{ grid-template-columns:1fr 1fr; gap:2.8rem 2.2rem; } }
 
-  /* SHELF GRID */
-  .shelf{
+  /* POD (each book) */
+  .pod{
     position:relative;
-    padding:2.2rem 1rem 1.2rem;   /* tightened bottom so books sit */
-    display:grid;
-    grid-auto-flow: row;
-    gap:1rem 1.2rem;
+    padding:3.2rem 1rem 1.6rem;
+    display:flex; flex-direction:column; align-items:center; gap:.6rem;
+    isolation:isolate;
+    animation:sprout .9s ease-out both;
+  }
+  /* extra wobbly (Seuss-y) */
+  .pod:nth-child(odd)  { transform: rotate(-1.6deg); }
+  .pod:nth-child(even) { transform: rotate(1.7deg); }
+  .pod:nth-child(3n)   { transform: rotate(-2.1deg); }
+  .pod:nth-child(5n)   { transform: rotate(1.9deg); }
+
+  /* Lamp cap + beam */
+  .lamp{
+    position:absolute; top:.3rem; left:50%; transform:translateX(-50%);
+    width:92px; height:80px;
+    border-radius:46% 46% 60% 60% / 60% 60% 40% 40%;
+    background:
+      radial-gradient(65% 55% at 50% 58%, #fff 0% , #fff 36%, rgba(255,255,255,0) 37%),
+      radial-gradient(100% 100% at 50% 10%, rgba(0,0,0,.18) 0%, rgba(0,0,0,0) 60%),
+      currentColor;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,.15));
     z-index:0;
   }
-  @media (max-width: 720px){ .shelf{ grid-template-columns: repeat(2, minmax(150px, 1fr)); } }
-  @media (min-width: 721px){ .shelf{ grid-template-columns: repeat(3, minmax(170px, 1fr)); } }
-
-  /* PLANK with depth */
-  .shelf::before{
-    content:"";
-    position:absolute; left:1rem; right:1rem; bottom:.2rem; height:22px;
-    border-radius:8px;
+  .lamp::after{
+    content:""; position:absolute; top:46px; left:-96px; right:-96px; bottom:-42px;
     background:
-      repeating-linear-gradient(90deg,
-        rgba(0,0,0,.04) 0px, rgba(0,0,0,.04) 2px,
-        rgba(255,255,255,.03) 2px, rgba(255,255,255,.03) 6px),
-      linear-gradient(180deg, #cdb79d, #a38768);
-    box-shadow: inset 0 1px rgba(255,255,255,.5), inset 0 -2px rgba(0,0,0,.12), 0 8px 18px rgba(0,0,0,.2);
-    z-index:1;
-  }
-  .shelf::after{
-    content:"";
-    position:absolute; left:1rem; right:1rem; bottom:0; height:6px;
-    border-radius:6px;
-    background: linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.18));
-    filter: blur(.2px);
-    z-index:2;
+      radial-gradient(120px 110px at 50% 0%,
+        rgba(var(--beam), .55) 0%,
+        rgba(var(--beam), .28) 35%,
+        rgba(var(--beam), .10) 60%,
+        transparent 85%);
+    filter: blur(1px); pointer-events:none; z-index:-1;
   }
 
-  /* BOOK CARDS */
-  .card{
-    --tilt:0deg; --bump:0px; --spot-rgb:255,255,255; --spot-a:0; --spot-x:50%; --spot-y:15%;
-    position:relative;
-    background:transparent; border-radius:0; overflow:visible;
-    z-index:3; transform-origin:bottom center; animation:sprout .8s ease-out both;
+  /* Bloom aura */
+  .bloom{
+    position:absolute; inset:-10% -8% auto -8%; height:56%;
+    background: radial-gradient(160px 120px at 50% 65%, rgba(var(--beam),.18), transparent 70%);
+    mix-blend-mode: soft-light; pointer-events:none; z-index:-2;
+    animation:breathe 5.2s ease-in-out infinite;
   }
 
-  /* kill the white box behind */
-  .frame{ width:100%; aspect-ratio:2 / 3; display:block; background:none !important; }
-
-  .card img{
-    width:100%; height:auto; display:block;
-    background:transparent !important; border-radius:0 !important;
-    box-shadow:0 6px 14px rgba(0,0,0,.18);
-    transform: translateY(calc(var(--bump) + 4px)) rotate(var(--tilt)); /* seat them lower */
-    transition: transform .25s ease, box-shadow .25s ease;
-    mix-blend-mode:multiply; /* temporary mask for baked-in whites */
+  /* BIG book image (no shelves) */
+  .book{
+    width:clamp(240px, 74vw, 380px);
+    display:block; background:transparent!important; border-radius:0!important;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,.20));
+    transform: translateY(2px) rotate(var(--tilt,0deg));
+    transition: transform .25s ease, filter .25s ease;
+    /* Uncomment while re-exporting PNGs if any white mattes linger */
+    /* mix-blend-mode:multiply; */
+  }
+  .pod:hover .book{
+    transform: translateY(-4px) rotate(calc(var(--tilt,0deg) - .6deg)) scale(1.02);
+    filter: drop-shadow(0 18px 28px rgba(0,0,0,.24));
   }
 
-  .card::after{
-    content:""; position:absolute; left:14%; right:14%; bottom:0; height:10px;
-    border-radius:999px;
-    background: radial-gradient(ellipse at center, rgba(0,0,0,.28) 0%, rgba(0,0,0,.20) 40%, rgba(0,0,0,0) 80%);
-    filter: blur(2px); z-index:-1; pointer-events:none;
+  .title{ margin:.55rem 0 0; font-weight:800; font-size:1.28rem; text-align:center; }
+  .desc { margin:.2rem 0 0; text-align:center; opacity:.86; }
+
+  /* color sets (lamp + beam) */
+  .gold{ color:#e7c07a; --beam: var(--gold); }
+  .rose{ color:#d6a1b2; --beam: var(--rose); }
+  .teal{ color:#98c9bf; --beam: var(--teal); }
+
+  @keyframes sprout{
+    0%{ opacity:0; transform:translateY(18px) scale(.94) rotate(-1deg); }
+    70%{ opacity:1; transform:translateY(-4px) scale(1.02) rotate(.4deg); }
+    100%{ transform:translateY(0) scale(1) rotate(0); }
   }
-
-  .card:hover img{ transform: translateY(calc(var(--bump) - 2px)) rotate(calc(var(--tilt) - 1deg)) scale(1.03);
-                   box-shadow:0 14px 26px rgba(0,0,0,.22); }
-  .card:hover::after{ transform:scale(.95,.85); opacity:.9; }
-
-  .card h3{ margin:10px 6px 2px; font-size:1.05rem; text-align:center; }
-  .card p { margin:0 8px 0; color:#444; font-size:.95rem; text-align:center; }
-
-  /* whimsical tilts */
-  .shelf .card:nth-child(1){ --tilt:-2.2deg; --bump: 2px; }
-  .shelf .card:nth-child(2){ --tilt: 1.4deg; --bump:-3px; }
-  .shelf .card:nth-child(3){ --tilt:-1.0deg; --bump: 4px; }
-  .shelf .card:nth-child(4){ --tilt: 2.1deg;  --bump:-2px; }
-  .shelf .card:nth-child(5){ --tilt:-1.8deg; --bump: 3px; }
-  .shelf .card:nth-child(6){ --tilt: 0.8deg;  --bump:-4px; }
-
-  /* Spotlights */
-  .card::before{
-    content:""; position:absolute; inset:-6% -4% -2%; pointer-events:none; border-radius:12px;
-    background: radial-gradient(220px 180px at var(--spot-x) var(--spot-y),
-      rgba(var(--spot-rgb), var(--spot-a)) 0%, rgba(var(--spot-rgb), calc(var(--spot-a)*.45)) 35%, transparent 70%);
-    mix-blend-mode:soft-light; filter:blur(2px); opacity:1; animation:breathe 4.5s ease-in-out infinite;
+  @keyframes breathe{
+    0%,100%{ opacity:.85; transform:translateY(0) }
+    50%{ opacity:.95; transform:translateY(-3px) }
   }
-  @keyframes breathe{ 0%,100%{transform:translateY(0) scale(1);opacity:1} 50%{transform:translateY(-2px) scale(1.02);opacity:.92} }
-  @keyframes sprout{ 0%{opacity:0;transform:translateY(16px) scale(.94) rotate(-.6deg)} 70%{opacity:1;transform:translateY(-4px) scale(1.02) rotate(.4deg)} 100%{transform:translateY(0) scale(1) rotate(0)} }
-  .spot-rose{ --spot-rgb: var(--rose); --spot-a:.55; --spot-x:48%; --spot-y:18%; }
-  .spot-teal{ --spot-rgb: var(--teal); --spot-a:.48; --spot-x:52%; --spot-y:20%; }
-  .spot-blue{ --spot-rgb: var(--blue); --spot-a:.50; --spot-x:50%; --spot-y:16%; }
-  .spot-gold{ --spot-rgb: var(--gold); --spot-a:.58; --spot-x:50%; --spot-y:14%; }
-
-  @media (prefers-reduced-motion: reduce){ .card, .card::before{ animation:none } }
-
-  /* Phone: stronger wallpaper scale */
-  @media (max-width: 720px){
-    body{
-      background:
-        linear-gradient(rgba(255,255,255,.25), rgba(255,255,255,.25)),
-        url("lilac-wallpaper.jpg?v=7") center top / 700px auto repeat,
-        radial-gradient(1100px 520px at 52% -6%, rgba(255,242,200,.35), transparent 55%),
-        radial-gradient(900px 520px at 80% 115%, rgba(255,242,200,.22), transparent 60%),
-        linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
-      background-blend-mode: normal, multiply, soft-light, soft-light, normal;
-    }
-  }
+  @media (prefers-reduced-motion:reduce){ .pod,.bloom{animation:none} }
 </style>
 </head>
 <body>
@@ -165,75 +140,38 @@
     <p>A living gallery of projects blooming in Soft Time.</p>
   </header>
 
-  <main class="shelves">
-    <section class="shelf" aria-label="Shelf one">
-      <article class="card spot-gold">
-        <div class="frame">
-          <img src="accidentally-real-shelf.png?v=7" alt="Accidentally Real cover" loading="lazy" decoding="async"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
-        </div>
-        <h3>Accidentally Real</h3>
-        <p>Novel • Kitty, Otter, and the sacred mending. (In progress)</p>
+  <main class="gallery">
+    <div class="grid">
+      <!-- Gold spotlight -->
+      <article class="pod gold" style="--tilt:-1.6deg">
+        <div class="lamp"></div>
+        <div class="bloom"></div>
+        <img class="book" src="accidentally-real-shelf.png?v=8" alt="Accidentally Real cover" loading="lazy" decoding="async"
+             onerror="this.replaceWith(document.createTextNode('Image coming soon'));">
+        <h3 class="title">Accidentally Real</h3>
+        <p class="desc">Novel • Kitty, Otter, and the sacred mending. (In progress)</p>
       </article>
 
-      <article class="card spot-rose">
-        <div class="frame">
-          <img src="ottistic-shelf.png?v=7" alt="Ottistic picture-book artwork" loading="lazy" decoding="async"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
-        </div>
-        <h3>Ottistic (Picture Book)</h3>
-        <p>A story about sideways thinking, soft friends, and words that are realer than real.</p>
+      <!-- Rose spotlight -->
+      <article class="pod rose" style="--tilt:1.8deg">
+        <div class="lamp"></div>
+        <div class="bloom"></div>
+        <img class="book" src="sprinkles-shelf.png?v=8" alt="Sprinkles After the Storm cover" loading="lazy" decoding="async"
+             onerror="this.replaceWith(document.createTextNode('Image coming soon'));">
+        <h3 class="title">Sprinkles After the Storm</h3>
+        <p class="desc">Forward-memories journal — “Taste and see.”</p>
       </article>
 
-      <article class="card spot-teal">
-        <div class="frame">
-          <img src="sprinkles-shelf.png?v=7" alt="Sprinkles After the Storm cover" loading="lazy" decoding="async"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
-        </div>
-        <h3>Sprinkles After the Storm</h3>
-        <p>Forward-memories journal — “Taste and see.”</p>
+      <!-- Teal spotlight -->
+      <article class="pod teal" style="--tilt:-2deg">
+        <div class="lamp"></div>
+        <div class="bloom"></div>
+        <img class="book" src="ottistic-shelf.png?v=8" alt="Ottistic picture-book artwork" loading="lazy" decoding="async"
+             onerror="this.replaceWith(document.createTextNode('Image coming soon'));">
+        <h3 class="title">Ottistic (Picture Book)</h3>
+        <p class="desc">A story about sideways thinking, soft friends, and words that are realer than real.</p>
       </article>
-    </section>
-
-    <section class="shelf" aria-label="Shelf two">
-      <article class="card spot-blue">
-        <div class="frame">
-          <img src="encouragemint.jpg?v=7" alt="Encouragemint artwork" loading="lazy" decoding="async"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
-        </div>
-        <h3>Encouragemint</h3>
-        <p>Mint’s threshold notes and sprinkles of clarity.</p>
-      </article>
-
-      <article class="card spot-gold">
-        <div class="frame">
-          <img src="pelican-porch.jpg?v=7" alt="Pelican’s Porch artwork" loading="lazy" decoding="async"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
-        </div>
-        <h3>Pelican’s Porch</h3>
-        <p>A log of progress, feathers, and sideways timelines.</p>
-      </article>
-
-      <article class="card spot-rose">
-        <div class="frame">
-          <img src="book-mockup-red.jpg?v=7" alt="Wordbaking cover mockup" loading="lazy" decoding="async"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
-        </div>
-        <h3>Wordbaking</h3>
-        <p>Poems &amp; parables passed warm, with crumbs.</p>
-      </article>
-    </section>
-
-    <section class="shelf" aria-label="Shelf three">
-      <article class="card spot-teal">
-        <div class="frame">
-          <img src="wonder-window.jpg?v=7" alt="Wonder Window pages" loading="lazy" decoding="async"
-               onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
-        </div>
-        <h3>Wonder Window</h3>
-        <p>Daily pocket pages for soft noticing and sacred pause.</p>
-      </article>
-    </section>
+    </div>
   </main>
 </body>
 </html>
