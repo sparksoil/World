@@ -15,23 +15,19 @@
     --vine:120,160,130;
     --spark:255,242,200;
 
-    /* spotlight palettes */
-    --rose: 255,192,205;
-    --teal: 120,210,200;
-    --blue: 160,180,255;
-    --gold: 255,220,150;
+    --rose:255,192,205; --teal:120,210,200; --blue:160,180,255; --gold:255,220,150;
   }
 
   *{box-sizing:border-box}
   html,body{height:100%}
 
-  /* WALL: stronger wallpaper */
+  /* WALL: strong wallpaper */
   body{
     margin:0; color:var(--ink);
     font-family: ui-sans-serif,-apple-system,"Segoe UI",Roboto,system-ui,Arial,sans-serif;
     background:
       linear-gradient(rgba(255,255,255,.25), rgba(255,255,255,.25)),
-      url("lilac-wallpaper.jpg?v=6") center top / 560px auto repeat,
+      url("lilac-wallpaper.jpg?v=7") center top / 560px auto repeat,
       radial-gradient(1100px 520px at 52% -6%, rgba(var(--spark),.35), transparent 55%),
       radial-gradient(900px 520px at 80% 115%, rgba(var(--spark),.22), transparent 60%),
       linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
@@ -44,19 +40,22 @@
   .back{ display:inline-block; margin:0 0 8px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
   .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
-  /* ROOM: framed pane */
+  /* ROOM FRAME: no white fill */
   main.shelves{
     display:flex; flex-direction:column; gap:3rem;
     max-width:1200px; margin:2rem auto 4rem; padding:2rem;
-    background:#fff;               /* crisp white, no tint */
+
+    background: transparent;                 /* ⬅️ no big white panel */
     border:2px solid var(--frame);
-    border-radius:20px; box-shadow:0 12px 28px rgba(0,0,0,.08);
+    border-radius:20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.06);  /* softer so it doesn’t read as a white box */
+    backdrop-filter: blur(1px);               /* optional micro frost; set to none if you want zero */
   }
 
   /* SHELF GRID */
   .shelf{
     position:relative;
-    padding:2.2rem 1rem 1.2rem;   /* tighter bottom so books sit */
+    padding:2.2rem 1rem 1.2rem;   /* tightened bottom so books sit */
     display:grid;
     grid-auto-flow: row;
     gap:1rem 1.2rem;
@@ -68,22 +67,19 @@
   /* PLANK with depth */
   .shelf::before{
     content:"";
-    position:absolute; left:1rem; right:1rem; bottom:0.2rem; height:22px;
+    position:absolute; left:1rem; right:1rem; bottom:.2rem; height:22px;
     border-radius:8px;
     background:
       repeating-linear-gradient(90deg,
         rgba(0,0,0,.04) 0px, rgba(0,0,0,.04) 2px,
         rgba(255,255,255,.03) 2px, rgba(255,255,255,.03) 6px),
       linear-gradient(180deg, #cdb79d, #a38768);
-    box-shadow:
-      inset 0 1px rgba(255,255,255,.5),
-      inset 0 -2px rgba(0,0,0,.12),
-      0 8px 18px rgba(0,0,0,.20);
+    box-shadow: inset 0 1px rgba(255,255,255,.5), inset 0 -2px rgba(0,0,0,.12), 0 8px 18px rgba(0,0,0,.2);
     z-index:1;
   }
   .shelf::after{
     content:"";
-    position:absolute; left:1rem; right:1rem; bottom:0rem; height:6px;
+    position:absolute; left:1rem; right:1rem; bottom:0; height:6px;
     border-radius:6px;
     background: linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.18));
     filter: blur(.2px);
@@ -92,57 +88,39 @@
 
   /* BOOK CARDS */
   .card{
-    --tilt: 0deg; --bump: 0px;
-    --spot-rgb: 255,255,255; --spot-a: 0;
-    --spot-x: 50%; --spot-y: 15%;
+    --tilt:0deg; --bump:0px; --spot-rgb:255,255,255; --spot-a:0; --spot-x:50%; --spot-y:15%;
     position:relative;
     background:transparent; border-radius:0; overflow:visible;
-    z-index:3;
-    transform-origin: bottom center;
-    animation: sprout .8s ease-out both;
+    z-index:3; transform-origin:bottom center; animation:sprout .8s ease-out both;
   }
 
-  /* NO panel behind images — transparent */
-  .frame{
-    width:100%;
-    aspect-ratio:2 / 3;
-    display:block;
-    background:transparent !important;
-  }
+  /* kill the white box behind */
+  .frame{ width:100%; aspect-ratio:2 / 3; display:block; background:none !important; }
 
   .card img{
-    width:100%;
-    height:auto;
-    display:block;
-    background:transparent !important;
-    border-radius:0 !important;
+    width:100%; height:auto; display:block;
+    background:transparent !important; border-radius:0 !important;
     box-shadow:0 6px 14px rgba(0,0,0,.18);
-    transform:translateY(calc(var(--bump) + 4px)) rotate(var(--tilt)); /* seat them lower */
-    transition:transform .25s ease, box-shadow .25s ease;
-
-    /* keep for now, harmless even if PNGs are fixed later */
-    mix-blend-mode:multiply;
+    transform: translateY(calc(var(--bump) + 4px)) rotate(var(--tilt)); /* seat them lower */
+    transition: transform .25s ease, box-shadow .25s ease;
+    mix-blend-mode:multiply; /* temporary mask for baked-in whites */
   }
 
   .card::after{
-    content:"";
-    position:absolute; left:14%; right:14%; bottom:0rem; height:10px;
+    content:""; position:absolute; left:14%; right:14%; bottom:0; height:10px;
     border-radius:999px;
-    background: radial-gradient(ellipse at center,
-                rgba(0,0,0,.28) 0%,
-                rgba(0,0,0,.20) 40%,
-                rgba(0,0,0,0) 80%);
-    filter: blur(2px);
-    z-index:-1; pointer-events:none;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,.28) 0%, rgba(0,0,0,.20) 40%, rgba(0,0,0,0) 80%);
+    filter: blur(2px); z-index:-1; pointer-events:none;
   }
 
-  .card:hover img{
-    transform: translateY(calc(var(--bump) - 2px)) rotate(calc(var(--tilt) - 1deg)) scale(1.03);
-    box-shadow: 0 14px 26px rgba(0,0,0,.22);
-  }
-  .card:hover::after{ transform: scale(.95,.85); opacity:.9; }
+  .card:hover img{ transform: translateY(calc(var(--bump) - 2px)) rotate(calc(var(--tilt) - 1deg)) scale(1.03);
+                   box-shadow:0 14px 26px rgba(0,0,0,.22); }
+  .card:hover::after{ transform:scale(.95,.85); opacity:.9; }
 
-  /* whimsical per-item tilts/bumps */
+  .card h3{ margin:10px 6px 2px; font-size:1.05rem; text-align:center; }
+  .card p { margin:0 8px 0; color:#444; font-size:.95rem; text-align:center; }
+
+  /* whimsical tilts */
   .shelf .card:nth-child(1){ --tilt:-2.2deg; --bump: 2px; }
   .shelf .card:nth-child(2){ --tilt: 1.4deg; --bump:-3px; }
   .shelf .card:nth-child(3){ --tilt:-1.0deg; --bump: 4px; }
@@ -152,45 +130,26 @@
 
   /* Spotlights */
   .card::before{
-    content:"";
-    position:absolute; inset:-6% -4% -2%; pointer-events:none;
-    border-radius:12px;
-    background:
-      radial-gradient(220px 180px at var(--spot-x) var(--spot-y),
-        rgba(var(--spot-rgb), var(--spot-a)) 0%,
-        rgba(var(--spot-rgb), calc(var(--spot-a) * .45)) 35%,
-        transparent 70%);
-    mix-blend-mode: soft-light;
-    filter: blur(2px); opacity:1;
-    animation: breathe 4.5s ease-in-out infinite;
+    content:""; position:absolute; inset:-6% -4% -2%; pointer-events:none; border-radius:12px;
+    background: radial-gradient(220px 180px at var(--spot-x) var(--spot-y),
+      rgba(var(--spot-rgb), var(--spot-a)) 0%, rgba(var(--spot-rgb), calc(var(--spot-a)*.45)) 35%, transparent 70%);
+    mix-blend-mode:soft-light; filter:blur(2px); opacity:1; animation:breathe 4.5s ease-in-out infinite;
   }
-  @keyframes breathe{
-    0%,100%{ transform:translateY(0) scale(1); opacity:1; }
-    50%    { transform:translateY(-2px) scale(1.02); opacity:.92; }
-  }
-
+  @keyframes breathe{ 0%,100%{transform:translateY(0) scale(1);opacity:1} 50%{transform:translateY(-2px) scale(1.02);opacity:.92} }
+  @keyframes sprout{ 0%{opacity:0;transform:translateY(16px) scale(.94) rotate(-.6deg)} 70%{opacity:1;transform:translateY(-4px) scale(1.02) rotate(.4deg)} 100%{transform:translateY(0) scale(1) rotate(0)} }
   .spot-rose{ --spot-rgb: var(--rose); --spot-a:.55; --spot-x:48%; --spot-y:18%; }
   .spot-teal{ --spot-rgb: var(--teal); --spot-a:.48; --spot-x:52%; --spot-y:20%; }
   .spot-blue{ --spot-rgb: var(--blue); --spot-a:.50; --spot-x:50%; --spot-y:16%; }
   .spot-gold{ --spot-rgb: var(--gold); --spot-a:.58; --spot-x:50%; --spot-y:14%; }
 
-  @keyframes sprout{
-    0%   { opacity:0; transform:translateY(16px) scale(.94) rotate(-0.6deg); }
-    70%  { opacity:1; transform:translateY(-4px) scale(1.02) rotate(.4deg); }
-    100% {           transform:translateY(0) scale(1) rotate(0); }
-  }
+  @media (prefers-reduced-motion: reduce){ .card, .card::before{ animation:none } }
 
-  @media (prefers-reduced-motion: reduce){
-    .card{ animation:none; transition:none; }
-    .card::before{ animation:none; }
-  }
-
-  /* Phone wallpaper stronger */
+  /* Phone: stronger wallpaper scale */
   @media (max-width: 720px){
     body{
       background:
         linear-gradient(rgba(255,255,255,.25), rgba(255,255,255,.25)),
-        url("lilac-wallpaper.jpg?v=6") center top / 700px auto repeat,
+        url("lilac-wallpaper.jpg?v=7") center top / 700px auto repeat,
         radial-gradient(1100px 520px at 52% -6%, rgba(255,242,200,.35), transparent 55%),
         radial-gradient(900px 520px at 80% 115%, rgba(255,242,200,.22), transparent 60%),
         linear-gradient(180deg, var(--paper-0) 0%, var(--paper-1) 40%, var(--paper-2) 100%);
@@ -207,11 +166,10 @@
   </header>
 
   <main class="shelves">
-    <!-- Shelf 1 -->
     <section class="shelf" aria-label="Shelf one">
       <article class="card spot-gold">
         <div class="frame">
-          <img src="accidentally-real-shelf.png?v=6" alt="Accidentally Real cover" loading="lazy" decoding="async"
+          <img src="accidentally-real-shelf.png?v=7" alt="Accidentally Real cover" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Accidentally Real</h3>
@@ -220,7 +178,7 @@
 
       <article class="card spot-rose">
         <div class="frame">
-          <img src="ottistic-shelf.png?v=6" alt="Ottistic picture-book artwork" loading="lazy" decoding="async"
+          <img src="ottistic-shelf.png?v=7" alt="Ottistic picture-book artwork" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Ottistic (Picture Book)</h3>
@@ -229,7 +187,7 @@
 
       <article class="card spot-teal">
         <div class="frame">
-          <img src="sprinkles-shelf.png?v=6" alt="Sprinkles After the Storm cover" loading="lazy" decoding="async"
+          <img src="sprinkles-shelf.png?v=7" alt="Sprinkles After the Storm cover" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Sprinkles After the Storm</h3>
@@ -237,11 +195,10 @@
       </article>
     </section>
 
-    <!-- Shelf 2 -->
     <section class="shelf" aria-label="Shelf two">
       <article class="card spot-blue">
         <div class="frame">
-          <img src="encouragemint.jpg?v=6" alt="Encouragemint artwork" loading="lazy" decoding="async"
+          <img src="encouragemint.jpg?v=7" alt="Encouragemint artwork" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Encouragemint</h3>
@@ -250,7 +207,7 @@
 
       <article class="card spot-gold">
         <div class="frame">
-          <img src="pelican-porch.jpg?v=6" alt="Pelican’s Porch artwork" loading="lazy" decoding="async"
+          <img src="pelican-porch.jpg?v=7" alt="Pelican’s Porch artwork" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Pelican’s Porch</h3>
@@ -259,7 +216,7 @@
 
       <article class="card spot-rose">
         <div class="frame">
-          <img src="book-mockup-red.jpg?v=6" alt="Wordbaking cover mockup" loading="lazy" decoding="async"
+          <img src="book-mockup-red.jpg?v=7" alt="Wordbaking cover mockup" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Wordbaking</h3>
@@ -267,11 +224,10 @@
       </article>
     </section>
 
-    <!-- Shelf 3 -->
     <section class="shelf" aria-label="Shelf three">
       <article class="card spot-teal">
         <div class="frame">
-          <img src="wonder-window.jpg?v=6" alt="Wonder Window pages" loading="lazy" decoding="async"
+          <img src="wonder-window.jpg?v=7" alt="Wonder Window pages" loading="lazy" decoding="async"
                onerror="this.closest('.frame').textContent='Image coming soon'; this.remove();">
         </div>
         <h3>Wonder Window</h3>
