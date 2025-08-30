@@ -132,23 +132,33 @@
     gap:3.4rem;
   }
 
+  /* TRANSFORM-COMPOSED PODS */
   .pod{
-    --tx:0px; --ty:0px; --rot:0deg; --wiggle:0px; --wrot:0deg;
-    transform: translate(var(--tx), calc(var(--ty) + var(--wiggle)))
-               rotate(calc(var(--rot) + var(--wrot)));
+    --tx:0px; --ty:0px; --rot:0deg;
+    --wiggle:0px; --wrot:0deg;
+    --sproutY:0px; --sproutScale:1; --sproutRot:0deg;
+
+    transform:
+      translate(var(--tx), calc(var(--ty) + var(--wiggle) + var(--sproutY)))
+      scale(var(--sproutScale))
+      rotate(calc(var(--rot) + var(--wrot) + var(--sproutRot)));
+
     animation: sprout .9s ease-out both, wiggle 6s ease-in-out infinite;
     position:relative;
     padding:3.2rem 1rem 1.6rem;
     display:flex; flex-direction:column; align-items:center; gap:.6rem;
     isolation:isolate;
+    will-change: transform;
   }
+
   .pod:nth-child(1){ --tx:-8%; --ty:-6%; --rot:-1.6deg; }
   .pod:nth-child(2){ --tx:6%;  --ty:4%;  --rot:2.2deg; }
   .pod:nth-child(3){ --tx:-4%; --ty:2%;  --rot:-1.3deg; }
+
   @media (min-width:760px){
     .grid{ display:grid; grid-template-columns:1fr 1fr; gap:3.2rem 2.8rem; justify-items:center; }
     .pod:nth-child(1){ --tx:-8%; --ty:-4%; --rot:-1.4deg; }
-    .pod:nth-child(2){ --tx:8%;  --ty:6%;  --rot:2deg; }
+    .pod:nth-child(2){ --tx:8%;  --ty:6%; --rot:2deg; }
     .pod:nth-child(3){ --tx:0%;  --ty:12%; --rot:-1.6deg; grid-column:span 2; }
   }
 
@@ -197,19 +207,25 @@
   .teal{ --beam: var(--teal); }
 
   @keyframes sprout{
-    0%{ opacity:0; transform:translateY(18px) scale(.94) rotate(-1deg); }
-    70%{ opacity:1; transform:translateY(-4px) scale(1.02) rotate(.4deg); }
-    100%{ transform:translateY(0) scale(1) rotate(0); }
+    0%   { opacity:0; --sproutY:18px; --sproutScale:.94; --sproutRot:-1deg; }
+    70%  { opacity:1; --sproutY:-4px; --sproutScale:1.02; --sproutRot:.4deg; }
+    100% { opacity:1; --sproutY:0px;  --sproutScale:1;    --sproutRot:0deg; }
   }
+
   @keyframes breathe{
     0%,100%{ opacity:.85; transform:translateY(0) }
     50%{ opacity:.95; transform:translateY(-3px) }
   }
+
   @keyframes wiggle{
     0%,100%{ --wiggle:0px; --wrot:0deg; }
-    50%{ --wiggle:-2px; --wrot:.4deg; }
+    50%    { --wiggle:-2px; --wrot:.4deg; }
   }
-  @media (prefers-reduced-motion:reduce){ .pod{animation:none} .pod::after{animation:none} }
+
+  @media (prefers-reduced-motion:reduce){
+    .pod{ animation:none }
+    .pod::after{ animation:none }
+  }
 </style>
 </head>
 <body>
@@ -219,7 +235,7 @@
     <div class="title-block" aria-label="Pelican’s Progress title">
       <img class="title-logo" src="pelicans-progress-title.png" alt="Pelican’s Progress">
       <p class="subtitle-line">A living gallery of projects blooming in Soft Time.</p>
-      <img class="pelican-side" src="pelican-laugh.png" alt="">
+      <img class="pelican-side" src="pelican-character.png" alt="">
     </div>
   </header>
 
