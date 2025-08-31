@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sparksoil Notebook — Soft Pages</title>
+<meta name="description" content="A living notebook of stories, ideas, and soft-time seedlings.">
+<!-- Keep base pointing to /World so images like /World/lilac-wallpaper.jpg work -->
+<base href="/World/">
+<link rel="stylesheet" href="notebook/styles.css">
+
+<!-- Fonts (serif for body, sans for UI) -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="nb-body">
+
+<header class="nb-header">
+  <a class="nb-back" href="index.html">← Back to doors</a>
+  <h1 class="nb-title">Soft Pages</h1>
+  <p class="nb-sub">A living notebook for stories in Soft Time.</p>
+</header>
+
+<main class="nb-container">
+  <section class="nb-card nb-intro">
+    <p>Welcome to your private greenhouse. Drafts, poems, scenes, and seeds can live here while they grow. 🌱</p>
+  </section>
+
+  <section class="nb-card">
+    <h2 class="nb-h2">Chapters</h2>
+    <ol class="nb-toc">
+      <li><a href="notebook/chapter-1.html">Accidentally Real — Scene: The Mending Begins</a></li>
+      <!-- Duplicate items as you add more chapters -->
+    </ol>
+  </section>
+</main>
+
+<footer class="nb-footer">
+  <button class="nb-toggle" id="themeToggle" aria-label="Toggle theme">Glow / Dim</button>
+</footer>
+
+<script>
+  // tiny theme toggle
+  const btn = document.getElementById('themeToggle');
+  const PREF = 'nb-theme';
+  const apply = v => document.documentElement.dataset.theme = v;
+  const saved = localStorage.getItem(PREF);
+  if (saved) apply(saved);
+  btn.addEventListener('click', () => {
+    const next = (document.documentElement.dataset.theme === 'dim') ? 'glow' : 'dim';
+    apply(next); localStorage.setItem(PREF, next);
+  });
+</script>
+</body>
+</html>
