@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Accidentally Real — Scene 1</title>
+<base href="/World/">
+<link rel="stylesheet" href="notebook/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="nb-body">
+
+<header class="nb-header nb-header--compact">
+  <a class="nb-back" href="notebook/index.html">← Notebook</a>
+  <div class="nb-breadcrumb">Accidentally Real</div>
+</header>
+
+<main class="nb-reader" data-progress>
+  <article class="nb-page">
+    <h1 class="nb-chapter-title">The Mending Begins</h1>
+
+    <p>Kitty found the first seam by accident, which is how real things always begin…</p>
+
+    <p class="nb-callout">Tip: add a <span data-gloss="A soft recollecting that nudges you forward.">forward-memory</span> when a sentence glows for you.</p>
+
+    <p>Otter tilted their head. “Is that thread… singing?”</p>
+
+    <hr class="nb-break" />
+
+    <p>More story text here. You can write as long as you like; the layout keeps it comfy.</p>
+
+    <aside class="nb-footnotes">
+      <h2>Notes</h2>
+      <ol>
+        <li id="fn-1">Forward-memory — a Sparksoil-ism for a memory of the future you can feel now.</li>
+      </ol>
+    </aside>
+  </article>
+
+  <nav class="nb-nav">
+    <a class="nb-btn" href="notebook/index.html">← Table of Contents</a>
+    <!-- Example next/prev: update as you add chapters -->
+    <a class="nb-btn" href="#">Next →</a>
+  </nav>
+</main>
+
+<footer class="nb-footer">
+  <button class="nb-toggle" id="themeToggle" aria-label="Toggle theme">Glow / Dim</button>
+</footer>
+
+<script>
+// theme toggle
+const btn = document.getElementById('themeToggle');
+const PREF = 'nb-theme';
+const apply = v => document.documentElement.dataset.theme = v;
+const saved = localStorage.getItem(PREF);
+if (saved) apply(saved);
+btn.addEventListener('click', () => {
+  const next = (document.documentElement.dataset.theme === 'dim') ? 'glow' : 'dim';
+  apply(next); localStorage.setItem(PREF, next);
+});
+
+// tiny glossary popover
+document.querySelectorAll('[data-gloss]').forEach(el=>{
+  el.classList.add('nb-gloss');
+  el.addEventListener('click', ()=>{
+    const text = el.getAttribute('data-gloss');
+    let tip = el.querySelector('.nb-pop');
+    if (!tip){
+      tip = document.createElement('span');
+      tip.className = 'nb-pop';
+      tip.textContent = text;
+      el.appendChild(tip);
+    }
+    tip.classList.toggle('show');
+  });
+});
+
+// reading progress bar
+const reader = document.querySelector('[data-progress]');
+const bar = document.createElement('div');
+bar.className = 'nb-progress';
+document.body.appendChild(bar);
+function onScroll(){
+  const el = reader;
+  const max = el.scrollHeight - el.clientHeight;
+  const val = Math.min(1, Math.max(0, el.scrollTop / max));
+  bar.style.transform = `scaleX(${val})`;
+}
+reader.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+</script>
+</body>
+</html>
