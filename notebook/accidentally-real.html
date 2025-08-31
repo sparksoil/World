@@ -25,7 +25,7 @@
 
     /* IMAGE FIRST so gradients sit behind it */
     background-image:
-      url("notebook/img/door-sprout.PNG?v=2"),
+      url("notebook/door-sprout.PNG?v=2"),
       radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.45), transparent 60%);
     background-size: cover, auto;
     background-position: center 18%, center;
@@ -76,13 +76,13 @@
     position:absolute; pointer-events:none; z-index:0; opacity:.9;
     filter: drop-shadow(0 0 6px rgba(255,220,150,.25));
   }
-  /* Sprout (bottom-left) — reusing the same art */
+  /* Sprout (bottom-left) */
   .doodle.sprout{
     left:-18px; bottom:-8px; width:120px; height:140px;
-    background: url("notebook/img/door-sprout.PNG?v=2") center/contain no-repeat;
+    background: url("notebook/door-sprout.PNG?v=2") center/contain no-repeat;
     animation: sproutWiggle 6.5s ease-in-out infinite;
   }
-  /* Star (top-right) — CSS starburst */
+  /* Star (top-right) */
   .doodle.star{
     right:-14px; top:-10px; width:100px; height:100px;
     background-image:
@@ -109,7 +109,7 @@
     .doodle{ animation:none }
   }
 
-  /* ===== existing sparkles (kept, brightened a touch) ===== */
+  /* ===== sparkles ===== */
   .sparkle{
     position:absolute; width:10px; height:10px; border-radius:50%;
     background: radial-gradient(circle, rgba(var(--glow),1) 0%, rgba(var(--glow),0) 70%);
