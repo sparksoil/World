@@ -22,14 +22,19 @@
     margin:0; color:var(--ink);
     font-family: ui-serif, Georgia, "Times New Roman", serif;
     background: var(--paper);
-    /* Background sketch */
+
+    /* ORDER MATTERS: put the IMAGE FIRST so gradients sit behind it */
     background-image:
-      radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.55), transparent 60%),
-      url("notebook/img/door-sprout.PNG");
-    background-size: cover;
-    background-position: center 18%;
-    background-attachment: fixed;
-    animation: bgBloom 1200ms ease-out both;
+      url("notebook/img/door-sprout.PNG?v=1"),
+      radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.45), transparent 60%);
+    background-size: cover, auto;
+    background-position: center 18%, center;
+    background-attachment: scroll; /* safer for iOS */
+    animation: bgBloom 900ms ease-out both;
+  }
+  @media (min-width: 900px){
+    /* give desktop a subtle fixed parallax */
+    body{ background-attachment: fixed, scroll; }
   }
 
   @keyframes bgBloom{
@@ -41,18 +46,15 @@
   header{
     position:sticky; top:0; z-index:2;
     background: transparent; /* veil removed */
-    backdrop-filter: none;
     padding:12px 16px 10px;
   }
-  .crumb, .series{
-    text-shadow: 0 1px 2px rgba(255,255,255,.8); /* subtle boost */
-  }
+  .crumb, .series{ text-shadow: 0 1px 2px rgba(255,255,255,.85); }
 
   .crumb{
     display:inline-block; text-decoration:none; color:var(--ink);
     padding:8px 12px; border-radius:12px; background:rgba(255,255,255,.45);
   }
-  .series{ display:block; font-size:.95rem; opacity:.8; margin:8px 2px 0; }
+  .series{ display:block; font-size:.95rem; opacity:.82; margin:8px 2px 0; }
 
   main{ padding:28px 16px 56px; }
   .page{
@@ -69,10 +71,12 @@
     overflow:hidden;
   }
 
-  /* soft glimmers drifting */
+  /* brighter, more visible sparkles */
   .sparkle{
-    position:absolute; width:8px; height:8px; border-radius:50%;
+    position:absolute; width:10px; height:10px; border-radius:50%;
     background: radial-gradient(circle, rgba(var(--glow),1) 0%, rgba(var(--glow),0) 70%);
+    box-shadow: 0 0 14px rgba(var(--glow),.9), 0 0 24px rgba(var(--glow),.5);
+    mix-blend-mode: screen;
     opacity:0; pointer-events:none;
     animation: twinkle 4.8s ease-in-out infinite;
   }
@@ -83,9 +87,9 @@
 
   @keyframes twinkle{
     0%   { transform:translateY(4px) scale(.6); opacity:0 }
-    20%  { opacity:.9 }
-    50%  { transform:translateY(-6px) scale(1); opacity:.6 }
-    80%  { opacity:.9 }
+    15%  { opacity:1 }
+    50%  { transform:translateY(-6px) scale(1); opacity:.65 }
+    85%  { opacity:1 }
     100% { transform:translateY(4px) scale(.6); opacity:0 }
   }
 
@@ -114,9 +118,7 @@
     border-radius:12px;
   }
 
-  .foot{
-    margin-top: 18px; font-size:.95rem; opacity:.75;
-  }
+  .foot{ margin-top: 18px; font-size:.95rem; opacity:.75; }
 </style>
 </head>
 <body>
