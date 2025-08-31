@@ -52,7 +52,7 @@
     outline: calc(var(--debug)*2px) dashed rgba(255,0,100,.7);
   }
 
-  /* 🔼 moved up a smidge: top 73% → 71% */
+  /* door positions */
   .door-1{left:35%; top:71%; width:10%; height:12%;}
   .door-2{left:47%; top:71%; width:10%; height:12%;}
   .door-3{left:59%; top:71%; width:10%; height:12%;}
@@ -129,15 +129,18 @@
 
   <!-- POSTER HERO WITH HOTSPOTS -->
   <div class="poster" role="img" aria-label="Sparksoil poster with pastel doors and spiral stairs">
-    <!-- ✅ Pelican door now points to pelican-progress.html -->
+    <!-- ✅ Pelican door -->
     <a class="hotspot door-1" href="pelican-progress.html" aria-label="Open Pelican">Pelican</a>
-    <a class="hotspot door-2" href="encouragemint.html"      aria-label="Open Encouragemint">Encouragemint</a>
+    
+    <!-- ✅ Mint door now opens Soft Pages hub -->
+    <a class="hotspot door-2" href="notebook/index.html" aria-label="Open Soft Pages">Soft Pages</a>
+    
     <a class="hotspot door-3" href="https://ko-fi.com/sparksoil" target="_blank" rel="noopener" aria-label="Support on Ko-fi">Ko-fi</a>
-    <a class="hotspot door-4" href="wonder-window/"          aria-label="Open Wonder Window Journal">Wonder Window</a>
-    <a class="hotspot girl"   href="#subscribe"              aria-label="Subscribe by email">Subscribe</a>
+    <a class="hotspot door-4" href="wonder-window/" aria-label="Open Wonder Window Journal">Wonder Window</a>
+    <a class="hotspot girl" href="#subscribe" aria-label="Subscribe by email">Subscribe</a>
   </div>
 
-  <!-- SUBSCRIBE (target of the girl click) -->
+  <!-- SUBSCRIBE -->
   <section id="subscribe" aria-labelledby="sub-h">
     <h2 id="sub-h">Get Sparksoil in your inbox</h2>
     <p>Low-pressure notes, first peeks at doors opening, and gentle tools for Shoedays.</p>
