@@ -38,28 +38,19 @@
     }
   }
 
-  /* HEADER */
-  header{
-    text-align:center;
-    padding:16px 16px 2px;                 /* a bit tighter */
-    position:relative; z-index:1;
-  }
+  header{ text-align:center; padding:16px 16px 4px; position:relative; z-index:1; }
   .back{ display:inline-block; margin:0 0 6px; text-decoration:none; color:inherit; padding:6px 10px; border-radius:8px; }
   .back:focus{ outline:3px solid rgba(255,230,150,.9); outline-offset:3px; }
 
-  /* TITLE BLOCK */
   .title-block{
     position:relative;
     display:flex; flex-direction:column; align-items:center;
-    gap:.12rem;                             /* hug elements */
-    margin:0 auto 0; max-width:92%;
+    gap:.15rem; margin:0 auto 0; max-width:92%;
     isolation:isolate;
   }
-
-  /* soft bloom behind PNG */
   .title-block::before{
     content:"";
-    position:absolute; inset:auto 0 -10px 0; /* closer */
+    position:absolute; inset:auto 0 -12px 0;
     margin:auto; width:min(680px, 88vw); height:44%;
     background:
       radial-gradient(closest-side, rgba(255,230,180,.55), rgba(255,230,180,0) 66%),
@@ -68,55 +59,6 @@
     z-index:0; pointer-events:none;
   }
 
-  /* Pelican hero — absolute PATH + cache-buster */
-  .pelican-hero{
-    position:absolute; left:50%; transform:translateX(-50%);
-    bottom:calc(100% + 8px);
-    width: clamp(120px, 22vw, 240px);
-    height:auto; display:block;
-    z-index:2; pointer-events:none; opacity:0;
-    filter:
-      drop-shadow(0 0 10px rgba(255,220,150,.65))
-      drop-shadow(0 0 20px rgba(255,192,205,.45))
-      drop-shadow(0 0 28px rgba(140,210,200,.40));
-    animation: pelicanPop 900ms ease-out 200ms forwards;
-  }
-  .pelican-hero::after{
-    content:"";
-    position:absolute; inset:0; margin:auto;
-    width:140%; height:140%;
-    background:
-      radial-gradient(circle, rgba(255,235,190,.75), rgba(255,235,190,0) 55%),
-      conic-gradient(from 0deg,
-        rgba(255,235,190,.9) 0 6deg, transparent 6deg 30deg,
-        rgba(255,235,190,.9) 30deg 36deg, transparent 36deg 60deg,
-        rgba(255,235,190,.9) 60deg 66deg, transparent 66deg 90deg,
-        rgba(255,235,190,.9) 90deg 96deg, transparent 96deg 120deg,
-        rgba(255,235,190,.9) 120deg 126deg, transparent 126deg 150deg,
-        rgba(255,235,190,.9) 150deg 156deg, transparent 156deg 180deg,
-        rgba(255,235,190,.9) 180deg 186deg, transparent 186deg 210deg,
-        rgba(255,235,190,.9) 210deg 216deg, transparent 216deg 240deg,
-        rgba(255,235,190,.9) 240deg 246deg, transparent 246deg 270deg,
-        rgba(255,235,190,.9) 270deg 276deg, transparent 276deg 300deg,
-        rgba(255,235,190,.9) 300deg 306deg, transparent 306deg 330deg,
-        rgba(255,235,190,.9) 330deg 336deg, transparent 336deg 360deg);
-    mix-blend-mode:screen; border-radius:50%;
-    transform:scale(.6); opacity:0; z-index:-1;
-    animation: sparkle 900ms ease-out 260ms forwards;
-    pointer-events:none;
-  }
-  @keyframes pelicanPop{
-    0%   { transform:translateX(-50%) translateY(8px) scale(.72); opacity:0; }
-    60%  { transform:translateX(-50%) translateY(-2px) scale(1.06); opacity:1; }
-    100% { transform:translateX(-50%) translateY(0)    scale(1.00); opacity:1; }
-  }
-  @keyframes sparkle{
-    0%   { transform:scale(.4); opacity:0; filter:blur(6px); }
-    50%  { transform:scale(1);  opacity:1; filter:blur(2px); }
-    100% { transform:scale(1.1);opacity:.0; filter:blur(10px); }
-  }
-
-  /* title image */
   .title-logo{
     position:relative; z-index:1;
     max-width:560px; width:100%; height:auto;
@@ -127,10 +69,8 @@
       drop-shadow(0 0 44px rgba(140,210,200,.40));
   }
 
-  /* subtitle — pulled up more */
-  @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap");
   .subtitle-line{
-    margin:-10px 0 0;                       /* hug title */
+    margin:-6px 0 0;
     font-family: "Cormorant Garamond", Georgia, serif;
     font-weight:600;
     font-size: clamp(1.2rem, 1.4vw + 1rem, 1.8rem);
@@ -143,90 +83,34 @@
       0 0 34px rgba(140,210,200,.40);
   }
 
-  /* MAIN GALLERY */
-  main.gallery{ max-width:1200px; margin:.1rem auto 4rem; padding:0 1rem 3rem; }
+  main.gallery{ max-width:1200px; margin:.25rem auto 4rem; padding:0 1rem 3rem; }
+  @media (min-width:760px){ main.gallery{ margin:.6rem auto 4rem; } }
 
-  .grid{
-    display:flex; flex-direction:column; align-items:center; gap:2.4rem; /* tighter */
-  }
+  .grid{ display:flex; flex-direction:column; align-items:center; gap:2.6rem; }
+  .pod{ position:relative; padding:2rem 1rem 1.2rem; display:flex; flex-direction:column; align-items:center; gap:.6rem; }
 
-  /* PODS (wiggle intact) */
-  .pod{
-    --tx:0px; --ty:0px; --rot:0deg;
-    --wiggle:0px; --wrot:0deg;
-    --sproutY:0px; --sproutScale:1; --sproutRot:0deg;
-
-    transform:
-      translate(var(--tx), calc(var(--ty) + var(--wiggle) + var(--sproutY)))
-      scale(var(--sproutScale))
-      rotate(calc(var(--rot) + var(--wrot) + var(--sproutRot)));
-
-    animation: sprout .9s ease-out both, wiggle 6s ease-in-out infinite;
-    position:relative;
-    padding:1.2rem 1rem 1rem;               /* trimmed */
-    display:flex; flex-direction:column; align-items:center; gap:.6rem;
-    isolation:isolate; will-change: transform;
-  }
-  .pod:first-child{ padding-top:.4rem; }     /* closes the “big gap” */
-
-  .pod:nth-child(1){ --tx:-8%; --ty:-6%; --rot:-1.6deg; }
-  .pod:nth-child(2){ --tx: 6%; --ty: 4%; --rot: 2.2deg; }
-  .pod:nth-child(3){ --tx:-4%; --ty: 2%; --rot:-1.3deg; }
-
-  @media (min-width:760px){
-    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:2.4rem 2rem; justify-items:center; }
-    .pod:nth-child(1){ --tx:-8%; --ty:-4%; --rot:-1.4deg; }
-    .pod:nth-child(2){ --tx: 8%; --ty: 6%; --rot: 2deg; }
-    .pod:nth-child(3){ --tx: 0%; --ty:12%; --rot:-1.6deg; grid-column:span 2; }
-  }
-
-  /* bigger shelves/books (~1.5× mobile/desktop) */
   .book{
-    width:clamp(330px, 88vw, 540px);
-    display:block; background:transparent!important; border-radius:0!important;
+    width:clamp(360px, 90vw, 560px);
+    display:block; transition:transform .25s ease, filter .25s ease, box-shadow .4s ease;
     filter: drop-shadow(0 10px 18px rgba(0,0,0,.20));
-    transition:transform .25s ease, filter .25s ease;
   }
-  .pod:hover .book{
+  .book:hover{
     transform:translateY(-4px) scale(1.02);
     filter: drop-shadow(0 18px 28px rgba(0,0,0,.24));
   }
+  /* Lamp glow when clicked */
+  .book.clicked{
+    box-shadow:0 0 25px rgba(255,220,150,.9), 0 0 45px rgba(255,220,150,.6);
+  }
 
-  .title{ margin:.45rem 0 0; font-weight:800; font-size:1.28rem; text-align:center; color:#2b221c; text-shadow:0 1px 0 rgba(255,255,255,.75);}
+  .title{ margin:.5rem 0 0; font-weight:800; font-size:1.28rem; text-align:center; color:#2b221c; text-shadow:0 1px 0 rgba(255,255,255,.75);}
   .desc { margin:.15rem 0 0; text-align:center; opacity:.9; color:#3b2f27; text-shadow:0 1px 0 rgba(255,255,255,.65); }
-
-  .gold{ --beam: var(--gold); }
-  .rose{ --beam: var(--rose); }
-  .teal{ --beam: var(--teal); }
-
-  @keyframes sprout{
-    0%   { opacity:0; --sproutY:18px; --sproutScale:.94; --sproutRot:-1deg; }
-    70%  { opacity:1; --sproutY:-4px; --sproutScale:1.02; --sproutRot:.4deg; }
-    100% { opacity:1; --sproutY:0px;  --sproutScale:1;    --sproutRot:0deg; }
-  }
-  @keyframes breathe{
-    0%,100%{ opacity:.85; transform:translateY(0) }
-    50%{ opacity:.95; transform:translateY(-3px) }
-  }
-  @keyframes wiggle{
-    0%,100%{ --wiggle:0px; --wrot:0deg; }
-    50%    { --wiggle:-2px; --wrot:.4deg; }
-  }
-
-  @media (prefers-reduced-motion:reduce){
-    .pod{ animation:none }
-    .pod::after{ animation:none }
-    .pelican-hero, .pelican-hero::after{ animation:none; opacity:1; }
-  }
 </style>
 </head>
 <body>
   <header>
     <a class="back" href="index.html">← Back to doors</a>
-
-    <div class="title-block" aria-label="Pelican’s Progress title">
-      <!-- absolute path + version to defeat cache -->
-      <img class="pelican-hero" src="/World/pelican-character.PNG?v=7" alt="">
+    <div class="title-block">
       <img class="title-logo" src="pelicans-progress-title.png" alt="Pelican’s Progress">
       <p class="subtitle-line">A living gallery of projects blooming in Soft Time.</p>
     </div>
@@ -235,7 +119,9 @@
   <main class="gallery">
     <div class="grid">
       <article class="pod gold">
-        <img class="book" src="accidentally-real-shelf.png?v=8" alt="Accidentally Real cover" loading="lazy">
+        <a href="notebook/accidentally-real.html">
+          <img class="book" src="accidentally-real-shelf.png?v=8" alt="Accidentally Real cover" loading="lazy">
+        </a>
         <h3 class="title">Accidentally Real</h3>
         <p class="desc">Novel • Kitty, Otter, and the sacred mending. (In progress)</p>
       </article>
@@ -253,5 +139,16 @@
       </article>
     </div>
   </main>
+
+  <script>
+    // make Accidentally Real book glow when clicked
+    const book = document.querySelector('.pod.gold .book');
+    if(book){
+      book.addEventListener('click', e=>{
+        book.classList.add('clicked');
+        setTimeout(()=> book.classList.remove('clicked'), 600);
+      });
+    }
+  </script>
 </body>
 </html>
