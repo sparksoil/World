@@ -2,216 +2,174 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Accidentally Real — The Door That Wasn’t There</title>
-<meta name="description" content="A living-parable entry from Accidentally Real." />
-<link rel="icon" href="../favicon.ico">
+<base href="/World/">
+<meta name="description" content="A living parable in soft time.">
+
 <style>
   :root{
     --ink:#2b221c;
-    --paper:#f9f6f1;
-    --accent:#8ccfc7;
-    --soft:#ffe6b6;
-    --max: 800px;
+    --paper:#faf6ee;
+    --card:#fff9f0;
+    --accent:#a8866a;
+    --glow:255,220,150;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
+
+  *{ box-sizing:border-box }
+  html,body{ height:100% }
   body{
     margin:0; color:var(--ink);
     font-family: ui-serif, Georgia, "Times New Roman", serif;
-    background:
-      radial-gradient(1400px 520px at 50% -8%, rgba(255,242,200,.22), transparent 60%),
-      linear-gradient(180deg, #fff 0%, var(--paper) 100%);
+    background: var(--paper);
+    /* Background sketch */
+    background-image:
+      radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.55), transparent 60%),
+      url("notebook/img/door-sprout.PNG");
+    background-size: cover;
+    background-position: center 18%;
+    background-attachment: fixed;
+    animation: bgBloom 1200ms ease-out both;
   }
-  .page{
-    max-width:var(--max);
-    margin: clamp(16px,4vw,40px) auto;
-    padding: clamp(16px,4vw,40px);
-    background:#fff;
-    border-radius:18px;
-    box-shadow:
-      0 12px 30px rgba(0,0,0,.08),
-      0 2px 0 rgba(255,230,182,.65) inset;
+
+  @keyframes bgBloom{
+    0%{ filter: blur(6px) brightness(.96); opacity:.0; }
+    60%{ filter: blur(2.5px) brightness(1.02); opacity:.9; }
+    100%{ filter: blur(0px) brightness(1.0); opacity:1; }
   }
+
   header{
-    text-align:center;
-    margin:0 0 1.2rem 0;
+    position:sticky; top:0; z-index:2;
+    backdrop-filter: blur(6px) saturate(110%);
+    background: linear-gradient(to bottom, rgba(255,255,255,.7), rgba(255,255,255,.35));
+    padding:12px 16px 10px;
   }
-  .back{
-    display:inline-block; margin:0 0 .75rem 0;
-    text-decoration:none; color:inherit; padding:.45rem .7rem;
-    border-radius:10px; background:rgba(255,230,182,.35);
-    box-shadow: 0 0 18px rgba(255,220,150,.5);
+  .crumb{
+    display:inline-block; text-decoration:none; color:var(--ink);
+    padding:8px 12px; border-radius:12px; background:rgba(255,255,255,.55);
   }
+  .series{ display:block; font-size:.95rem; opacity:.8; margin:8px 2px 0; }
+
+  main{ padding:28px 16px 56px; }
+  .page{
+    max-width:min(720px, 92vw);
+    margin:0 auto;
+    background: linear-gradient(#fff, #fff8ee);
+    border-radius:20px;
+    box-shadow:
+      0 2px 0 rgba(0,0,0,.03),
+      0 12px 24px rgba(0,0,0,.10),
+      inset 0 1px 0 rgba(255,255,255,.65);
+    padding: clamp(20px, 3.2vw, 36px);
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* soft glimmers drifting */
+  .sparkle{
+    position:absolute; width:8px; height:8px; border-radius:50%;
+    background: radial-gradient(circle, rgba(var(--glow),1) 0%, rgba(var(--glow),0) 70%);
+    opacity:0; pointer-events:none;
+    animation: twinkle 4.8s ease-in-out infinite;
+  }
+  .sparkle.s1{ left:12%; top:18%; animation-delay:.2s }
+  .sparkle.s2{ right:10%; top:28%; animation-delay:1.1s }
+  .sparkle.s3{ left:22%; bottom:18%; animation-delay:2.0s }
+  .sparkle.s4{ right:18%; bottom:10%; animation-delay:2.6s }
+
+  @keyframes twinkle{
+    0%   { transform:translateY(4px) scale(.6); opacity:0 }
+    20%  { opacity:.9 }
+    50%  { transform:translateY(-6px) scale(1); opacity:.6 }
+    80%  { opacity:.9 }
+    100% { transform:translateY(4px) scale(.6); opacity:0 }
+  }
+
   h1{
-    font-size: clamp(1.8rem, 2.6vw + 1rem, 2.6rem);
-    line-height:1.1; margin:.2rem 0 .3rem;
-    text-shadow: 0 0 20px rgba(255,220,150,.28), 0 0 34px rgba(140,210,200,.25);
+    font-size: clamp(2rem, 2.2rem + 1vw, 3rem);
+    line-height:1.12; margin: 0 0 .6rem;
   }
   h2{
-    font-size: clamp(1.2rem, 1.1vw + 1rem, 1.6rem);
-    margin:.1rem 0 1rem; font-weight:600; opacity:.9;
+    font-size: clamp(1.35rem, 1.1rem + .9vw, 1.8rem);
+    margin: .2rem 0 1.2rem; opacity:.85;
   }
-  h3{
-    font-size: clamp(1.05rem, 1vw + 1rem, 1.35rem);
-    margin:2.1rem 0 .6rem; font-weight:700;
-    text-shadow: 0 0 14px rgba(255,220,150,.25);
+  hr{
+    height:12px; border:0; margin:18px 0 22px;
+    background:
+      radial-gradient(closest-side, rgba(var(--glow),.35), rgba(var(--glow),0) 70%),
+      linear-gradient(to right, transparent, rgba(0,0,0,.06), transparent);
+    mask: linear-gradient(90deg, transparent, #000 15% 85%, transparent);
+    border-radius:999px;
   }
-  p{ margin:.55rem 0; line-height:1.6; }
-  .poem p{ margin:.35rem 0; }
-  .rule{
-    height:1px; background:linear-gradient(90deg, transparent, rgba(0,0,0,.12), transparent);
-    margin:1.5rem 0 1.2rem;
+  p{ font-size:clamp(1.02rem,1rem + .3vw,1.16rem); line-height:1.7; margin:.55rem 0; }
+  em{ letter-spacing:.15px }
+
+  blockquote{
+    margin:1rem 0 1.25rem; padding:.9rem 1rem;
+    background: #fff4da; border-left:4px solid rgba(var(--glow),.9);
+    border-radius:12px;
   }
-  .glow{
-    text-shadow:
-      0 0 8px rgba(255,220,150,.55),
-      0 0 18px rgba(255,192,205,.40),
-      0 0 24px rgba(140,210,200,.35);
-  }
-  footer{
-    margin-top:2rem; display:flex; justify-content:space-between; align-items:center;
-    gap:.8rem; font-size:.95rem; opacity:.8;
-  }
-  .nextprev a{ color:inherit; text-decoration:none; padding:.4rem .6rem; border-radius:8px; background:rgba(140,210,200,.12); }
-  @media (prefers-color-scheme: dark){
-    body{ background: radial-gradient(1400px 520px at 50% -8%, rgba(255,242,200,.18), transparent 60%), linear-gradient(#f3efe8,#eae3d9); }
+
+  .foot{
+    margin-top: 18px; font-size:.95rem; opacity:.75;
   }
 </style>
 </head>
 <body>
-  <main class="page" role="main">
-    <header>
-      <a class="back" href="/World/index.html">← Back to doors</a>
-      <h1 class="glow">Accidentally Real</h1>
-      <h2>The Door That Wasn’t There</h2>
-    </header>
 
-    <section aria-labelledby="why-magic">
-      <h3 id="why-magic">First things first — Why I Don’t Use the Word “Magic” in This Story</h3>
+<header>
+  <a class="crumb" href="../pelican-progress.html">← Notebook</a>
+  <span class="series">Accidentally Real</span>
+</header>
 
-      <p>“Magic” was never ours. From the beginning, it’s been a counterfeit—an imitation of the real wonder Jehovah wove into creation. It offers the illusion of power apart from Him, a shortcut that bypasses truth, dependence, and love. It’s not misunderstood. It’s misdirected.</p>
+<main>
+  <article class="page">
+    <span class="sparkle s1"></span>
+    <span class="sparkle s2"></span>
+    <span class="sparkle s3"></span>
+    <span class="sparkle s4"></span>
 
-      <p>But awe, wonder, imagination—those are gifts from Jehovah. They are holy, not hollow. They don’t need spells or secrets. They need stillness and seeing.</p>
+    <h1>The Door That Wasn’t There</h1>
+    <h2>Before You Enter</h2>
 
-      <p>So in this story, I use the word <em>glimmer</em>.</p>
+    <p>This is a living parable. It breathes in dream-logic—not bound by the rules of our waking world. It speaks in symbols, echoes, and slow-burning truth.</p>
+    <p>You may encounter things that feel “magical,” but the wonder here is not illusion. It’s deeper than that. It’s the kind of awe that belongs to Jehovah, who formed reality itself and set eternity in our hearts.</p>
+    <p>I am one of Jehovah’s Witnesses. This story comes from a place of reverence, not fantasy for fantasy’s sake. Every thread of beauty and strangeness points back to the Creator, not the created.</p>
+    <p>This book may bend time. It may blur the line between dreams and daylight—but it will not bend what is true.</p>
+    <p>So enter slowly. Let the soil and the stars speak. Let the sparkle and the sorrow both lead you. And remember: this is not an escape. It’s a way to remember what’s real. Realer than real, even…</p>
 
-      <p>A glimmer is what happens when the seed meets the sky and you notice it. It’s when the invisible becomes felt. When something true brushes up against your heart and says, “I’m real, and I’m from Jehovah.”</p>
+    <hr>
 
-      <p>This isn’t magic. This is a reminder. Jehovah is near. And He made you to wonder with Him.</p>
-    </section>
+    <h2>The Door That Wasn’t There</h2>
+    <p>I walked a road of straight, sharp lines, Gray stone beneath, gray sky confined. The path was clear, the rules were set, One way forward, one regret.</p>
+    <p>I called it truth, I called it fate, A single track, a measured gate. And so I walked, and so I stayed, Blind to what my words had made.</p>
+    <p>Then once, by chance—or something more— A friend traced along the floor. They whispered, “Look, it’s always been.” And where they touched, the cracks grew thin.</p>
+    <p>A door appeared, a path unknown, A place the maps had never shown. The air was thick with violet rain, With golden roots and hills untamed.</p>
+    <p>I turned and asked, “But was it real?” They laughed and said, “It’s what you feel. The world you name is what you see— A cage, a door, a lock, a key.”</p>
+    <p>And now I know, with every breath, That words can paint a life or death. For once you name a thing anew, The world itself is born with you.</p>
 
-    <div class="rule" aria-hidden="true"></div>
+    <hr>
 
-    <section aria-labelledby="before-you-enter">
-      <h3 id="before-you-enter">Before You Enter</h3>
+    <h2>Catherine at Her Desk</h2>
+    <p>Catherine read the last line twice, frowned, and closed the book. “Well, that was stupid,” she muttered to herself.</p>
+    <p>She shoved it under a stack of invoices on her desk—the kind of safe burial where odd thoughts go to die. The office hummed with fluorescent stillness. Spreadsheets. Deadlines. Printer toner that smelled faintly like burnt marshmallow.</p>
+    <p>Her hair, obedient and flat at 8:02 a.m., had already begun plotting by 9:45. By lunch, it would frizz just enough to mock her. She would give up the fight and twist it into a ponytail—an act of quiet surrender. It knew what it did.</p>
+    <p>Even straightened, she still caught herself twirling it—old habit, nervous tether. Every time she noticed, she stopped instantly, scolding herself under her breath, as if the partners in the corner office might see and dock her for fidgeting while corporate.</p>
+    <p>She wasn’t Kitty here. She was Catherine. And Catherine didn’t have time for poems about imaginary doors.</p>
 
-      <p>This is a living parable. It breathes in dream-logic— not bound by the rules of our waking world. It speaks in symbols, echoes, and slow-burning truth.</p>
+    <hr>
 
-      <p>You may encounter things that feel “magical,” but the wonder here is not illusion. It’s deeper than that. It’s the kind of awe that belongs to Jehovah, who formed reality itself and set eternity in our hearts.</p>
+    <h2>The Middle Disguised as a Beginning</h2>
+    <p>That’s a funny thing they say about life in this world: that it’s a journey, not a destination. Or better yet—that it’s not even about the destination, but the friends you make along the way.</p>
+    <p>And still… we’re constantly told: Here’s where you need to go. What you must do to get there. When you should arrive.</p>
+    <p>But… does anyone ever pause to consider—maybe, just maybe, it’s simply the art of being where you are until you leave there?</p>
+    <p>Maybe, while you’re there, you stumble onto some treasures… And perhaps this, too, is just another middle disguised as a beginning.</p>
+    <p>Wait—strike that, reverse it.</p>
+    <p>Oh—and one more thing they don’t tell you: There are many different ways to end up in the same place, and many different places to end up in the same ways.</p>
+    <p>Believe me, I know. So far today, I’ve lived six different lifetimes, visited four different worlds, and forgotten my lunch twice. And it’s only 11:01 AM.</p>
 
-      <p>I am one of Jehovah’s Witnesses. This story comes from a place of reverence, not fantasy for fantasy’s sake.</p>
-
-      <p>Every thread of beauty and strangeness points back to the Creator, not the created.</p>
-
-      <p>This book may bend time. It may blur the line between dreams and daylight— but it will not bend what is true.</p>
-
-      <p>So enter slowly. Let the soil and the stars speak. Let the sparkle and the sorrow both lead you.</p>
-
-      <p>And remember: This is not an escape. It’s a way to remember what’s real. <em>Realer than real, even…</em></p>
-    </section>
-
-    <div class="rule" aria-hidden="true"></div>
-
-    <section aria-labelledby="door">
-      <h3 id="door">The Door That Wasn’t There</h3>
-
-      <div class="poem" role="doc-poem" aria-label="verse">
-        <p>I walked a road of straight, sharp lines,</p>
-        <p>Gray stone beneath, gray sky confined.</p>
-        <p>The path was clear, the rules were set,</p>
-        <p>One way forward, one regret.</p>
-
-        <p>I called it truth, I called it fate,</p>
-        <p>A single track, a measured gate.</p>
-        <p>And so I walked, and so I stayed,</p>
-        <p>Blind to what my words had made.</p>
-
-        <p>Then once, by chance—or something more—</p>
-        <p>A friend traced along the floor.</p>
-        <p>They whispered, “Look, it’s always been.”</p>
-        <p>And where they touched, the cracks grew thin.</p>
-
-        <p>A door appeared, a path unknown,</p>
-        <p>A place the maps had never shown.</p>
-        <p>The air was thick with violet rain,</p>
-        <p>With golden roots and hills untamed.</p>
-
-        <p>I turned and asked, “But was it real?”</p>
-        <p>They laughed and said, “It’s what you feel.</p>
-        <p>The world you name is what you see—</p>
-        <p>A cage, a door, a lock, a key.”</p>
-
-        <p>And now I know, with every breath,</p>
-        <p>That words can paint a life or death.</p>
-        <p>For once you name a thing anew,</p>
-        <p>The world itself is born with you.</p>
-      </div>
-    </section>
-
-    <div class="rule" aria-hidden="true"></div>
-
-    <section aria-labelledby="catherine">
-      <h3 id="catherine">Catherine at Her Desk</h3>
-
-      <p>Catherine read the last line twice, frowned, and closed the book. “Well, that was stupid,” she muttered to herself.</p>
-
-      <p>She shoved it under a stack of invoices on her desk—the kind of safe burial where odd thoughts go to die. The office hummed with fluorescent stillness. Spreadsheets. Deadlines. Printer toner that smelled faintly like burnt marshmallow.</p>
-
-      <p>Her hair, obedient and flat at 8:02 a.m., had already begun plotting by 9:45. By lunch, it would frizz just enough to mock her. She would give up the fight and twist it into a ponytail—an act of quiet surrender. It knew what it did.</p>
-
-      <p>Even straightened, she still caught herself twirling it—old habit, nervous tether. Every time she noticed, she stopped instantly, scolding herself under her breath, as if the partners in the corner office might see and dock her for fidgeting while corporate.</p>
-
-      <p>She wasn’t Kitty here. She was Catherine.</p>
-
-      <p>And Catherine didn’t have time for poems about imaginary doors.</p>
-    </section>
-
-    <div class="rule" aria-hidden="true"></div>
-
-    <section aria-labelledby="middle">
-      <h3 id="middle">The Middle Disguised as a Beginning</h3>
-
-      <p>That’s a funny thing they say about life in this world: that it’s a journey, not a destination.</p>
-
-      <p>Or better yet— that it’s not even about the destination, but the friends you make along the way.</p>
-
-      <p>And still… we’re constantly told: Here’s where you need to go. What you must do to get there. When you should arrive.</p>
-
-      <p>But… does anyone ever pause to consider— maybe, just maybe, it’s simply the art of being where you are until you leave there?</p>
-
-      <p>Maybe, while you’re there, you stumble onto some treasures…</p>
-
-      <p>And perhaps this, too, is just another middle disguised as a beginning.</p>
-
-      <p>Wait— strike that, reverse it.</p>
-
-      <p>Oh—and one more thing they don’t tell you: There are many different ways to end up in the same place, and many different places to end up in the same ways.</p>
-
-      <p>Believe me, I know.</p>
-
-      <p>So far today, I’ve lived six different lifetimes, visited four different worlds, and forgotten my lunch twice.</p>
-
-      <p>And it’s only 11:01 AM.</p>
-    </section>
-
-    <footer>
-      <div>© Sparksoil</div>
-      <nav class="nextprev" aria-label="pagination">
-        <!-- Hook these up later -->
-        <a href="/World/">Home</a>
-      </nav>
-    </footer>
-  </main>
+    <p class="foot">— from <em>Accidentally Real</em></p>
+  </article>
+</main>
 </body>
 </html>
