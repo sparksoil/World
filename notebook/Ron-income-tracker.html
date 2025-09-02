@@ -32,10 +32,12 @@
     background-blend-mode: multiply;
   }
   .wrap{max-width:980px; margin:24px auto; padding:0 16px}
-  .card{
-    background:#fff0; border:1px solid var(--line); border-radius:14px; padding:16px;
+  /* overlay panel (also used for Lucy mode) */
+  .panel{
+    background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px;
     backdrop-filter:saturate(110%);
   }
+  .card{ background:#fff0; border:1px solid var(--line); border-radius:14px; padding:16px; }
   h1{margin:0 0 6px; font-size:1.25rem; font-weight:650}
   h2{margin:0 0 8px; font-size:1.05rem; font-weight:650}
   p.muted{margin:0 0 10px; color:#6b7280; font-size:.93rem}
@@ -45,8 +47,7 @@
   @media (max-width:760px){ .row,.row-3,.row-4{grid-template-columns:1fr} }
   label{display:grid; gap:6px; font-size:.95rem}
   input,select,textarea,button{
-    font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff;
-    color:var(--ink);
+    font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);
   }
   input[type="date"]{padding:8px 10px}
   textarea{min-height:70px; resize:vertical}
@@ -65,22 +66,35 @@
   tfoot td{font-weight:600; border-top:2px solid var(--line)}
   details.settings{margin:8px 0 0}
   details.settings summary{cursor:pointer; user-select:none}
-  /* Lucy Mode: calmer layout */
+  .quietline{border:none; height:1px; background:var(--line); opacity:.6; margin:6px 0 12px}
+  .footer{margin-top:10px; font-size:.9rem; color:#6b7280}
+  .toggle{display:flex; align-items:center; gap:8px}
+
+  /* Lucy Mode — background swap + overlay + softer accents */
   .lucy body, .lucy .wrap{letter-spacing:.2px}
   .lucy .inline .pill{display:none}
   .lucy .bar{display:none}
   .lucy .actions{gap:6px}
-  .lucy table th:nth-child(5), .lucy table td:nth-child(5){ /* Amount column stays */
+  .lucy h1, .lucy h2{font-weight:560}
+  .lucy body{
+    background: #f7f6fb url('Lucy-swirl.png') center/cover fixed no-repeat;
+    background-blend-mode: lighten;
   }
-  .lucy .muted{color:#5b6470}
-  .quietline{border:none; height:1px; background:var(--line); opacity:.6; margin:6px 0 12px}
-  .footer{margin-top:10px; font-size:.9rem; color:#6b7280}
-  .toggle{display:flex; align-items:center; gap:8px}
+  /* soften borders/lines & panelize main blocks for readability */
+  .lucy .panel, .lucy .card, .lucy table{
+    background: rgba(255,255,255,0.86);
+    border-color: rgba(0,0,0,0.08);
+  }
+  .lucy th, .lucy td { border-bottom-color: rgba(0,0,0,0.08); }
+  .lucy .divider, .lucy .quietline { background: rgba(0,0,0,0.08); }
+  .lucy .fill{ background:#8aa1c7; }        /* gentler accent bar */
+  .lucy .success{ background:rgba(209,230,247,.6); border-color:rgba(159,197,232,.8); color:#345 }
+  .lucy button.primary{ background:#4b5563 } /* slightly softer than cedar */
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="card" role="region" aria-label="Ron Ledger">
+  <div class="panel" role="region" aria-label="Ron Ledger">
     <div class="inline" style="justify-content:space-between">
       <div>
         <h1>Ron — Pet Job Income Ledger</h1>
@@ -143,6 +157,36 @@
         </label>
       </div>
 
+      <!-- Multi-day toggle -->
+      <div class="row" style="align-items:end;">
+        <label class="inline"><input id="multiToggle" type="checkbox" name="multiday"> Multi-day job?</label>
+        <div class="muted">For house sitting or multi-day care.</div>
+      </div>
+
+      <!-- Multi-day fields (hidden until toggled) -->
+      <div id="multiFields" class="row-3" style="display:none;">
+        <label>Start Date
+          <input type="date" name="startDate">
+        </label>
+        <label>End Date
+          <input type="date" name="endDate">
+        </label>
+        <label>Split evenly across days?
+          <select name="splitEvenly">
+            <option value="yes">Yes — divide total amount</option>
+            <option value="no">No — keep amount on first day</option>
+          </select>
+        </label>
+      </div>
+      <div id="multiChoice" class="row" style="display:none;">
+        <label>Destination mode
+          <select name="expandMode">
+            <option value="summary">One summary row (shows date range)</option>
+            <option value="expand">Auto-expand into daily rows</option>
+          </select>
+        </label>
+      </div>
+
       <div class="actions" style="margin-top:10px;">
         <button class="primary" type="submit" aria-label="Save entry">Log to Ledger</button>
         <button class="secondary" type="button" id="clearBtn" aria-label="Clear form">Wipe Slate</button>
@@ -186,7 +230,7 @@
         <table aria-label="Logged entries">
           <thead>
             <tr>
-              <th>Date</th><th>Client</th><th>Service</th><th>Method</th>
+              <th>Date / Range</th><th>Client</th><th>Service</th><th>Method</th>
               <th class="right">Amount</th>
               <th class="right">Set-Aside</th>
               <th class="right">Net</th>
@@ -249,6 +293,9 @@
   const reservePctInput = $('#reservePct');
   const saveSettingsBtn = $('#saveSettings');
   const lucyToggle = $('#lucyToggle');
+  const multiToggle = $('#multiToggle');
+  const multiFields = $('#multiFields');
+  const multiChoice = $('#multiChoice');
 
   const monthLabel = $('#monthLabel');
   const countMonth = $('#countMonth');
@@ -299,19 +346,59 @@
     });
   })();
 
+  // Multi-day toggle
+  multiToggle.addEventListener('change', ()=>{
+    const on = multiToggle.checked;
+    multiFields.style.display = on ? '' : 'none';
+    multiChoice.style.display = on ? '' : 'none';
+  });
+
   // ---------- Helpers ----------
   const monthKey = d => `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}`;
   const currentMonthKey = () => monthKey(new Date());
   const calcReserve = amt => (amt * (settings.reservePct/100));
   const calcNet = amt => (amt - calcReserve(amt));
 
+  function daysBetweenInclusive(startISO, endISO){
+    const start = new Date(startISO+"T00:00:00");
+    const end = new Date(endISO+"T00:00:00");
+    const ms = end - start;
+    if(ms < 0) return 0;
+    return Math.floor(ms/86400000) + 1;
+  }
+
+  function isoAddDays(iso, i){
+    const d = new Date(iso+"T00:00:00");
+    d.setUTCDate(d.getUTCDate()+i);
+    return d.toISOString().slice(0,10);
+  }
+
+  // Split an amount across N days with cent-accurate total
+  function splitEven(amount, n){
+    const cents = Math.round(Number(amount)*100);
+    const base = Math.floor(cents / n);
+    let rem = cents - base*n;
+    const out = Array.from({length:n}, ()=> base);
+    for(let i=0;i<rem;i++) out[i] += 1; // distribute remainder
+    return out.map(c => (c/100));
+  }
+
+  // For monthly filtering, use startDate if this is a range
+  function entryMonthKey(e){
+    const iso = e.startDate ? e.startDate : e.date;
+    if(!iso || iso.length < 7) return '';
+    const d = new Date(iso+"T00:00:00");
+    return monthKey(d);
+  }
+
   // ---------- Render ----------
   function render(){
     rows.innerHTML = entries.map(e=>{
       const reserve = calcReserve(e.amount);
       const net = e.amount - reserve;
+      const dateCell = e.startDate ? `${e.startDate} – ${e.endDate}` : e.date;
       return `<tr>
-        <td>${e.date}</td>
+        <td>${dateCell}</td>
         <td>${escapeHtml(e.client)}</td>
         <td>${escapeHtml(e.service)}</td>
         <td>${escapeHtml(e.method)}</td>
@@ -337,9 +424,9 @@
     totalReserveFoot.textContent = fmtMoney(reserveAllVal);
     totalNetFoot.textContent = fmtMoney(netAllVal);
 
-    // Month
+    // Month (use start date for ranges)
     const cmk = currentMonthKey();
-    const monthEntries = entries.filter(e=> (e.date||'').slice(0,7) === cmk);
+    const monthEntries = entries.filter(e=> entryMonthKey(e) === cmk);
     const grossM = monthEntries.reduce((s,e)=>s+e.amount,0);
     const reserveM = monthEntries.reduce((s,e)=>s+calcReserve(e.amount),0);
     const netM = grossM - reserveM;
@@ -362,9 +449,11 @@
   form.addEventListener('submit', async ev=>{
     ev.preventDefault();
     const fd = new FormData(form);
-    const entry = {
+    const multiday = !!fd.get('multiday');
+
+    const base = {
       id: crypto.randomUUID(),
-      date: fd.get('date') || todayISO(),
+      date: fd.get('date') || todayISO(),        // used if not multiday
       client: (fd.get('client')||'').trim(),
       service: (fd.get('service')||'').trim(),
       amount: Number(fd.get('amount')||0),
@@ -373,27 +462,92 @@
       notes: (fd.get('notes')||'').trim(),
       reservePct: settings.reservePct,
     };
-    entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
-    entry.net = Number((entry.amount - entry.reserve).toFixed(2));
 
     // Basic validation
-    if(!entry.date){ alert('The shelf won’t hold unless you fill the date.'); return; }
-    if(!entry.client){ alert('Name the client so the log can stand.'); return; }
+    if(!base.client){ alert('Name the client so the log can stand.'); return; }
 
-    entries.push(entry);
-    Storage.save(entries);
+    if(!multiday){
+      if(!base.date){ alert('The shelf won’t hold unless you fill the date.'); return; }
+      base.reserve = Number((base.amount * (settings.reservePct/100)).toFixed(2));
+      base.net = Number((base.amount - base.reserve).toFixed(2));
+      entries.push(base);
+      Storage.save(entries);
+      await OutboundAdapter.send(base);
+      try{ window.parent?.postMessage({ type:'sparksoil-income-created', payload:base }, '*'); }catch{}
+    } else {
+      const startDate = fd.get('startDate');
+      const endDate = fd.get('endDate');
+      const split = (fd.get('splitEvenly')||'yes') === 'yes';
+      const mode = (fd.get('expandMode')||'summary');
+      if(!startDate || !endDate){ alert('Start and End dates are needed for multi-day jobs.'); return; }
+      const days = daysBetweenInclusive(startDate, endDate);
+      if(days <= 0){ alert('End date must be the same or after start date.'); return; }
+
+      if(mode === 'summary'){
+        const entry = {
+          ...base,
+          startDate, endDate, days, isRange:true
+        };
+        entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
+        entry.net = Number((entry.amount - entry.reserve).toFixed(2));
+        entries.push(entry);
+        Storage.save(entries);
+        await OutboundAdapter.send(entry);
+        try{ window.parent?.postMessage({ type:'sparksoil-income-created', payload:entry }, '*'); }catch{}
+      } else {
+        // expand into daily rows
+        if(split){
+          const parts = splitEven(base.amount, days);
+          for(let i=0;i<days;i++){
+            const dISO = isoAddDays(startDate, i);
+            const amt = parts[i];
+            const entry = {
+              ...base,
+              id: crypto.randomUUID(),
+              date: dISO,
+              amount: Number(amt.toFixed(2)),
+              startDate, endDate, days, isExpandedChild:true
+            };
+            entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
+            entry.net = Number((entry.amount - entry.reserve).toFixed(2));
+            entries.push(entry);
+            // Optional outbound per-day:
+            await OutboundAdapter.send(entry);
+            try{ window.parent?.postMessage({ type:'sparksoil-income-created', payload:entry }, '*'); }catch{}
+          }
+        } else {
+          // keep full amount on first day; zero on others
+          for(let i=0;i<days;i++){
+            const dISO = isoAddDays(startDate, i);
+            const amt = (i===0) ? base.amount : 0;
+            const entry = {
+              ...base,
+              id: crypto.randomUUID(),
+              date: dISO,
+              amount: Number(amt.toFixed(2)),
+              startDate, endDate, days, isExpandedChild:true
+            };
+            entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
+            entry.net = Number((entry.amount - entry.reserve).toFixed(2));
+            entries.push(entry);
+            await OutboundAdapter.send(entry);
+            try{ window.parent?.postMessage({ type:'sparksoil-income-created', payload:entry }, '*'); }catch{}
+          }
+        }
+        Storage.save(entries);
+      }
+    }
+
     render();
 
-    // Bridge to Swirl
-    try{ window.parent?.postMessage({ type:'sparksoil-income-created', payload:entry }, '*'); }catch{}
-
-    // Optional outbound webhook
-    await OutboundAdapter.send(entry);
-
+    // UX
     savedMsg.style.display='block';
     setTimeout(()=> savedMsg.style.display='none', 1400);
     form.reset();
     form.date.value = todayISO();
+    multiFields.style.display='none';
+    multiChoice.style.display='none';
+    document.getElementById('multiToggle').checked = false;
   });
 
   // Clear
