@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ron — Pet Job Income Ledger</title>
+<style>
+  :root{
+    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    --ink:#111111;              /* darker ink for readability */
+    --stone:#f5f5f4;            /* page bg */
+    --grain:#e7e5e4;            /* light ui */
+    --line:#d6d3d1;             /* borders */
+    --cedar:#374151;            /* button */
+    --moss:#365a3c;             /* accent */
+    --success-bg:#e7f5ec;
+    --success-bd:#b6e2c7;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e5e7eb; --stone:#0b0f14; --grain:#11151a; --line:#25313b; --cedar:#1f2937; --moss:#90c59e;
+      --success-bg:#0f1a14; --success-bd:#1b3b28;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--stone); color:var(--ink); font-family:var(--font); line-height:1.45;
+    background-image: linear-gradient(var(--stone),var(--stone)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"><path d="M0 70c30-25 60-25 90 0s60 25 90 0" fill="none" stroke="%23d6d3d1" stroke-opacity=".12" stroke-width="2"/></svg>');
+    background-blend-mode:multiply;
+  }
+  .wrap{max-width:980px; margin:24px auto; padding:0 16px}
+  .panel{position:relative; background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px}
+  .card{ background:#fff0; border:1px solid var(--line); border-radius:14px; padding:16px; }
+  h1{margin:0 0 6px; font-size:1.25rem; font-weight:700}
+  h2{margin:0 0 8px; font-size:1.05rem; font-weight:650}
+  p.muted{margin:0 0 10px; color:#6b7280; font-size:.93rem}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+  .row-4{display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:12px}
+  @media (max-width:760px){ .row,.row-3,.row-4{grid-template-columns:1fr} }
+  label{display:grid; gap:6px; font-size:.95rem}
+  input,select,textarea,button{font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink)}
+  input[type="date"]{padding:8px 10px}
+  textarea{min-height:70px; resize:vertical}
+  button.primary{background:var(--cedar); color:#fff; border:none; border-radius:12px; padding:12px 16px; cursor:pointer}
+  button.secondary{background:var(--grain)}
+  .actions{display:flex; gap:10px; flex-wrap:wrap}
+  .divider{height:1px; background:repeating-linear-gradient(90deg,var(--line),var(--line) 8px,transparent 8px,transparent 16px); margin:16px 0}
+  .pill{display:inline-block; padding:4px 10px; border-radius:999px; background:var(--grain); font-size:.85rem}
+  .inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .right{text-align:right}
+  .success{background:var(--success-bg); color:var(--moss); border:1px solid var(--success-bd); padding:8px 10px; border-radius:10px; display:none}
+  .bar{height:8px; border-radius:6px; background:var(--grain); overflow:hidden}
+  .fill{height:100%; background:var(--moss)}
+  table{width:100%; border-collapse:collapse; background:#fff}
+  th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
+  tfoot td{font-weight:600; border-top:2px solid var(--line)}
+  details.settings{margin:8px 0 0}
+  details.settings summary{cursor:pointer; user-select:none}
+  .quietline{border:none; height:1px; background:var(--line); opacity:.6; margin:6px 0 12px}
+  .footer{margin-top:10px; font-size:.9rem; color:#6b7280}
+  .toggle{display:flex; align-items:center; gap:8px}
+
+  /* Ron image by title */
+  .brand{display:flex; justify-content:space-between; align-items:flex-start; gap:12px}
+  .brand .title{min-width:0}
+  .brand-fig{flex:0 0 auto; width:92px; height:auto; opacity:.95}
+  @media (max-width:480px){ .brand-fig{width:74px} }
+
+  /* Quote block */
+  .quote-wrap{margin:.25rem 0 .5rem; position:relative}
+  .quote-main{font-size:1.05rem; font-weight:620; color:var(--ink)}
+  .quote-sub{font-size:.95rem; color:#6b7280; font-style:italic; margin-top:2px}
+  .quote-shimmer{
+    position:relative; height:2px; margin-top:6px; overflow:hidden; opacity:0;
+    background:linear-gradient(90deg, transparent, rgba(200,210,255,.7), transparent);
+  }
+  .quote-shimmer.on{opacity:1; animation:shimmerRun 900ms ease-out 1;}
+  @keyframes shimmerRun{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+  .quote-glimmer{
+    position:absolute; inset:auto 0 -6px 0; height:6px; pointer-events:none; opacity:0;
+    background:radial-gradient(ellipse at center, rgba(188,164,255,.55), rgba(188,164,255,0) 70%);
+    filter:blur(1px);
+  }
+  .quote-glimmer.on{opacity:1; animation:glimmerFade 1200ms ease-out 1;}
+  @keyframes glimmerFade{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+  .lucy .quote-main{font-weight:560}
+  .lucy .quote-sub{color:#5d6472}
+
+  /* Sparkles layer for Log action */
+  .panel{position:relative}
+  .spark-layer{position:absolute; inset:0; pointer-events:none; overflow:visible}
+  .spark{position:absolute; width:8px; height:8px; border-radius:999px; opacity:0; filter:blur(.2px)}
+  @keyframes sparklePop{
+    0%{transform:translate(0,0) scale(.6); opacity:0}
+    10%{opacity:1; transform:translate(var(--dx), var(--dy)) scale(1)}
+    70%{opacity:.9; transform:translate(calc(var(--dx)*3), calc(var(--dy)*3)) scale(.9)}
+    100%{opacity:0; transform:translate(calc(var(--dx)*4), calc(var(--dy)*4)) scale(.6)}
+  }
+  /* Ron palette (default) */
+  .spark.gold1{background:#f7d188; box-shadow:0 0 10px 2px #f7d18855}
+  .spark.gold2{background:#f3b84e; box-shadow:0 0 10px 2px #f3b84e55}
+  .spark.gold3{background:#ffe9a8; box-shadow:0 0 10px 2px #ffe9a855}
+  /* Lucy override palette */
+  .lucy .spark.gold1{background:#c4b5fd; box-shadow:0 0 12px 3px #c4b5fd55}
+  .lucy .spark.gold2{background:#93c5fd; box-shadow:0 0 12px 3px #93c5fd55}
+  .lucy .spark.gold3{background:#e5e7eb; box-shadow:0 0 12px 3px #e5e7eb77}
+
+  /* Lucy Mode background (no heavy veil) */
+  .lucy body, .lucy .wrap{letter-spacing:.2px}
+  .lucy h1, .lucy h2{font-weight:560}
+  .lucy body{
+    background:#f7f6fb url('Lucy-swirl.png') center/cover fixed no-repeat;
+    background-blend-mode:normal;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel" role="region" aria-label="Ron Ledger">
+    <div class="spark-layer" id="sparkLayer" aria-hidden="true"></div>
+
+    <div class="brand">
+      <div class="title">
+        <h1>Ron — Pet Job Income Ledger</h1>
+        <p class="muted">Straight lines. Quiet totals. Set aside what needs setting aside.</p>
+
+        <!-- Quotes Harmony -->
+        <div id="quoteWrap" class="quote-wrap" aria-live="polite">
+          <div id="quoteMain" class="quote-main"></div>
+          <div id="quoteSub"  class="quote-sub"></div>
+          <div id="quoteShimmer" class="quote-shimmer" aria-hidden="true"></div>
+          <div id="quoteGlimmer" class="quote-glimmer" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- Ron pairing image by title (transparent PNG recommended) -->
+      <img class="brand-fig" src="ron-board.png" alt="Ron holding a blank board">
+    </div>
+
+    <div class="inline" style="justify-content:space-between;margin-top:6px;">
+      <label class="toggle" title="Reduce visual noise for Lucy">
+        <input id="lucyToggle" type="checkbox"> Lucy Mode
+      </label>
+      <div class="inline">
+        <button class="secondary" type="button" id="exportJsonBtn">Backup (.json)</button>
+        <button class="secondary" type="button" id="exportCsvBtn">Backup (.csv)</button>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+        <button class="secondary" type="button" id="importBtn">Restore</button>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <details class="settings">
+      <summary><strong>Settings</strong> — Set-Aside % (Ron’s Jar)</summary>
+      <div class="row" style="margin-top:8px;">
+        <label>Set-Aside Percentage (% to reserve)
+          <input id="reservePct" type="number" step="0.1" min="0" max="100" placeholder="25">
+        </label>
+        <div class="inline" style="align-items:flex-end;">
+          <button id="saveSettings" type="button" class="secondary">Save</button>
+          <span class="muted">Used to compute “Set-Aside” and “Net”. Defaults to 25%.</span>
+        </div>
+      </div>
+    </details>
+
+    <hr class="quietline">
+
+    <!-- Form -->
+    <form id="entryForm" aria-describedby="savedMsg">
+      <div class="row">
+        <label>Date
+          <input type="date" name="date" required>
+        </label>
+        <label>Client
+          <input name="client" placeholder="Keely / Dexter / Witcher" required>
+        </label>
+      </div>
+
+      <div class="row-3">
+        <label>Service
+          <input name="service" placeholder="Drop-in / Overnight / Litter clean" required>
+        </label>
+        <label>Amount (USD)
+          <input type="number" step="0.01" name="amount" min="0" required placeholder="45.00">
+        </label>
+        <label>Payment Method
+          <select name="method" required>
+            <option value="Cash">Cash</option>
+            <option value="Venmo">Venmo</option>
+            <option value="Zelle">Zelle</option>
+            <option value="Card">Card</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="inline"><input type="checkbox" name="paid"> Mark as paid</label>
+        <label>Field Log
+          <input name="notes" placeholder="Council remarks, special care, etc.">
+        </label>
+      </div>
+
+      <!-- Multi-day toggle -->
+      <div class="row" style="align-items:end;">
+        <label class="inline"><input id="multiToggle" type="checkbox" name="multiday"> Multi-day job?</label>
+        <div class="muted">For house sitting or multi-day care.</div>
+      </div>
+
+      <!-- Multi-day fields -->
+      <div id="multiFields" class="row-3" style="display:none;">
+        <label>Start Date
+          <input type="date" name="startDate">
+        </label>
+        <label>End Date
+          <input type="date" name="endDate">
+        </label>
+        <label>Split evenly across days?
+          <select name="splitEvenly">
+            <option value="yes">Yes — divide total amount</option>
+            <option value="no">No — keep amount on first day</option>
+          </select>
+        </label>
+      </div>
+      <div id="multiChoice" class="row" style="display:none;">
+        <label>Destination mode
+          <select name="expandMode">
+            <option value="summary">One summary row (shows date range)</option>
+            <option value="expand">Auto-expand into daily rows</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="actions" style="margin-top:10px;">
+        <button class="primary" type="submit" aria-label="Save entry" id="logBtn">Log to Ledger</button>
+        <button class="secondary" type="button" id="clearBtn" aria-label="Clear form">Wipe Slate</button>
+      </div>
+      <p id="savedMsg" class="success" role="status" aria-live="polite">Logged. Ron set it on the shelf. 🪵</p>
+    </form>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <!-- Summaries -->
+    <div class="row">
+      <div>
+        <h2>This Season’s Stack</h2>
+        <div class="inline">
+          <span class="pill" id="monthLabel">Month</span>
+          <span class="pill">Logs: <span id="countMonth">0</span></span>
+          <span class="pill">Gross: $<span id="grossMonth">0.00</span></span>
+          <span class="pill">Set-Aside: $<span id="reserveMonth">0.00</span></span>
+          <span class="pill">Net: $<span id="netMonth">0.00</span></span>
+          <span class="pill">Paid: $<span id="paidMonth">0.00</span></span>
+          <span class="pill">Unpaid: $<span id="unpaidMonth">0.00</span></span>
+        </div>
+        <div class="bar" style="margin-top:10px;" aria-hidden="true"><div class="fill" id="paidBar" style="width:0%"></div></div>
+      </div>
+      <div class="right">
+        <h2>The Mountain’s Record</h2>
+        <div>Logs: <strong id="countAll">0</strong></div>
+        <div>Gross: <strong>$<span id="totalAll">0.00</span></strong></div>
+        <div>Set-Aside: <strong>$<span id="reserveAll">0.00</span></strong></div>
+        <div>Net: <strong>$<span id="netAll">0.00</span></strong></div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card" style="margin-top:10px; padding:10px;">
+      <div class="inline" style="justify-content:space-between; margin-bottom:6px;">
+        <strong>Ledger</strong>
+        <small class="muted">The mountain remembers.</small>
+      </div>
+      <div class="grid">
+        <table aria-label="Logged entries">
+          <thead>
+            <tr>
+              <th>Date / Range</th><th>Client</th><th>Service</th><th>Method</th>
+              <th class="right">Amount</th>
+              <th class="right">Set-Aside</th>
+              <th class="right">Net</th>
+              <th>Paid</th><th>Field Log</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">Totals</td>
+              <td class="right">$<span id="totalFoot">0.00</span></td>
+              <td class="right">$<span id="totalReserveFoot">0.00</span></td>
+              <td class="right">$<span id="totalNetFoot">0.00</span></td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">Emits <code>sparksoil-income-created</code> to the parent (for your Swirl). Set-Aside defaults to 25% unless changed.</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ---------- Keys ----------
+  const KEY = 'sparksoil_income_entries_v1';
+  const SETTINGS_KEY = 'sparksoil_income_settings_v1';
+  const LUCY_KEY = 'sparksoil_income_lucy_v1';
+  const QUOTE_COUNT_KEY = 'sparksoil_quote_count_v1';
+
+  // ---------- Storage ----------
+  const Storage = {
+    load(){ try{ return JSON.parse(localStorage.getItem(KEY))||[] }catch{ return [] } },
+    save(entries){ localStorage.setItem(KEY, JSON.stringify(entries)) }
+  };
+  const Settings = {
+    load(){ const def={reservePct:25}; try{ return {...def, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY))||{})} }catch{ return def } },
+    save(s){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) }
+  };
+
+  // ---------- Backup (download / restore) ----------
+  function downloadBlob(filename, text, type){
+    const blob = new Blob([text], {type});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+    setTimeout(()=> URL.revokeObjectURL(url), 1000);
+  }
+  function entriesToCSV(list){
+    if(!list?.length) return 'id,date,startDate,endDate,days,client,service,method,amount,paid,reservePct,notes\n';
+    const cols = ['id','date','startDate','endDate','days','client','service','method','amount','paid','reservePct','notes'];
+    const esc = s => (s==null?'':String(s).replace(/"/g,'""'));
+    const rows = list.map(e=> cols.map(c=> `"${esc(e[c])}"`).join(','));
+    return cols.join(',') + '\n' + rows.join('\n');
+  }
+
+  // ---------- DOM ----------
+  const $ = s=>document.querySelector(s);
+  const form = $('#entryForm');
+  const rows = $('#rows');
+  const savedMsg = $('#savedMsg');
+
+  const reservePctInput = $('#reservePct');
+  const saveSettingsBtn = $('#saveSettings');
+  const lucyToggle = $('#lucyToggle');
+  const multiToggle = $('#multiToggle');
+  const multiFields = $('#multiFields');
+  const multiChoice = $('#multiChoice');
+
+  const exportJsonBtn = $('#exportJsonBtn');
+  const exportCsvBtn  = $('#exportCsvBtn');
+  const importBtn     = $('#importBtn');
+  const importFile    = $('#importFile');
+
+  const logBtn = $('#logBtn');
+  const sparkLayer = $('#sparkLayer');
+
+  const monthLabel = $('#monthLabel');
+  const countMonth = $('#countMonth');
+  const grossMonth = $('#grossMonth');
+  const reserveMonth = $('#reserveMonth');
+  const netMonth = $('#netMonth');
+  const paidMonth = $('#paidMonth');
+  const unpaidMonth = $('#unpaidMonth');
+  const paidBar = $('#paidBar');
+
+  const countAll = $('#countAll');
+  const totalAll = $('#totalAll');
+  const reserveAll = $('#reserveAll');
+  const netAll = $('#netAll');
+
+  const totalFoot = $('#totalFoot');
+  const totalReserveFoot = $('#totalReserveFoot');
+  const totalNetFoot = $('#totalNetFoot');
+
+  // Quotes DOM
+  const quoteMain   = document.getElementById('quoteMain');
+  const quoteSub    = document.getElementById('quoteSub');
+  const quoteShimmer= document.getElementById('quoteShimmer');
+  const quoteGlimmer= document.getElementById('quoteGlimmer');
+
+  const fmtMoney = n => (Number(n||0)).toFixed(2);
+  const todayISO = () => new Date().toISOString().slice(0,10);
+  form.date.value = todayISO();
+
+  function escapeHtml(s=''){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
+
+  // ---------- State ----------
+  let entries = Storage.load().map(e=>({...e, amount:Number(e.amount)||0, paid:!!e.paid}));
+  let settings = Settings.load();
+
+  // ----- Quotes -----
+  const RON_QUOTES = [
+    "Consistency doesn’t need to be loud.",
+    "Stack the logs. That’s it.",
+    "I’m allergic to wasting effort.",
+    "Slow is smooth. Smooth is steady.",
+    "No.",
+    "Blink."
+  ];
+  const LUCY_QUOTES = [
+    "It still counts if it’s quiet.",
+    "Even rivers rest before the sea.",
+    "Soft is also strong.",
+    "One pebble is still a path.",
+    "You can count remembering."
+  ];
+  const LUCY_UNDERS = [
+    "Lucy said I could count remembering.",
+    "We can be gentle and still arrive.",
+    "Soft time still stacks."
+  ];
+  const RON_UNDERS = [
+    "Still counts.",
+    "Logged. Quiet is fine.",
+    "The mountain remembers."
+  ];
+  const getCount = ()=> Number(localStorage.getItem(QUOTE_COUNT_KEY)||0);
+  const bumpCount = ()=> localStorage.setItem(QUOTE_COUNT_KEY, String(getCount()+1));
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+  function showQuote(mode){
+    const n = getCount();
+    const crossover = (n % 4 === 3);
+    let main="", sub="", shimmer=false, glimmer=false;
+    if(mode==='lucy'){ main = pick(LUCY_QUOTES); if(crossover){ sub=pick(RON_UNDERS); glimmer=true; } }
+    else { main = pick(RON_QUOTES); if(crossover){ sub=pick(LUCY_UNDERS); shimmer=true; } }
+    quoteMain.textContent = main;
+    quoteSub.textContent = sub;
+    quoteShimmer.classList.remove('on');
+    quoteGlimmer.classList.remove('on');
+    if(shimmer){ void quoteShimmer.offsetWidth; quoteShimmer.classList.add('on'); }
+    if(glimmer){ void quoteGlimmer.offsetWidth; quoteGlimmer.classList.add('on'); }
+    bumpCount();
+  }
+
+  // Settings UI
+  reservePctInput.value = settings.reservePct;
+  saveSettingsBtn.addEventListener('click', ()=> {
+    const pct = Number(reservePctInput.value);
+    settings.reservePct = isNaN(pct)||pct<0 ? 0 : Math.min(100,pct);
+    Settings.save(settings);
+    render();
+  });
+
+  // Lucy mode (persisted) + initial quote
+  (function initLucy(){
+    const on = localStorage.getItem(LUCY_KEY)==='1';
+    lucyToggle.checked = on;
+    document.documentElement.classList.toggle('lucy', on);
+    showQuote(on ? 'lucy' : 'ron');
+    lucyToggle.addEventListener('change', ()=>{
+      const val = lucyToggle.checked;
+      document.documentElement.classList.toggle('lucy', val);
+      localStorage.setItem(LUCY_KEY, val ? '1' : '0');
+      showQuote(val ? 'lucy' : 'ron');
+    });
+  })();
+
+  // Multi-day toggle
+  multiToggle.addEventListener('change', ()=>{
+    const on = multiToggle.checked;
+    multiFields.style.display = on ? '' : 'none';
+    multiChoice.style.display = on ? '' : 'none';
+  });
+
+  // ---------- Helpers ----------
+  const monthKey = d => `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}`;
+  const currentMonthKey = () => monthKey(new Date());
+  const calcReserve = amt => (amt * (settings.reservePct/100));
+  const calcNet = amt => (amt - calcReserve(amt));
+
+  function daysBetweenInclusive(startISO, endISO){
+    const start = new Date(startISO+"T00:00:00");
+    const end = new Date(endISO+"T00:00:00");
+    const ms = end - start;
+    if(ms < 0) return 0;
+    return Math.floor(ms/86400000) + 1;
+  }
+  function isoAddDays(iso, i){
+    const d = new Date(iso+"T00:00:00");
+    d.setUTCDate(d.getUTCDate()+i);
+    return d.toISOString().slice(0,10);
+  }
+  function splitEven(amount, n){
+    const cents = Math.round(Number(amount)*100);
+    const base = Math.floor(cents / n);
+    let rem = cents - base*n;
+    const out = Array.from({length:n}, ()=> base);
+    for(let i=0;i<rem;i++) out[i] += 1;
+    return out.map(c => (c/100));
+  }
+  function entryMonthKey(e){
+    const iso = e.startDate ? e.startDate : e.date;
+    if(!iso || iso.length < 7) return '';
+    const d = new Date(iso+"T00:00:00");
+    return monthKey(d);
+  }
+
+  // ---------- Sparkles ----------
+  function burstSparkles(anchorEl){
+    if(!sparkLayer) return;
+    const rect = anchorEl?.getBoundingClientRect?.() || {left:0, top:0, width:0, height:0};
+    const hostRect = sparkLayer.getBoundingClientRect();
+    const centerX = (rect.left + rect.width*0.5) - hostRect.left;
+    const centerY = (rect.top  + rect.height*0.3) - hostRect.top;
+    const howMany = 16;
+    for(let i=0;i<howMany;i++){
+      const dot = document.createElement('div');
+      dot.className = 'spark ' + (i%3===0?'gold1':i%3===1?'gold2':'gold3');
+      const angle = (Math.random()*Math.PI*2);
+      const dist  = 24 + Math.random()*36;
+      const dx = Math.cos(angle)*dist + 'px';
+      const dy = Math.sin(angle)*dist + 'px';
+      dot.style.setProperty('--dx', dx);
+      dot.style.setProperty('--dy', dy);
+      dot.style.left = (centerX + (Math.random()*8-4)) + 'px';
+      dot.style.top  = (centerY + (Math.random()*6-3)) + 'px';
+      dot.style.animation = `sparklePop ${550+Math.random()*300}ms ease-out forwards`;
+      sparkLayer.appendChild(dot);
+      setTimeout(()=> dot.remove(), 1000);
+    }
+  }
+
+  // ---------- Render ----------
+  function render(){
+    rows.innerHTML = entries.map(e=>{
+      const reserve = calcReserve(e.amount);
+      const net = e.amount - reserve;
+      const dateCell = e.startDate ? `${e.startDate} – ${e.endDate}` : e.date;
+      return `<tr>
+        <td>${dateCell}</td>
+        <td>${escapeHtml(e.client)}</td>
+        <td>${escapeHtml(e.service)}</td>
+        <td>${escapeHtml(e.method)}</td>
+        <td class="right">${e.amount.toFixed(2)}</td>
+        <td class="right">${reserve.toFixed(2)}</td>
+        <td class="right">${net.toFixed(2)}</td>
+        <td>${e.paid ? 'Yes' : 'No'}</td>
+        <td>${escapeHtml(e.notes||'')}</td>
+      </tr>`;
+    }).join('');
+
+    const grossAll = entries.reduce((s,e)=>s+e.amount,0);
+    const reserveAllVal = entries.reduce((s,e)=>s+calcReserve(e.amount),0);
+    const netAllVal = grossAll - reserveAllVal;
+
+    countAll.textContent = entries.length;
+    totalAll.textContent = fmtMoney(grossAll);
+    reserveAll.textContent = fmtMoney(reserveAllVal);
+    netAll.textContent = fmtMoney(netAllVal);
+
+    totalFoot.textContent = fmtMoney(grossAll);
+    totalReserveFoot.textContent = fmtMoney(reserveAllVal);
+    totalNetFoot.textContent = fmtMoney(netAllVal);
+
+    const cmk = currentMonthKey();
+    const monthEntries = entries.filter(e=> entryMonthKey(e) === cmk);
+    const grossM = monthEntries.reduce((s,e)=>s+e.amount,0);
+    const reserveM = monthEntries.reduce((s,e)=>s+calcReserve(e.amount),0);
+    const netM = grossM - reserveM;
+    const paidM = monthEntries.filter(e=>e.paid).reduce((s,e)=>s+e.amount,0);
+    const unpaidM = grossM - paidM;
+
+    monthLabel.textContent = new Date().toLocaleString(undefined,{month:'long', year:'numeric'});
+    countMonth.textContent = monthEntries.length;
+    grossMonth.textContent = fmtMoney(grossM);
+    reserveMonth.textContent = fmtMoney(reserveM);
+    netMonth.textContent = fmtMoney(netM);
+    paidMonth.textContent = fmtMoney(paidM);
+    unpaidMonth.textContent = fmtMoney(unpaidM);
+
+    const pctPaid = grossM>0 ? Math.max(0,Math.min(100,(paidM/grossM)*100)) : 0;
+    paidBar.style.width = pctPaid.toFixed(0)+'%';
+  }
+
+  // ---------- Submit ----------
+  form.addEventListener('submit', async ev=>{
+    ev.preventDefault();
+    const fd = new FormData(form);
+    const multiday = !!fd.get('multiday');
+
+    const base = {
+      id: crypto.randomUUID(),
+      date: fd.get('date') || todayISO(),
+      client: (fd.get('client')||'').trim(),
+      service: (fd.get('service')||'').trim(),
+      amount: Number(fd.get('amount')||0),
+      method: fd.get('method') || 'Other',
+      paid: !!fd.get('paid'),
+      notes: (fd.get('notes')||'').trim(),
+      reservePct: settings.reservePct,
+    };
+
+    if(!base.client){ alert('Name the client so the log can stand.'); return; }
+
+    if(!multiday){
+      if(!base.date){ alert('The shelf won’t hold unless you fill the date.'); return; }
+      base.reserve = Number((base.amount * (settings.reservePct/100)).toFixed(2));
+      base.net = Number((base.amount - base.reserve).toFixed(2));
+      entries.push(base);
+      Storage.save(entries);
+    } else {
+      const startDate = fd.get('startDate');
+      const endDate = fd.get('endDate');
+      const split = (fd.get('splitEvenly')||'yes') === 'yes';
+      const mode = (fd.get('expandMode')||'summary');
+      if(!startDate || !endDate){ alert('Start and End dates are needed for multi-day jobs.'); return; }
+      const days = daysBetweenInclusive(startDate, endDate);
+      if(days <= 0){ alert('End date must be the same or after start date.'); return; }
+
+      if(mode === 'summary'){
+        const entry = {...base, startDate, endDate, days, isRange:true};
+        entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
+        entry.net = Number((entry.amount - entry.reserve).toFixed(2));
+        entries.push(entry);
+        Storage.save(entries);
+      } else {
+        if(split){
+          const parts = splitEven(base.amount, days);
+          for(let i=0;i<days;i++){
+            const dISO = isoAddDays(startDate, i);
+            const amt = parts[i];
+            const entry = {...base, id:crypto.randomUUID(), date:dISO, amount:Number(amt.toFixed(2)), startDate, endDate, days, isExpandedChild:true};
+            entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
+            entry.net = Number((entry.amount - entry.reserve).toFixed(2));
+            entries.push(entry);
+          }
+        } else {
+          for(let i=0;i<days;i++){
+            const dISO = isoAddDays(startDate, i);
+            const amt = (i===0) ? base.amount : 0;
+            const entry = {...base, id:crypto.randomUUID(), date:dISO, amount:Number(amt.toFixed(2)), startDate, endDate, days, isExpandedChild:true};
+            entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
+            entry.net = Number((entry.amount - entry.reserve).toFixed(2));
+            entries.push(entry);
+          }
+        }
+        Storage.save(entries);
+      }
+    }
+
+    render();
+
+    // sparkle + new quote
+    burstSparkles(logBtn);
+    showQuote(lucyToggle.checked ? 'lucy' : 'ron');
+
+    // UX
+    savedMsg.style.display='block';
+    setTimeout(()=> savedMsg.style.display='none', 1200);
+    form.reset();
+    form.date.value = todayISO();
+    multiFields.style.display='none';
+    multiChoice.style.display='none';
+    document.getElementById('multiToggle').checked = false;
+  });
+
+  // Clear
+  $('#clearBtn').addEventListener('click', ()=> form.reset());
+
+  // Backup buttons
+  exportJsonBtn.addEventListener('click', ()=>{
+    const stamp = new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');
+    downloadBlob(`ron-ledger-${stamp}.json`, JSON.stringify(entries, null, 2), 'application/json');
+  });
+  exportCsvBtn.addEventListener('click', ()=>{
+    const stamp = new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');
+    downloadBlob(`ron-ledger-${stamp}.csv`, entriesToCSV(entries), 'text/csv');
+  });
+  importBtn.addEventListener('click', ()=> importFile.click());
+  importFile.addEventListener('change', async ()=>{
+    const file = importFile.files[0]; if(!file) return;
+    try{
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if(!Array.isArray(data)) throw new Error('Not a ledger JSON file');
+      const have = new Set(entries.map(e=>e.id));
+      const merged = [...entries]; for(const e of data){ if(!have.has(e.id)) merged.push(e); }
+      entries = merged; Storage.save(entries); render();
+      alert('Restore complete. The mountain added the extra logs.');
+    }catch(err){ alert('Restore failed: ' + err.message); }
+    finally{ importFile.value=''; }
+  });
+
+  // Initial render
+  render();
+})();
+</script>
+</body>
+</html>
