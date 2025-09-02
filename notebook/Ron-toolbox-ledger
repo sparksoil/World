@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ron — Pet Job Income Ledger</title>
+<style>
+  :root{
+    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    --ink: #111111;         /* darker ink for readability */
+    --stone: #f5f5f4;       /* stone-100 */
+    --grain: #e7e5e4;       /* stone-200 */
+    --line: #d6d3d1;        /* stone-300 */
+    --cedar: #374151;       /* slate-700 (buttons) */
+    --moss: #365a3c;        /* income accent */
+    --terracotta: #b46363;  /* expense accent (soft) */
+    --success-bg:#e7f5ec;   /* quiet success */
+    --success-bd:#b6e2c7;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#f2f3f5; --stone:#0b0f14; --grain:#11151a; --line:#25313b; --cedar:#1f2937; --moss:#90c59e;
+      --terracotta:#d08a8a; --success-bg:#0f1a14; --success-bd:#1b3b28;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--stone); color:var(--ink); font-family:var(--font); line-height:1.45;
+    /* subtle woodgrain */
+    background-image: linear-gradient(var(--stone),var(--stone)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"><path d="M0 70c30-25 60-25 90 0s60 25 90 0" fill="none" stroke="%23d6d3d1" stroke-opacity=".12" stroke-width="2"/></svg>');
+    background-blend-mode: multiply;
+  }
+  .wrap{max-width:980px; margin:24px auto; padding:0 16px}
+  .panel{
+    background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px;
+  }
+  .card{ background:#fff0; border:1px solid var(--line); border-radius:14px; padding:16px; }
+  h1{margin:0 0 6px; font-size:1.25rem; font-weight:700}
+  h2{margin:0 0 8px; font-size:1.05rem; font-weight:650}
+  p.muted{margin:0 0 10px; color:#3a3f46; font-size:.93rem}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+  .row-4{display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:12px}
+  @media (max-width:900px){ .row,.row-3,.row-4{grid-template-columns:1fr} }
+  label{display:grid; gap:6px; font-size:.95rem}
+  input,select,textarea,button{
+    font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);
+  }
+  input[type="date"]{padding:8px 10px}
+  textarea{min-height:70px; resize:vertical}
+  button.primary{background:var(--cedar); color:#fff; border:none; border-radius:12px; padding:12px 16px; cursor:pointer}
+  button.secondary{background:var(--grain)}
+  .actions{display:flex; gap:10px; flex-wrap:wrap}
+  .divider{height:1px; background:repeating-linear-gradient(90deg,var(--line),var(--line) 8px,transparent 8px,transparent 16px); margin:16px 0}
+  .pill{display:inline-block; padding:4px 10px; border-radius:999px; background:var(--grain); font-size:.85rem}
+  .inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .right{text-align:right}
+  .success{background:var(--success-bg); color:var(--moss); border:1px solid var(--success-bd); padding:8px 10px; border-radius:10px; display:none}
+  .bar{height:8px; border-radius:6px; background:var(--grain); overflow:hidden}
+  .fill{height:100%; background:var(--moss)}
+  table{width:100%; border-collapse:collapse; background:#fff}
+  th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem; vertical-align:top}
+  tfoot td{font-weight:700; border-top:2px solid var(--line)}
+  details.settings{margin:8px 0 0}
+  details.settings summary{cursor:pointer; user-select:none}
+  .quietline{border:none; height:1px; background:var(--line); opacity:.6; margin:6px 0 12px}
+  .footer{margin-top:10px; font-size:.9rem; color:#3a3f46}
+  .toggle{display:flex; align-items:center; gap:8px}
+
+  /* Amount coloring */
+  .amt-income{ color: var(--moss); font-weight:600 }
+  .amt-expense{ color: var(--terracotta); font-weight:600 }
+
+  /* Lucy Mode — NO veil, background shows clearly; keep text dark */
+  .lucy body, .lucy .wrap{letter-spacing:.2px}
+  .lucy .inline .pill{display:none}
+  .lucy .bar{display:none}
+  .lucy .actions{gap:6px}
+  .lucy h1, .lucy h2{font-weight:620}
+  .lucy body{
+    background: #f4f3fb url('Lucy-swirl.png') center/cover fixed no-repeat;
+    background-blend-mode: normal;
+  }
+  /* keep panels readable with hairline borders, no white wash */
+  .lucy .panel, .lucy .card, .lucy table{
+    background: transparent;
+    border-color: rgba(0,0,0,0.06);
+  }
+  .lucy th, .lucy td { border-bottom-color: rgba(0,0,0,0.06); }
+  .lucy .divider, .lucy .quietline { background: rgba(0,0,0,0.06); }
+  .lucy input, .lucy select, .lucy textarea { background: rgba(255,255,255,0.85); color: var(--ink); }
+  .lucy .fill{ background:#8aa1c7; }
+  .lucy .success{ background:rgba(209,230,247,.55); border-color:rgba(159,197,232,.7); color:#233244 }
+  .lucy button.primary{ background:#4b5563 }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel" role="region" aria-label="Ron Ledger">
+    <div class="inline" style="justify-content:space-between">
+      <div>
+        <h1>Ron — Pet Job Income Ledger</h1>
+        <p class="muted">Straight lines. Quiet totals. Set aside what needs setting aside.</p>
+      </div>
+      <label class="toggle" title="Reduce visual noise for Lucy">
+        <input id="lucyToggle" type="checkbox"> Lucy Mode
+      </label>
+    </div>
+
+    <!-- Settings -->
+    <details class="settings">
+      <summary><strong>Settings</strong> — Set-Aside % (Ron’s Jar)</summary>
+      <div class="row" style="margin-top:8px;">
+        <label>Set-Aside Percentage (% to reserve)
+          <input id="reservePct" type="number" step="0.1" min="0" max="100" placeholder="25">
+        </label>
+        <label>Rover Fee % (for auto expense)
+          <input id="roverPct" type="number" step="0.1" min="0" max="100" placeholder="20">
+        </label>
+        <div class="inline" style="align-items:flex-end;">
+          <button id="saveSettings" type="button" class="secondary">Save</button>
+          <span class="muted">Tax jar default 25%. Rover fee default 20%.</span>
+        </div>
+      </div>
+    </details>
+
+    <hr class="quietline">
+
+    <!-- Form -->
+    <form id="entryForm" aria-describedby="savedMsg">
+      <div class="row-3">
+        <label>Date
+          <input type="date" name="date" required>
+        </label>
+        <label>Client
+          <input name="client" placeholder="Keely / Dexter / Witcher" required>
+        </label>
+        <label>Category
+          <select name="category" required>
+            <option value="Income" selected>Income</option>
+            <option value="Expense">Expense</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="row-3">
+        <label>Service / Description
+          <input name="service" placeholder="Drop-in / Overnight / Litter / Rover fee / Supplies" required>
+        </label>
+        <label>Amount (USD)
+          <input type="number" step="0.01" name="amount" min="0" required placeholder="45.00">
+        </label>
+        <label>Payment Method
+          <select name="method" required>
+            <option value="Cash">Cash</option>
+            <option value="Venmo">Venmo</option>
+            <option value="Zelle">Zelle</option>
+            <option value="Card">Card</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="row-3">
+        <label>Platform
+          <select name="platform" required>
+            <option value="Direct" selected>Direct</option>
+            <option value="Rover">Rover</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label class="inline"><input type="checkbox" name="paid"> Mark as paid</label>
+        <label>Field Log
+          <input name="notes" placeholder="Council remarks, special care, etc.">
+        </label>
+      </div>
+
+      <!-- Multi-day toggle (for Income jobs) -->
+      <div class="row" style="align-items:end;">
+        <label class="inline"><input id="multiToggle" type="checkbox" name="multiday"> Multi-day job?</label>
+        <div class="muted">For house sitting or multi-day care (Income only).</div>
+      </div>
+
+      <!-- Multi-day fields (hidden until toggled) -->
+      <div id="multiFields" class="row-3" style="display:none;">
+        <label>Start Date
+          <input type="date" name="startDate">
+        </label>
+        <label>End Date
+          <input type="date" name="endDate">
+        </label>
+        <label>Split evenly across days?
+          <select name="splitEvenly">
+            <option value="yes">Yes — divide total amount</option>
+            <option value="no">No — keep amount on first day</option>
+          </select>
+        </label>
+      </div>
+      <div id="multiChoice" class="row" style="display:none;">
+        <label>Destination mode
+          <select name="expandMode">
+            <option value="summary">One summary row (shows date range)</option>
+            <option value="expand">Auto-expand into daily rows</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="actions" style="margin-top:10px;">
+        <button class="primary" type="submit" aria-label="Save entry">Log to Ledger</button>
+        <button class="secondary" type="button" id="clearBtn" aria-label="Clear form">Wipe Slate</button>
+      </div>
+      <p id="savedMsg" class="success" role="status" aria-live="polite">Logged. Ron set it on the shelf. 🪵</p>
+    </form>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <!-- Summaries -->
+    <div class="row">
+      <div>
+        <h2>This Season’s Stack</h2>
+        <div class="inline">
+          <span class="pill" id="monthLabel">Month</span>
+          <span class="pill">Logs: <span id="countMonth">0</span></span>
+          <span class="pill">Gross Income: $<span id="grossMonth">0.00</span></span>
+          <span class="pill">Expenses: $<span id="expMonth">0.00</span></span>
+          <span class="pill">Net After Exp: $<span id="netMonth">0.00</span></span>
+          <span class="pill">Tax Set-Aside: $<span id="reserveMonth">0.00</span></span>
+        </div>
+        <div class="bar" style="margin-top:10px;" aria-hidden="true"><div class="fill" id="paidBar" style="width:0%"></div></div>
+      </div>
+      <div class="right">
+        <h2>The Mountain’s Record</h2>
+        <div>Logs: <strong id="countAll">0</strong></div>
+        <div>Gross Income: <strong>$<span id="totalIncome">0.00</span></strong></div>
+        <div>Expenses: <strong>$<span id="totalExpense">0.00</span></strong></div>
+        <div>Net After Expenses: <strong>$<span id="totalNetAfter">0.00</span></strong></div>
+        <div>Tax Set-Aside: <strong>$<span id="reserveAll">0.00</span></strong></div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card" style="margin-top:10px; padding:10px;">
+      <div class="inline" style="justify-content:space-between; margin-bottom:6px;">
+        <strong>Ledger</strong>
+        <small class="muted">The mountain remembers.</small>
+      </div>
+      <div class="grid">
+        <table aria-label="Logged entries">
+          <thead>
+            <tr>
+              <th>Date / Range</th><th>Client</th><th>Category</th><th>Service</th>
+              <th>Platform</th><th>Method</th>
+              <th class="right">Amount</th>
+              <th class="right">Set-Aside</th>
+              <th class="right">Net</th>
+              <th>Paid</th><th>Field Log</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="6">Totals</td>
+              <td class="right">$<span id="totalFoot">0.00</span></td>
+              <td class="right">$<span id="totalReserveFoot">0.00</span></td>
+              <td class="right">$<span id="totalNetFoot">0.00</span></td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">
+      🦦 Little Nudge: Tides come four times a year — <strong>Apr 15 • Jun 15 • Sep 15 • Jan 15</strong>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ---------- Keys ----------
+  const KEY = 'sparksoil_income_entries_v2';
+  const SETTINGS_KEY = 'sparksoil_income_settings_v2';
+  const LUCY_KEY = 'sparksoil_income_lucy_v1';
+
+  // ---------- Storage ----------
+  const Storage = {
+    load(){ try{ return JSON.parse(localStorage.getItem(KEY))||[] }catch{ return [] } },
+    save(entries){ localStorage.setItem(KEY, JSON.stringify(entries)) }
+  };
+  const Settings = {
+    load(){
+      const def={reservePct:25, roverPct:20};
+      try{ return {...def, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY))||{})} }catch{ return def }
+    },
+    save(s){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) }
+  };
+
+  // ---------- DOM ----------
+  const $ = s=>document.querySelector(s);
+  const form = $('#entryForm');
+  const rows = $('#rows');
+  const savedMsg = $('#savedMsg');
+
+  const reservePctInput = $('#reservePct');
+  const roverPctInput = $('#roverPct');
+  const saveSettingsBtn = $('#saveSettings');
+  const lucyToggle = $('#lucyToggle');
+  const multiToggle = $('#multiToggle');
+  const multiFields = $('#multiFields');
+  const multiChoice = $('#multiChoice');
+
+  const monthLabel = $('#monthLabel');
+  const countMonth = $('#countMonth');
+  const grossMonth = $('#grossMonth');
+  const expMonth = $('#expMonth');
+  const reserveMonth = $('#reserveMonth');
+  const netMonth = $('#netMonth');
+  const paidBar = $('#paidBar');
+
+  const countAll = $('#countAll');
+  const totalIncome = $('#totalIncome');
+  const totalExpense = $('#totalExpense');
+  const totalNetAfter = $('#totalNetAfter');
+  const reserveAll = $('#reserveAll');
+
+  const totalFoot = $('#totalFoot');
+  const totalReserveFoot = $('#totalReserveFoot');
+  const totalNetFoot = $('#totalNetFoot');
+
+  const fmtMoney = n => (Number(n||0)).toFixed(2);
+  const todayISO = () => new Date().toISOString().slice(0,10);
+  form.date.value = todayISO();
+
+  function escapeHtml(s=''){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
+
+  // ---------- State ----------
+  let entries = Storage.load().map(e=>({...e, amount:Number(e.amount)||0, paid:!!e.paid}));
+  let settings = Settings.load();
+
+  // Settings UI
+  reservePctInput.value = settings.reservePct;
+  roverPctInput.value = settings.roverPct;
+  saveSettingsBtn.addEventListener('click', ()=> {
+    const rpct = Number(reservePctInput.value);
+    const fpct = Number(roverPctInput.value);
+    settings.reservePct = isNaN(rpct)||rpct<0 ? 0 : Math.min(100,rpct);
+    settings.roverPct = isNaN(fpct)||fpct<0 ? 0 : Math.min(100,fpct);
+    Settings.save(settings);
+    render();
+  });
+
+  // Lucy mode (persisted)
+  (function initLucy(){
+    const on = localStorage.getItem(LUCY_KEY)==='1';
+    lucyToggle.checked = on;
+    document.documentElement.classList.toggle('lucy', on);
+    lucyToggle.addEventListener('change', ()=>{
+      const val = lucyToggle.checked;
+      document.documentElement.classList.toggle('lucy', val);
+      localStorage.setItem(LUCY_KEY, val ? '1' : '0');
+    });
+  })();
+
+  // Multi-day toggle (Income only)
+  multiToggle.addEventListener('change', ()=>{
+    const on = multiToggle.checked;
+    multiFields.style.display = on ? '' : 'none';
+    multiChoice.style.display = on ? '' : 'none';
+  });
+
+  // ---------- Helpers ----------
+  const monthKey = d => `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}`;
+  const currentMonthKey = () => monthKey(new Date());
+  const calcReserve = amt => (amt * (settings.reservePct/100));
+
+  function daysBetweenInclusive(startISO, endISO){
+    const start = new Date(startISO+"T00:00:00");
+    const end = new Date(endISO+"T00:00:00");
+    const ms = end - start;
+    if(ms < 0) return 0;
+    return Math.floor(ms/86400000) + 1;
+  }
+  function isoAddDays(iso, i){
+    const d = new Date(iso+"T00:00:00");
+    d.setUTCDate(d.getUTCDate()+i);
+    return d.toISOString().slice(0,10);
+  }
+  function splitEven(amount, n){
+    const cents = Math.round(Number(amount)*100);
+    const base = Math.floor(cents / n);
+    let rem = cents - base*n;
+    const out = Array.from({length:n}, ()=> base);
+    for(let i=0;i<rem;i++) out[i] += 1;
+    return out.map(c => (c/100));
+  }
+  function entryMonthKey(e){
+    const iso = e.startDate ? e.startDate : e.date;
+    if(!iso || iso.length < 7) return '';
+    const d = new Date(iso+"T00:00:00");
+    return monthKey(d);
+  }
+
+  // ---------- Render ----------
+  function render(){
+    rows.innerHTML = entries.map(e=>{
+      const isIncome = (e.category||'Income') === 'Income';
+      const reserve = isIncome ? calcReserve(e.amount) : 0;
+      const net = isIncome ? (e.amount - reserve) : -e.amount;
+      const dateCell = e.startDate ? `${e.startDate} – ${e.endDate}` : e.date;
+      const amtClass = isIncome ? 'amt-income' : 'amt-expense';
+      const shownAmount = isIncome ? e.amount : -e.amount; // show negative for expenses
+      return `<tr>
+        <td>${dateCell||''}</td>
+        <td>${escapeHtml(e.client||'')}</td>
+        <td>${escapeHtml(e.category||'Income')}</td>
+        <td>${escapeHtml(e.service||'')}</td>
+        <td>${escapeHtml(e.platform||'Direct')}</td>
+        <td>${escapeHtml(e.method||'')}</td>
+        <td class="right ${amtClass}">${shownAmount.toFixed(2)}</td>
+        <td class="right">${reserve.toFixed(2)}</td>
+        <td class="right">${net.toFixed(2)}</td>
+        <td>${e.paid ? 'Yes' : 'No'}</td>
+        <td>${escapeHtml(e.notes||'')}</td>
+      </tr>`;
+    }).join('');
+
+    // Totals
+    const incomeEntries = entries.filter(e=> (e.category||'Income')==='Income');
+    const expenseEntries = entries.filter(e=> (e.category||'Income')==='Expense');
+
+    const grossIncome = incomeEntries.reduce((s,e)=> s+e.amount, 0);
+    const expenses = expenseEntries.reduce((s,e)=> s+e.amount, 0);
+    const taxReserveAll = incomeEntries.reduce((s,e)=> s+calcReserve(e.amount), 0);
+    const netAfter = grossIncome - expenses;
+
+    // All-time
+    countAll.textContent = entries.length;
+    totalIncome.textContent = fmtMoney(grossIncome);
+    totalExpense.textContent = fmtMoney(expenses);
+    totalNetAfter.textContent = fmtMoney(netAfter);
+    reserveAll.textContent = fmtMoney(taxReserveAll);
+
+    // Table foot (amount/reserve/net)
+    const totalAmountForFoot = grossIncome - expenses; // mirrors signed amount column
+    const totalReserveFootVal = taxReserveAll;
+    const totalNetFootVal = netAfter - taxReserveAll;
+
+    totalFoot.textContent = fmtMoney(totalAmountForFoot);
+    totalReserveFoot.textContent = fmtMoney(totalReserveFootVal);
+    totalNetFoot.textContent = fmtMoney(totalNetFootVal);
+
+    // Month
+    const cmk = currentMonthKey();
+    const monthEntries = entries.filter(e=> entryMonthKey(e) === cmk);
+    const monthIncome = monthEntries.filter(e=> (e.category||'Income')==='Income');
+    const monthExpense = monthEntries.filter(e=> (e.category||'Income')==='Expense');
+
+    const grossM = monthIncome.reduce((s,e)=>s+e.amount,0);
+    const expM = monthExpense.reduce((s,e)=>s+e.amount,0);
+    const reserveM = monthIncome.reduce((s,e)=>s+calcReserve(e.amount),0);
+    const netM = grossM - expM;
+
+    monthLabel.textContent = new Date().toLocaleString(undefined,{month:'long', year:'numeric'});
+    countMonth.textContent = monthEntries.length;
+    grossMonth.textContent = fmtMoney(grossM);
+    expMonth.textContent = fmtMoney(expM);
+    reserveMonth.textContent = fmtMoney(reserveM);
+    netMonth.textContent = fmtMoney(netM);
+
+    const paidM = monthIncome.filter(e=>e.paid).reduce((s,e)=>s+e.amount,0);
+    const pctPaid = grossM>0 ? Math.max(0,Math.min(100,(paidM/grossM)*100)) : 0;
+    paidBar.style.width = pctPaid.toFixed(0)+'%';
+  }
+
+  // Submit
+  form.addEventListener('submit', async ev=>{
+    ev.preventDefault();
+    const fd = new FormData(form);
+    const category = (fd.get('category')||'Income');
+    const platform = (fd.get('platform')||'Direct');
+    const multiday = !!fd.get('multiday');
+
+    const base = {
+      id: crypto.randomUUID(),
+      date: fd.get('date') || todayISO(),
+      client: (fd.get('client')||'').trim(),
+      service: (fd.get('service')||'').trim(),
+      amount: Number(fd.get('amount')||0),
+      method: fd.get('method') || 'Other',
+      platform,
+      category,
+      paid: !!fd.get('paid'),
+      notes: (fd.get('notes')||'').trim(),
+      reservePct: settings.reservePct,
+    };
+
+    // Basic validation
+    if(!base.client){ alert('Name the client so the log can stand.'); return; }
+    if(base.amount < 0){ alert('Use positive numbers. Expenses are handled automatically as negative in the table.'); return; }
+
+    const pushEntry = (entry)=>{ entries.push(entry); };
+
+    // CATEGORY: Expense (simple, no multi-day)
+    if(category === 'Expense'){
+      const entry = {...base};
+      // No reserve on expenses; show as negative in table only.
+      pushEntry(entry);
+      Storage.save(entries);
+      render();
+      savedMsg.style.display='block';
+      setTimeout(()=> savedMsg.style.display='none', 1200);
+      form.reset(); form.date.value = todayISO();
+      return;
+    }
+
+    // CATEGORY: Income
+    if(!multiday){
+      // single-day income
+      const entry = {...base};
+      pushEntry(entry);
+
+      // Auto Rover Fee Expense
+      if(platform === 'Rover' && settings.roverPct > 0 && base.amount > 0){
+        const feeAmt = Number((base.amount * (settings.roverPct/100)).toFixed(2));
+        const fee = {
+          id: crypto.randomUUID(),
+          date: base.date,
+          client: base.client,
+          service: 'Rover platform fee',
+          amount: feeAmt,
+          method: base.method,
+          platform: 'Rover',
+          category: 'Expense',
+          paid: true,
+          notes: 'Auto-logged by Ron',
+          reservePct: settings.reservePct
+        };
+        pushEntry(fee);
+      }
+
+    } else {
+      // multi-day income
+      const startDate = fd.get('startDate');
+      const endDate = fd.get('endDate');
+      const split = (fd.get('splitEvenly')||'yes') === 'yes';
+      const mode = (fd.get('expandMode')||'summary');
+      if(!startDate || !endDate){ alert('Start and End dates are needed for multi-day jobs.'); return; }
+      const days = daysBetweenInclusive(startDate, endDate);
+      if(days <= 0){ alert('End date must be the same or after start date.'); return; }
+
+      if(mode === 'summary'){
+        const entry = { ...base, startDate, endDate, days, isRange:true };
+        pushEntry(entry);
+
+        if(platform === 'Rover' && settings.roverPct > 0 && base.amount > 0){
+          const feeAmt = Number((base.amount * (settings.roverPct/100)).toFixed(2));
+          const fee = {
+            id: crypto.randomUUID(),
+            date: startDate,
+            client: base.client,
+            service: 'Rover platform fee (range)',
+            amount: feeAmt,
+            method: base.method,
+            platform: 'Rover',
+            category: 'Expense',
+            paid: true,
+            notes: `Auto-logged by Ron (${startDate}–${endDate})`,
+            reservePct: settings.reservePct
+          };
+          pushEntry(fee);
+        }
+
+      } else {
+        // expand into daily rows
+        if(split){
+          const parts = splitEven(base.amount, days);
+          for(let i=0;i<days;i++){
+            const dISO = isoAddDays(startDate, i);
+            const entry = { ...base, id: crypto.randomUUID(), date: dISO, amount: Number(parts[i].toFixed(2)), startDate, endDate, days, isExpandedChild:true };
+            pushEntry(entry);
+          }
+        } else {
+          for(let i=0;i<days;i++){
+            const dISO = isoAddDays(startDate, i);
+            const amt = (i===0) ? base.amount : 0;
+            const entry = { ...base, id: crypto.randomUUID(), date: dISO, amount: Number(amt.toFixed(2)), startDate, endDate, days, isExpandedChild:true };
+            pushEntry(entry);
+          }
+        }
+        // One Rover fee for the whole job
+        if(platform === 'Rover' && settings.roverPct > 0 && base.amount > 0){
+          const feeAmt = Number((base.amount * (settings.roverPct/100)).toFixed(2));
+          const fee = {
+            id: crypto.randomUUID(),
+            date: startDate,
+            client: base.client,
+            service: 'Rover platform fee (expanded)',
+            amount: feeAmt,
+            method: base.method,
+            platform: 'Rover',
+            category: 'Expense',
+            paid: true,
+            notes: `Auto-logged by Ron (${startDate}–${endDate})`,
+            reservePct: settings.reservePct
+          };
+          pushEntry(fee);
+        }
+      }
+    }
+
+    Storage.save(entries);
+    render();
+
+    // UX
+    savedMsg.style.display='block';
+    setTimeout(()=> savedMsg.style.display='none', 1200);
+    form.reset();
+    form.date.value = todayISO();
+    multiFields.style.display='none';
+    multiChoice.style.display='none';
+    document.getElementById('multiToggle').checked = false;
+  });
+
+  // Clear
+  document.getElementById('clearBtn').addEventListener('click', ()=> form.reset());
+
+  // Initial render
+  render();
+})();
+</script>
+</body>
+</html>
