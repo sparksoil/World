@@ -1,0 +1,246 @@
+Got it, Brookie 🪵✨ — here’s the full updated Ron-toolbox-ledger.html with your Soft-Ron Harmony quotes, sparkle glimmers when you log, backup download button for Ron’s peace of mind, and Ron’s image set to ron-board.PNG (case-sensitive so it should match your GitHub upload).
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ron — Pet Job Income Ledger</title>
+<style>
+  :root{
+    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    --ink:#111111; --stone:#f5f5f4; --grain:#e7e5e4; --line:#d6d3d1;
+    --cedar:#374151; --moss:#365a3c;
+    --success-bg:#e7f5ec; --success-bd:#b6e2c7;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e5e7eb; --stone:#0b0f14; --grain:#11151a; --line:#25313b;
+      --cedar:#1f2937; --moss:#90c59e;
+      --success-bg:#0f1a14; --success-bd:#1b3b28;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--stone); color:var(--ink);
+    font-family:var(--font); line-height:1.45;
+    background-image: linear-gradient(var(--stone),var(--stone)),
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"><path d="M0 70c30-25 60-25 90 0s60 25 90 0" fill="none" stroke="%23d6d3d1" stroke-opacity=".12" stroke-width="2"/></svg>');
+    background-blend-mode: multiply;
+  }
+  .wrap{max-width:980px; margin:24px auto; padding:0 16px}
+  .panel{background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px}
+  .card{background:#fff0; border:1px solid var(--line); border-radius:14px; padding:16px}
+  h1{margin:0 0 6px; font-size:1.25rem; font-weight:650; display:flex; align-items:center; gap:8px}
+  h2{margin:0 0 8px; font-size:1.05rem; font-weight:650}
+  p.muted{margin:0 0 10px; color:#6b7280; font-size:.93rem}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+  .row-4{display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:12px}
+  @media (max-width:760px){.row,.row-3,.row-4{grid-template-columns:1fr}}
+  label{display:grid; gap:6px; font-size:.95rem}
+  input,select,textarea,button{
+    font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
+    background:#fff; color:var(--ink);
+  }
+  button.primary{background:var(--cedar); color:#fff; border:none; border-radius:12px; padding:12px 16px; cursor:pointer}
+  button.secondary{background:var(--grain)}
+  .actions{display:flex; gap:10px; flex-wrap:wrap}
+  .pill{display:inline-block; padding:4px 10px; border-radius:999px; background:var(--grain); font-size:.85rem}
+  .inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .right{text-align:right}
+  .success{background:var(--success-bg); color:var(--moss); border:1px solid var(--success-bd);
+    padding:8px 10px; border-radius:10px; display:none}
+  table{width:100%; border-collapse:collapse; background:#fff}
+  th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
+  tfoot td{font-weight:600; border-top:2px solid var(--line)}
+  .footer{margin-top:10px; font-size:.9rem; color:#6b7280}
+  .toggle{display:flex; align-items:center; gap:8px}
+
+  /* Quotes */
+  .quote-wrap{margin:.5rem 0}
+  .quote-main{font-size:1.05rem; font-weight:620; color:var(--ink)}
+  .quote-sub{font-size:.95rem; color:#6b7280; font-style:italic; margin-top:2px}
+  .quote-shimmer{height:2px; margin-top:6px; overflow:hidden; opacity:0;
+    background:linear-gradient(90deg, transparent, rgba(200,210,255,.7), transparent)}
+  .quote-shimmer.on{opacity:1; animation:shimmerRun 900ms ease-out 1}
+  @keyframes shimmerRun{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+  .quote-glimmer{height:6px; opacity:0;
+    background:radial-gradient(ellipse at center, rgba(188,164,255,.55), rgba(188,164,255,0) 70%);
+    filter:blur(1px)}
+  .quote-glimmer.on{opacity:1; animation:glimmerFade 1200ms ease-out 1}
+  @keyframes glimmerFade{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+  .lucy .quote-main{font-weight:560}
+  .lucy .quote-sub{color:#5d6472}
+
+  /* Sparkle effect when logging */
+  .sparkle{position:fixed; pointer-events:none; font-size:18px; animation:sparkleUp 1.2s ease-out forwards}
+  @keyframes sparkleUp{
+    0%{opacity:1; transform:translateY(0) scale(1)}
+    100%{opacity:0; transform:translateY(-40px) scale(.6)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel" role="region" aria-label="Ron Ledger">
+    <div class="inline" style="justify-content:space-between">
+      <div>
+        <h1>
+          <img src="ron-board.PNG" alt="Ron holding board" style="height:48px">
+          Ron — Pet Job Income Ledger
+        </h1>
+        <p class="muted">Straight lines. Quiet totals. Set aside what needs setting aside.</p>
+        <div id="quoteWrap" class="quote-wrap" aria-live="polite">
+          <div id="quoteMain" class="quote-main"></div>
+          <div id="quoteSub" class="quote-sub"></div>
+          <div id="quoteShimmer" class="quote-shimmer"></div>
+          <div id="quoteGlimmer" class="quote-glimmer"></div>
+        </div>
+      </div>
+      <label class="toggle"><input id="lucyToggle" type="checkbox"> Lucy Mode</label>
+    </div>
+
+    <!-- Settings -->
+    <details class="settings">
+      <summary><strong>Settings</strong> — Set-Aside % (Ron’s Jar)</summary>
+      <label>Set-Aside Percentage
+        <input id="reservePct" type="number" min="0" max="100" placeholder="25">
+      </label>
+      <button id="saveSettings" type="button" class="secondary">Save</button>
+    </details>
+
+    <!-- Form -->
+    <form id="entryForm">
+      <div class="row">
+        <label>Date <input type="date" name="date" required></label>
+        <label>Client <input name="client" required></label>
+      </div>
+      <div class="row-3">
+        <label>Service <input name="service" required></label>
+        <label>Amount <input type="number" step="0.01" name="amount" required></label>
+        <label>Method
+          <select name="method"><option>Cash</option><option>Venmo</option><option>Zelle</option><option>Card</option><option>Other</option></select>
+        </label>
+      </div>
+      <div class="row">
+        <label class="inline"><input type="checkbox" name="paid"> Paid</label>
+        <label>Notes <input name="notes"></label>
+      </div>
+      <div class="actions">
+        <button class="primary" type="submit">Log</button>
+        <button class="secondary" type="button" id="clearBtn">Clear</button>
+        <button class="secondary" type="button" id="backupBtn">Download Backup</button>
+      </div>
+      <p id="savedMsg" class="success">Logged. Ron set it on the shelf. 🪵</p>
+    </form>
+
+    <!-- Table -->
+    <table>
+      <thead><tr><th>Date</th><th>Client</th><th>Service</th><th>Method</th><th>Amount</th><th>Set-Aside</th><th>Net</th><th>Paid</th><th>Notes</th></tr></thead>
+      <tbody id="rows"></tbody>
+      <tfoot><tr><td colspan="4">Totals</td><td id="totalFoot"></td><td id="reserveFoot"></td><td id="netFoot"></td><td colspan="2"></td></tr></tfoot>
+    </table>
+  </div>
+</div>
+
+<script>
+(()=> {
+  const KEY='sparksoil_income_entries_v1', SETTINGS_KEY='sparksoil_income_settings_v1', LUCY_KEY='sparksoil_income_lucy_v1';
+  const $=s=>document.querySelector(s);
+  const form=$('#entryForm'), rows=$('#rows'), savedMsg=$('#savedMsg');
+  const reservePctInput=$('#reservePct'), saveSettingsBtn=$('#saveSettings'), lucyToggle=$('#lucyToggle');
+  const totalFoot=$('#totalFoot'), reserveFoot=$('#reserveFoot'), netFoot=$('#netFoot');
+  const quoteMain=$('#quoteMain'), quoteSub=$('#quoteSub'), quoteShimmer=$('#quoteShimmer'), quoteGlimmer=$('#quoteGlimmer');
+
+  const Storage={load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}},save(e){localStorage.setItem(KEY,JSON.stringify(e))}};
+  const Settings={load(){const def={reservePct:25};try{return{...def,...(JSON.parse(localStorage.getItem(SETTINGS_KEY))||{})}}catch{return def}},save(s){localStorage.setItem(SETTINGS_KEY,JSON.stringify(s))}};
+
+  const RON_QUOTES=["Consistency doesn’t need to be loud.","Stack the logs. That’s it.","I’m allergic to wasting effort.","Slow is smooth. Smooth is steady.","No.","Blink."];
+  const LUCY_QUOTES=["It still counts if it’s quiet.","Even rivers rest before the sea.","Soft is also strong.","One pebble is still a path.","You can count remembering."];
+  const LUCY_UNDERS=["Lucy said I could count remembering.","We can be gentle and still arrive.","Soft time still stacks."];
+  const RON_UNDERS=["Still counts.","Logged. Quiet is fine.","The mountain remembers."];
+
+  const QUOTE_COUNT_KEY='sparksoil_quote_count_v1';
+  const getCount=()=>Number(localStorage.getItem(QUOTE_COUNT_KEY)||0);
+  const bumpCount=()=>localStorage.setItem(QUOTE_COUNT_KEY,String(getCount()+1));
+  const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+
+  function showQuote(mode){
+    const n=getCount(); const cross=(n%4===3);
+    let main="",sub="",shim=false,glim=false;
+    if(mode==="lucy"){main=pick(LUCY_QUOTES); if(cross){sub=pick(RON_UNDERS);glim=true}}
+    else{main=pick(RON_QUOTES); if(cross){sub=pick(LUCY_UNDERS);shim=true}}
+    quoteMain.textContent=main; quoteSub.textContent=sub;
+    quoteShimmer.classList.remove('on'); quoteGlimmer.classList.remove('on');
+    if(shim){void quoteShimmer.offsetWidth; quoteShimmer.classList.add('on')}
+    if(glim){void quoteGlimmer.offsetWidth; quoteGlimmer.classList.add('on')}
+    bumpCount();
+  }
+
+  let entries=Storage.load(), settings=Settings.load();
+  reservePctInput.value=settings.reservePct;
+  saveSettingsBtn.onclick=()=>{settings.reservePct=Number(reservePctInput.value)||25;Settings.save(settings);render()};
+
+  (function initLucy(){
+    const on=localStorage.getItem(LUCY_KEY)==='1'; lucyToggle.checked=on;
+    document.documentElement.classList.toggle('lucy',on); showQuote(on?'lucy':'ron');
+    lucyToggle.onchange=()=>{const val=lucyToggle.checked;document.documentElement.classList.toggle('lucy',val);localStorage.setItem(LUCY_KEY,val?'1':'0');showQuote(val?'lucy':'ron')}
+  })();
+
+  const calcReserve=amt=>(amt*(settings.reservePct/100));
+  function render(){
+    rows.innerHTML=entries.map(e=>{
+      const r=calcReserve(e.amount),n=e.amount-r;
+      return `<tr><td>${e.date}</td><td>${e.client}</td><td>${e.service}</td><td>${e.method}</td><td>${e.amount.toFixed(2)}</td><td>${r.toFixed(2)}</td><td>${n.toFixed(2)}</td><td>${e.paid?'Yes':'No'}</td><td>${e.notes||''}</td></tr>`;
+    }).join('');
+    const gross=entries.reduce((s,e)=>s+e.amount,0),res=entries.reduce((s,e)=>s+calcReserve(e.amount),0),net=gross-res;
+    totalFoot.textContent=gross.toFixed(2);reserveFoot.textContent=res.toFixed(2);netFoot.textContent=net.toFixed(2);
+  }
+
+  form.onsubmit=ev=>{
+    ev.preventDefault();const fd=new FormData(form);
+    const entry={id:crypto.randomUUID(),date:fd.get('date'),client:fd.get('client'),service:fd.get('service'),
+      amount:Number(fd.get('amount')),method:fd.get('method'),paid:!!fd.get('paid'),notes:fd.get('notes')||''};
+    entries.push(entry);Storage.save(entries);render();showQuote(lucyToggle.checked?'lucy':'ron');
+    sparkleBurst(lucyToggle.checked?'lucy':'ron');
+    savedMsg.style.display='block';setTimeout(()=>savedMsg.style.display='none',1400);form.reset()
+  };
+
+  $('#clearBtn').onclick=()=>form.reset();
+
+  // Backup button
+  $('#backupBtn').onclick=()=>{
+    const blob=new Blob([JSON.stringify(entries,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ron-ledger-backup.json';a.click()
+  };
+
+  // Sparkle animation
+  function sparkleBurst(mode){
+    const colors= mode==='lucy' ? ["#c9c2f0","#aee2f7","#e2d9ff"] : ["#ffd700","#ffb347","#fffacd"];
+    for(let i=0;i<10;i++){
+      const s=document.createElement('div');s.className='sparkle';s.textContent='✦';
+      s.style.left=(window.innerWidth/2+(Math.random()*120-60))+'px';
+      s.style.top=(200+Math.random()*40)+'px';
+      s.style.color=colors[Math.floor(Math.random()*colors.length)];
+      document.body.appendChild(s);setTimeout(()=>s.remove(),1200)
+    }
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
+
+
+⸻
+
+✅ Changes included:
+	•	Uses ron-board.PNG for your Ron image.
+	•	Ron/Lucy quote harmony system.
+	•	Sparkle bursts on log (✦ gold for Ron, lilac/blue/silver for Lucy).
+	•	Backup button to download logs (ron-ledger-backup.json).
+
+Do you want me to also tuck the quarterly tax reminder dates in tiny Otter-style text at the bottom for your “zero spoon” safety net?
