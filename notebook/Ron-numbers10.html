@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Money and Things — Pet Job Income Ledger</title>
+
+<!-- Handwritten + title fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Cormorant+Garamond:wght@600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+
+    /* Ron palette (parchment + mountain) */
+    --ink:#1f2328;              /* dark charcoal (not pure black) */
+    --muted:#5f6670;
+    --panel-rgb:246,239,227;    /* parchment base for translucent boxes */
+    --grain-rgb:231,223,209;
+    --line:#d5cbbb;
+    --cedar:#2d3748;
+    --moss:#365a3c;
+
+    --success-bg:#e7f5ec;
+    --success-bd:#b6e2c7;
+
+    /* Background defaults (Ron) – longhands controlled by vars */
+    --bg-url: url("bobross-bg.jpeg");
+    --bg-size: cover;
+    --bg-position: center top;
+    --bg-repeat: no-repeat;
+    --bg-attach: fixed;         /* default: Ron is fixed */
+  }
+
+  /* System dark theme — Lucy forces light UI anyway */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e7e7ea; --muted:#aab1b9;
+      --line:#2a323b; --cedar:#374151; --moss:#99caa6;
+    }
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+
+  /* ---------- PAGE BACKGROUND (longhands to avoid iOS fixed/repeat bug) ---------- */
+  body{
+    margin:0; color:var(--ink); font-family:var(--font); line-height:1.45;
+
+    background-image: var(--bg-url);
+    background-position: var(--bg-position);
+    background-size: var(--bg-size);
+    background-repeat: var(--bg-repeat);
+    background-attachment: var(--bg-attach);
+    background-color:#635B3A; /* Ron grounding color under the image */
+  }
+
+  /* Lucy Mode — correct bokeh, scroll + repeat-y so it runs the whole page */
+  html.lucy{
+    --bg-url: url("./Lucy-bokeh.png");  /* your repo file */
+    --bg-size: 900px auto;
+    --bg-position: left 10% top 0;
+    --bg-repeat: repeat-y;
+    --bg-attach: scroll;               /* critical for iOS */
+    background-color:#D8D1D5;          /* page color behind the art */
+  }
+  @media (max-width: 800px){ html.lucy{ --bg-size: 820px auto; } }
+
+  .wrap{max-width:980px; margin:24px auto; padding:0 16px}
+
+  /* ---------- Translucent panels & controls ---------- */
+  .panel,.card,table{
+    background: rgba(var(--panel-rgb), 0.45);
+  }
+  .panel,.card{border:1px solid var(--line); border-radius:14px; padding:16px}
+  table{width:100%; border-collapse:collapse}
+  th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
+  tfoot td{font-weight:600; border-top:2px solid var(--line)}
+
+  /* Page title at the very top */
+  .page-title{
+    margin:0 0 12px;
+    font-size:1.85rem;         /* bigger */
+    font-weight:700;
+    text-align:center;
+    font-family:"Cinzel", serif;
+  }
+  html.lucy .page-title{ font-family:"Cormorant Garamond", serif }
+
+  /* Section headings */
+  h2{margin:0 0 8px; font-size:1.05rem; font-weight:650}
+  p.muted{margin:0 0 10px; color:var(--muted); font-size:.95rem}
+
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+  @media (max-width:760px){ .row,.row-3{grid-template-columns:1fr} }
+  label{display:grid; gap:6px; font-size:.95rem}
+
+  input,select,textarea,button{
+    font:inherit; padding:10px 12px; border:1px solid var(--line);
+    border-radius:10px; background: rgba(var(--panel-rgb),0.40); color:var(--ink);
+  }
+  input[type="date"]{padding:8px 10px}
+  textarea{min-height:70px; resize:vertical}
+
+  button.primary{background:var(--cedar); color:#fff; border:none; border-radius:12px; padding:12px 16px; cursor:pointer}
+  button.secondary{background: rgba(var(--grain-rgb),0.6) }
+
+  .actions{display:flex; gap:10px}
+  .divider{height:1px; background:repeating-linear-gradient(90deg,var(--line),var(--line) 8px,transparent 8px,transparent 16px); margin:16px 0}
+  .pill{display:inline-block; padding:4px 10px; border-radius:999px; background: rgba(var(--grain-rgb),0.6); font-size:.85rem}
+  .inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .right{text-align:right}
+  .success{background:var(--success-bg); color:var(--moss); border:1px solid var(--success-bd); padding:8px 10px; border-radius:10px; display:none}
+  .bar{height:8px; border-radius:6px; background: rgba(var(--grain-rgb),0.6); overflow:hidden}
+  .fill{height:100%; background:var(--moss)}
+  .quietline{border:none; height:1px; background:var(--line); opacity:.7; margin:6px 0 12px}
+  .footer{margin-top:10px; font-size:.9rem; color:var(--muted)}
+  .toggle{display:flex; align-items:center; gap:8px}
+
+  /* Lucy stays light but still translucent (no solid white override) */
+  html.lucy .panel, html.lucy .card, html.lucy table,
+  html.lucy input, html.lucy select, html.lucy textarea {
+    background: rgba(255,255,255,0.20) !important;
+    color:#1f2328 !important;
+    border-color:rgba(0,0,0,.08) !important;
+  }
+
+  /* Title swap per mode (we drive the page title separately now) */
+  #titleSwap{font-family:"Cinzel", serif}
+  html.lucy #titleSwap{font-family:"Cormorant Garamond", serif}
+
+  /* ---------- TOP art (swaps Ron/Lucy) ---------- */
+  .top-art{
+    position:relative;
+    margin:0 0 14px;
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .top-art img.art{
+    display:block;
+    width:100%;
+    height:auto;
+    opacity:.92;             /* gentle transparency in the box */
+  }
+  /* default = Ron shows, Lucy hidden (with stronger specificity) */
+  .top-art img.art-lucy{ display:none !important; }
+  /* when Lucy mode toggled on, swap */
+  html.lucy .top-art img.art-ron{  display:none !important; }
+  html.lucy .top-art img.art-lucy{ display:block !important; }
+
+  /* Quotes overlay on the art */
+  .top-art .ron-quote-text{
+    position:absolute; left:50%; top:70%; transform:translate(-50%,-50%);
+    width:72%; text-align:center; color:#fff;
+    font-family:'Patrick Hand','Caveat',cursive; line-height:1.25;
+    text-shadow:0 1px 0 rgba(0,0,0,.25);
+    pointer-events:none;
+  }
+  #ronQuoteMain{ font-size:1.25rem; }
+  #ronQuoteSub{ font-size:1rem; opacity:.85; font-style:italic; margin-top:2px }
+
+  /* We removed the old subtitle paragraph—quotes act as living subtitles now */
+
+  /* ---------- Sparkles ---------- */
+  .sparkles{ position:fixed; inset:0; pointer-events:none; z-index:99 }
+  .sparkle{ position:absolute; width:6px; height:6px; border-radius:50%; opacity:0; transform:scale(.6); }
+  .sparkle.show{ animation:pop 800ms ease-out forwards }
+  @keyframes pop{
+    0%{opacity:0; transform:translate(0,0) scale(.4)}
+    20%{opacity:1}
+    100%{opacity:0; transform:translate(var(--dx),var(--dy)) scale(1)}
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- Page title at the very top -->
+  <h1 id="titleSwap" class="page-title">Money and Things</h1>
+
+  <div class="panel" role="region" aria-label="Ron Ledger">
+
+    <!-- TOP art (swaps Ron/Lucy) + rotating quote overlay -->
+    <div class="top-art">
+      <img class="art art-ron"  src="./ron-board.png"       alt="Ron board art"  loading="lazy">
+      <img class="art art-lucy" src="./Lucy-cozy-lilac.PNG" alt="Lucy cozy art" loading="lazy">
+      <div class="ron-quote-text">
+        <div id="ronQuoteMain"></div>
+        <div id="ronQuoteSub"></div>
+      </div>
+    </div>
+
+    <div class="inline" style="justify-content:space-between">
+      <div>
+        <!-- Subtitle removed on purpose -->
+      </div>
+
+      <label class="toggle" title="Reduce visual noise for Lucy">
+        <input id="lucyToggle" type="checkbox"> Lucy Mode
+      </label>
+    </div>
+
+    <hr class="quietline">
+
+    <!-- Settings -->
+    <details class="settings">
+      <summary><strong>Settings</strong> — Set-Aside % (Ron’s Jar)</summary>
+      <div class="row" style="margin-top:8px;">
+        <label>Set-Aside Percentage (% to reserve)
+          <input id="reservePct" type="number" step="0.1" min="0" max="100" placeholder="25">
+        </label>
+        <div class="inline" style="align-items:flex-end;">
+          <button id="saveSettings" type="button" class="secondary">Save</button>
+          <span class="muted">Used to compute “Set-Aside” and “Net”. Defaults to 25%.</span>
+        </div>
+      </div>
+    </details>
+
+    <hr class="quietline">
+
+    <!-- Form -->
+    <form id="entryForm" aria-describedby="savedMsg">
+      <div class="row">
+        <label>Date
+          <input type="date" name="date" required>
+        </label>
+        <label>Client
+          <input name="client" placeholder="Keely / Dexter / Witcher" required>
+        </label>
+      </div>
+
+      <div class="row-3">
+        <label>Service
+          <input name="service" placeholder="Drop-in / Overnight / Litter clean" required>
+        </label>
+        <label>Amount (USD)
+          <input type="number" step="0.01" name="amount" min="0" required placeholder="45.00">
+        </label>
+        <label>Payment Method
+          <select name="method" required>
+            <option value="Cash">Cash</option>
+            <option value="Venmo">Venmo</option>
+            <option value="Zelle">Zelle</option>
+            <option value="Card">Card</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="inline"><input type="checkbox" name="paid"> Mark as paid</label>
+        <label>Field Log
+          <input name="notes" placeholder="Council remarks, special care, etc.">
+        </label>
+      </div>
+
+      <!-- Multi-day toggle -->
+      <div class="row" style="align-items:end;">
+        <label class="inline"><input id="multiToggle" type="checkbox" name="multiday"> Multi-day job?</label>
+        <div class="muted">For house sitting or multi-day care (Income only).</div>
+      </div>
+
+      <!-- Multi-day fields -->
+      <div id="multiFields" class="row-3" style="display:none;">
+        <label>Start Date
+          <input type="date" name="startDate">
+        </label>
+        <label>End Date
+          <input type="date" name="endDate">
+        </label>
+        <label>Split evenly across days?
+          <select name="splitEvenly">
+            <option value="yes">Yes — divide total amount</option>
+            <option value="no">No — keep on first day</option>
+          </select>
+        </label>
+      </div>
+      <div id="multiChoice" class="row" style="display:none;">
+        <label>Destination mode
+          <select name="expandMode">
+            <option value="summary">One summary row (shows date range)</option>
+            <option value="expand">Auto-expand into daily rows</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="actions" style="margin-top:10px;">
+        <button class="primary" type="submit" aria-label="Save entry" id="logBtn">Log to Ledger</button>
+        <button class="secondary" type="button" id="clearBtn" aria-label="Clear form">Wipe Slate</button>
+      </div>
+      <p id="savedMsg" class="success" role="status" aria-live="polite">Logged. Ron set it on the shelf. 🪵</p>
+    </form>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <!-- Summaries -->
+    <div class="row">
+      <div>
+        <h2>This Season’s Stack</h2>
+        <div class="inline">
+          <span class="pill" id="monthLabel">Month</span>
+          <span class="pill">Logs: <span id="countMonth">0</span></span>
+          <span class="pill">Gross Income: $<span id="grossMonth">0.00</span></span>
+          <span class="pill">Expenses: $<span id="expMonth">0.00</span></span>
+          <span class="pill">Net After Exp: $<span id="netMonth">0.00</span></span>
+          <span class="pill">Tax Set-Aside: $<span id="reserveMonth">0.00</span></span>
+        </div>
+        <div class="bar" style="margin-top:10px;" aria-hidden="true"><div class="fill" id="paidBar" style="width:0%"></div></div>
+      </div>
+      <div class="right">
+        <h2 id="titleRight">The Mountain’s Record</h2>
+        <div>Logs: <strong id="countAll">0</strong></div>
+        <div>Gross Income: <strong>$<span id="totalAll">0.00</span></strong></div>
+        <div>Expenses: <strong>$<span id="expAll">0.00</span></strong></div>
+        <div>Net After Expenses: <strong>$<span id="netAll">0.00</span></strong></div>
+        <div>Tax Set-Aside: <strong>$<span id="reserveAll">0.00</span></strong></div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card" style="margin-top:10px; padding:10px;">
+      <div class="inline" style="justify-content:space-between; margin-bottom:6px;">
+        <strong>Ledger</strong>
+        <small class="muted">The mountain remembers.</small>
+      </div>
+        <table aria-label="Logged entries">
+          <thead>
+            <tr>
+              <th>Date / Range</th><th>Client</th><th>Category</th><th>Service</th><th>Platform</th><th>Method</th>
+              <th class="right">Amount</th>
+              <th class="right">Set-Aside</th>
+              <th class="right">Net</th>
+              <th>Paid</th><th>Field Log</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="6">Totals</td>
+              <td class="right">$<span id="totalFoot">0.00</span></td>
+              <td class="right">$<span id="totalReserveFoot">0.00</span></td>
+              <td class="right">$<span id="totalNetFoot">0.00</span></td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+    </div>
+
+    <!-- Otter nudge -->
+    <p class="footer">🦦 Little Nudge: Tides come four times a year — <strong>Apr 15 • Jun 15 • Sep 15 • Jan 15</strong></p>
+  </div>
+</div>
+
+<!-- Sparkle layer -->
+<div class="sparkles" id="sparkles"></div>
+
+<script>
+(() => {
+  // ---------- Keys ----------
+  const KEY = 'sparksoil_income_entries_v1';
+  const SETTINGS_KEY = 'sparksoil_income_settings_v1';
+  const LUCY_KEY = 'sparksoil_income_lucy_v1';
+  const QUOTE_COUNT_KEY = 'sparksoil_quote_count_v1';
+
+  // ---------- Storage ----------
+  const Storage = {
+    load(){ try{ return JSON.parse(localStorage.getItem(KEY))||[] }catch{ return [] } },
+    save(entries){ localStorage.setItem(KEY, JSON.stringify(entries)) }
+  };
+  const Settings = {
+    load(){ const def={reservePct:25}; try{ return {...def, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY))||{})} }catch{ return def } },
+    save(s){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) }
+  };
+
+  // ---------- DOM ----------
+  const $ = s=>document.querySelector(s);
+  const form = $('#entryForm'), rows = $('#rows'), savedMsg = $('#savedMsg');
+  const reservePctInput = $('#reservePct'), saveSettingsBtn = $('#saveSettings');
+  const lucyToggle = $('#lucyToggle'), titleSwap = $('#titleSwap'), titleRight = $('#titleRight');
+  const multiToggle = $('#multiToggle'), multiFields = $('#multiFields'), multiChoice = $('#multiChoice');
+  const monthLabel = $('#monthLabel'), countMonth = $('#countMonth'), grossMonth = $('#grossMonth'), expMonth = $('#expMonth'),
+        reserveMonth = $('#reserveMonth'), netMonth = $('#netMonth'), paidBar = $('#paidBar');
+  const countAll = $('#countAll'), totalAll = $('#totalAll'), expAll = $('#expAll'), netAll = $('#netAll'), reserveAll = $('#reserveAll');
+  const totalFoot = $('#totalFoot'), totalReserveFoot = $('#totalReserveFoot'), totalNetFoot = $('#totalNetFoot');
+  const ronBoardMain = document.getElementById('ronQuoteMain'), ronBoardSub = document.getElementById('ronQuoteSub');
+  const sparkles = document.getElementById('sparkles');
+  const logBtn = document.getElementById('logBtn');
+
+  const fmtMoney = n => (Number(n||0)).toFixed(2);
+  const todayISO = () => new Date().toISOString().slice(0,10);
+  form.date.value = todayISO();
+
+  function escapeHtml(s=''){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
+
+  // ---------- Quotes ----------
+  const RON_QUOTES = [
+    "Consistency doesn’t need to be loud.",
+    "Stack the logs. That’s it.",
+    "I’m allergic to wasting effort.",
+    "Slow is smooth. Smooth is steady.",
+    "No.",
+    "Blink.",
+    "I logged it. I didn’t forget."
+  ];
+  const LUCY_QUOTES = [
+    "It still counts if it’s quiet.",
+    "Even rivers rest before the sea.",
+    "Soft is also strong.",
+    "One pebble is still a path.",
+    "You can count remembering."
+  ];
+  const LUCY_UNDERS = [
+    "Lucy said I could count remembering.",
+    "We can be gentle and still arrive.",
+    "Soft time still stacks."
+  ];
+  const RON_UNDERS = [
+    "Still counts.",
+    "Logged. Quiet is fine.",
+    "The mountain remembers."
+  ];
+  function getCount(){ return Number(localStorage.getItem(QUOTE_COUNT_KEY)||0); }
+  function bumpCount(){ localStorage.setItem(QUOTE_COUNT_KEY, String(getCount()+1)); }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+  function showQuote(mode){
+    const n = getCount();
+    const crossover = (n % 4 === 3);
+    let main="", sub="";
+    if(mode==='lucy'){ main = pick(LUCY_QUOTES); if(crossover){ sub = pick(RON_UNDERS); } }
+    else { main = pick(RON_QUOTES); if(crossover){ sub = pick(LUCY_UNDERS); } }
+    ronBoardMain.textContent = main; ronBoardSub.textContent = sub;
+    bumpCount();
+  }
+
+  // ---------- State ----------
+  let entries = Storage.load().map(e=>({...e, amount:Number(e.amount)||0, paid:!!e.paid}));
+  let settings = Settings.load();
+  reservePctInput.value = settings.reservePct;
+
+  saveSettingsBtn.addEventListener('click', ()=> {
+    const pct = Number(reservePctInput.value);
+    settings.reservePct = isNaN(pct)||pct<0 ? 0 : Math.min(100,pct);
+    Settings.save(settings);
+    render();
+  });
+
+  // Lucy mode (persisted) — toggle on <html>, not body
+  (function initLucy(){
+    const on = localStorage.getItem(LUCY_KEY)==='1';
+    lucyToggle.checked = on;
+    document.documentElement.classList.toggle('lucy', on);
+    titleSwap.textContent = on ? "Pebbles and Things" : "Money and Things";
+    titleRight.textContent = on ? "The River’s Ledger" : "The Mountain’s Record";
+    showQuote(on ? 'lucy' : 'ron');
+
+    lucyToggle.addEventListener('change', ()=>{
+      const val = lucyToggle.checked;
+      document.documentElement.classList.toggle('lucy', val);
+      localStorage.setItem(LUCY_KEY, val ? '1' : '0');
+      titleSwap.textContent = val ? "Pebbles and Things" : "Money and Things";
+      titleRight.textContent = val ? "The River’s Ledger" : "The Mountain’s Record";
+      showQuote(val ? 'lucy' : 'ron');
+
+      // Sparkles at the toggle
+      const r = lucyToggle.getBoundingClientRect();
+      sparkleBurst(r.left + r.width/2, r.top + window.scrollY, val ? 'lucy' : 'ron');
+    });
+  })();
+
+  // Multi-day toggle
+  multiToggle.addEventListener('change', ()=>{
+    const on = multiToggle.checked;
+    multiFields.style.display = on ? '' : 'none';
+    multiChoice.style.display = on ? '' : 'none';
+  });
+
+  // Helpers
+  const monthKey = d => `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}`;
+  const currentMonthKey = () => monthKey(new Date());
+  const calcReserve = amt => (amt * (settings.reservePct/100));
+  const calcNet = amt => (amt - calcReserve(amt));
+  function daysBetweenInclusive(startISO, endISO){
+    const start = new Date(startISO+"T00:00:00"); const end = new Date(endISO+"T00:00:00");
+    const ms = end - start; if(ms < 0) return 0; return Math.floor(ms/86400000) + 1;
+  }
+  function isoAddDays(iso, i){ const d = new Date(iso+"T00:00:00"); d.setUTCDate(d.getUTCDate()+i); return d.toISOString().slice(0,10); }
+  function splitEven(amount, n){
+    const cents = Math.round(Number(amount)*100);
+    const base = Math.floor(cents / n); let rem = cents - base*n;
+    const out = Array.from({length:n}, ()=> base); for(let i=0;i<rem;i++) out[i]+=1; return out.map(c=>c/100);
+  }
+
+  /* Month math fix: child rows count in their own month */
+  function entryMonthKey(e){
+    const iso = e.isExpandedChild ? e.date : (e.startDate || e.date);
+    if(!iso || iso.length < 7) return '';
+    const d = new Date(iso + "T00:00:00");
+    return monthKey(d);
+  }
+
+  // Sparkles
+  function sparkleBurst(x, y, mode){
+    const palette = mode==='lucy'
+      ? ['#c8bfff','#b8e0ff','#e6e6ff','#bcd7ff','#cfd2ff']
+      : ['#f6d365','#fda085','#ffd166','#f4a261','#e9c46a'];
+    for(let i=0;i<18;i++){
+      const s = document.createElement('div');
+      s.className='sparkle show';
+      s.style.left = x+'px'; s.style.top = y+'px';
+      s.style.background = palette[i%palette.length];
+      const dx = (Math.random()*160-80)+'px';
+      const dy = (Math.random()*120-60)+'px';
+      s.style.setProperty('--dx', dx); s.style.setProperty('--dy', dy);
+      sparkles.appendChild(s);
+      setTimeout(()=> s.remove(), 900);
+    }
+  }
+
+  // ---------- Render ----------
+  function render(){
+    rows.innerHTML = entries.map(e=>{
+      /* Stable history: prefer stored reserve/net when present */
+      const reserve = (typeof e.reserve === 'number') ? e.reserve : calcReserve(e.amount);
+      const net     = (typeof e.net     === 'number') ? e.net     : (e.amount - reserve);
+      const dateCell = e.startDate ? `${e.startDate} – ${e.endDate}` : e.date;
+      return `<tr>
+        <td>${dateCell}</td>
+        <td>${escapeHtml(e.client)}</td>
+        <td>${escapeHtml(e.category||'Income')}</td>
+        <td>${escapeHtml(e.service||'')}</td>
+        <td>${escapeHtml(e.platform||'Direct')}</td>
+        <td>${escapeHtml(e.method||'')}</td>
+        <td class="right">${e.amount.toFixed(2)}</td>
+        <td class="right">${reserve.toFixed(2)}</td>
+        <td class="right">${net.toFixed(2)}</td>
+        <td>${e.paid ? 'Yes' : 'No'}</td>
+        <td>${escapeHtml(e.notes||'')}</td>
+      </tr>`;
+    }).join('');
+
+    const sum = (list, pick) => list.reduce((s,e)=> s + pick(e), 0);
+
+    const grossAll   = sum(entries, e=> (e.category||'Income')==='Income'  ? e.amount : 0);
+    const expAllVal  = sum(entries, e=> (e.category||'Income')==='Expense' ? e.amount : 0);
+    const reserveAll = sum(entries, e=>{
+      if((e.category||'Income')!=='Income') return 0;
+      return (typeof e.reserve==='number') ? e.reserve : calcReserve(e.amount);
+    });
+    const netDisplay = (grossAll - expAllVal) - reserveAll;
+
+    countAll.textContent = entries.length;
+    totalAll.textContent = fmtMoney(grossAll);
+    expAll.textContent   = fmtMoney(expAllVal);
+    reserveAll.textContent = fmtMoney(reserveAll);
+    netAll.textContent   = fmtMoney(netDisplay);
+
+    totalFoot.textContent        = fmtMoney(grossAll);
+    totalReserveFoot.textContent = fmtMoney(reserveAll);
+    totalNetFoot.textContent     = fmtMoney(netDisplay);
+
+    const cmk = currentMonthKey();
+    const monthEntries = entries.filter(e=> entryMonthKey(e) === cmk);
+    const grossM   = sum(monthEntries, e=> (e.category||'Income')==='Income'  ? e.amount : 0);
+    const expM     = sum(monthEntries, e=> (e.category||'Income')==='Expense' ? e.amount : 0);
+    const reserveM = sum(monthEntries, e=>{
+      if((e.category||'Income')!=='Income') return 0;
+      return (typeof e.reserve==='number') ? e.reserve : calcReserve(e.amount);
+    });
+    const netM = (grossM - expM) - reserveM;
+
+    monthLabel.textContent = new Date().toLocaleString(undefined,{month:'long', year:'numeric'});
+    countMonth.textContent = monthEntries.length;
+    grossMonth.textContent = fmtMoney(grossM);
+    expMonth.textContent   = fmtMoney(expM);
+    reserveMonth.textContent = fmtMoney(reserveM);
+    netMonth.textContent   = fmtMoney(netM);
+
+    const paidM = sum(monthEntries, e=> (e.paid && (e.category||'Income')==='Income') ? e.amount : 0);
+    paidBar.style.width = (grossM>0 ? ((paidM/grossM)*100) : 0).toFixed(0) + '%';
+  }
+
+  // ---------- Submit ----------
+  form.addEventListener('submit', ev=>{
+    ev.preventDefault();
+    const fd = new FormData(form);
+    const multiday = !!fd.get('multiday');
+
+    const base = {
+      id: crypto.randomUUID(),
+      date: fd.get('date') || todayISO(),
+      client: (fd.get('client')||'').trim(),
+      category: 'Income',
+      platform: 'Direct',
+      service: (fd.get('service')||'').trim(),
+      amount: Number(fd.get('amount')||0),
+      method: fd.get('method') || 'Other',
+      paid: !!fd.get('paid'),
+      notes: (fd.get('notes')||'').trim(),
+      reservePct: Settings.load().reservePct,
+    };
+
+    if(!base.client){ alert('Name the client so the log can stand.'); return; }
+
+    function push(e){
+      // store computed values at log-time for historical stability
+      e.reserve = Number((e.amount * (Settings.load().reservePct/100)).toFixed(2));
+      e.net = Number((e.amount - e.reserve).toFixed(2));
+      entries.push(e);
+    }
+
+    if(!multiday){
+      if(!base.date){ alert('Fill the date.'); return; }
+      push(base);
+      Storage.save(entries);
+    }else{
+      const startDate = fd.get('startDate'), endDate = fd.get('endDate');
+      const split = (fd.get('splitEvenly')||'yes')==='yes';
+      const mode = (fd.get('expandMode')||'summary');
+      if(!startDate || !endDate){ alert('Start and End are needed.'); return; }
+
+      // inclusive day count helper
+      const days = daysBetweenInclusive(startDate, endDate);
+      if(days<=0){ alert('End date must be same or after start.'); return; }
+
+      if(mode==='summary'){
+        push({...base, startDate, endDate, days, isRange:true});
+        Storage.save(entries);
+      }else{
+        if(split){
+          const parts = splitEven(base.amount, days);
+          for(let i=0;i<days;i++){
+            const dISO = isoAddDays(startDate, i);
+            const amt = parts[i];
+            push({...base, id:crypto.randomUUID(), date:dISO, amount:Number(amt.toFixed(2)), startDate, endDate, days, isExpandedChild:true});
+          }
+        }else{
+          for(let i=0;i<days;i++){
+            const dISO = isoAddDays(startDate, i);
+            const amt = (i===0) ? base.amount : 0;
+            push({...base, id:crypto.randomUUID(), date:dISO, amount:Number(amt.toFixed(2)), startDate, endDate, days, isExpandedChild:true});
+          }
+        }
+        Storage.save(entries);
+      }
+    }
+
+    render();
+    showQuote(lucyToggle.checked ? 'lucy' : 'ron'); // fresh quote on save
+
+    // Sparkles (center of button)
+    const r = logBtn.getBoundingClientRect();
+    sparkleBurst(r.left + r.width/2, r.top + r.height/2 + window.scrollY, lucyToggle.checked ? 'lucy' : 'ron');
+
+    savedMsg.style.display='block';
+    setTimeout(()=> savedMsg.style.display='none', 1400);
+    form.reset(); form.date.value = todayISO();
+    multiFields.style.display='none'; multiChoice.style.display='none'; document.getElementById('multiToggle').checked = false;
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', ()=> form.reset());
+
+  // ---------- Init ----------
+  (function init(){
+    document.getElementById('reservePct').value = Settings.load().reservePct;
+    showQuote(localStorage.getItem(LUCY_KEY)==='1' ? 'lucy' : 'ron');
+    render();
+  })();
+})();
+</script>
+</body>
+</html>
