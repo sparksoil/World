@@ -28,6 +28,8 @@
     --success-bg:#e7f5ec;
     --success-bd:#b6e2c7;
   }
+
+  /* System dark theme — only for Ron. Lucy will override to stay light. */
   @media (prefers-color-scheme: dark){
     :root{
       --ink:#e7e7ea; --muted:#aab1b9;
@@ -45,20 +47,21 @@
   body{
     margin:0; color:var(--ink); font-family:var(--font); line-height:1.45;
 
-    /* Bob Ross–style painting background (update filename if needed) */
+    /* Bob Ross–style painting background from notebook/ */
     background:
       linear-gradient(rgba(239,233,221,.92),rgba(239,233,221,.92)),
-      url("bob-ross-bg.jpg") center/cover fixed no-repeat;
+      url("notebook/bobross-bg.jpeg") center/cover fixed no-repeat;
     background-blend-mode:multiply;
   }
 
-  /* Lucy Mode swaps to her lilac page — still no heavy white veil */
+  /* Lucy Mode: soft lilac bokeh, force light UI regardless of system dark */
+  .lucy { color-scheme: light; } /* tell browsers to use light form controls */
   .lucy body, .lucy .body-bg{
-    background: linear-gradient(rgba(255,255,255,.88),rgba(255,255,255,.88)),
-                url("Lucy-swirl.png") center/cover fixed no-repeat !important;
+    background:
+      linear-gradient(rgba(255,255,255,.88),rgba(255,255,255,.88)),
+      url("notebook/Lucy-bokeh.png") center/cover fixed no-repeat !important;
     background-blend-mode:normal !important;
   }
-
   .wrap{max-width:980px; margin:24px auto; padding:0 16px}
 
   /* Parchment panels & controls */
@@ -98,6 +101,14 @@
   .quietline{border:none; height:1px; background:var(--line); opacity:.7; margin:6px 0 12px}
   .footer{margin-top:10px; font-size:.9rem; color:var(--muted)}
   .toggle{display:flex; align-items:center; gap:8px}
+
+  /* Lucy stays light: override dark-scheme surfaces explicitly */
+  .lucy .panel, .lucy .card, .lucy table,
+  .lucy input, .lucy select, .lucy textarea {
+    background:rgba(255,255,255,0.95) !important;
+    color:#1f2328 !important;
+    border-color:rgba(0,0,0,.08) !important;
+  }
 
   /* Title swap per mode */
   #titleSwap{font-family:"Cinzel", serif}
