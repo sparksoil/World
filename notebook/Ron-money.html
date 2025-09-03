@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ron — Pet Job Income Ledger</title>
 
+<!-- Handwritten + title fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Cormorant+Garamond:wght@600&family=Cinzel:wght@600&display=swap" rel="stylesheet">
 
 <style>
@@ -23,13 +24,12 @@
     --success-bg:#e7f5ec;
     --success-bd:#b6e2c7;
 
-    /* Background defaults (Ron / Mountain) */
+    /* Background defaults (Ron) */
     --bg-url: url("bobross-bg.jpeg");
     --bg-size: cover;
     --bg-position: center top;
     --bg-repeat: no-repeat;
-    --bg-attach: fixed;      /* iOS clips repeats when fixed; Lucy will switch this */
-    --bg-color: #635B3A;     /* Ron grounding color below the image */
+    --bg-attach: fixed;     /* critical: Ron uses fixed; Lucy will override */
   }
 
   @media (prefers-color-scheme: dark){
@@ -42,7 +42,7 @@
   *{box-sizing:border-box}
   html,body{height:100%}
 
-  /* ---------- PAGE BACKGROUNDS (longhand for iOS) ---------- */
+  /* ---------- PAGE BACKGROUND (longhands so iOS repeats properly) ---------- */
   body{
     margin:0; color:var(--ink); font-family:var(--font); line-height:1.45;
 
@@ -51,25 +51,21 @@
     background-size: var(--bg-size);
     background-repeat: var(--bg-repeat);
     background-attachment: var(--bg-attach);
-    background-color: var(--bg-color);
-  }
-  /* Hard iOS safeguard: when <html> has .lucy, force body to scroll + repeat */
-  html.lucy body{
-    background-attachment: scroll !important;
-    background-repeat: repeat-y !important;
+    background-color: #635B3A;  /* Ron grounding color under the image */
   }
 
-  /* Lucy Mode — bokeh, scroll + repeat-y down the page, and her page color */
-  .lucy{
-    --bg-url: url("./Lucy-bokeh.png");
+  /* Lucy Mode — bokeh file, scroll + repeat-y so it runs the whole page */
+  html.lucy{
+    --bg-url: url("./Lucy-bokeh.png");    /* your repo file */
     --bg-size: 900px auto;
     --bg-position: left 10% top 0;
     --bg-repeat: repeat-y;
-    --bg-attach: scroll;
-    --bg-color:#D8D1D5;
+    --bg-attach: scroll;                  /* iOS fix: do NOT use fixed */
   }
+
+  /* Slight phone tweak to image size only */
   @media (max-width: 800px){
-    .lucy{ --bg-size: 820px auto; }
+    html.lucy{ --bg-size: 820px auto; }
   }
 
   .wrap{max-width:980px; margin:24px auto; padding:0 16px}
@@ -81,9 +77,8 @@
   th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
   tfoot td{font-weight:600; border-top:2px solid var(--line)}
 
-  /* Titles */
-  h1{margin:0 0 12px; font-size:1.55rem; font-weight:700; letter-spacing:.3px; font-family:"Cinzel", serif}
-  .lucy h1{font-family:"Cormorant Garamond", serif}
+  h1{margin:0 0 6px; font-size:1.55rem; font-weight:700; font-family:"Cinzel", serif}
+  html.lucy h1{font-family:"Cormorant Garamond", serif}
   h2{margin:0 0 8px; font-size:1.05rem; font-weight:650}
   p.muted{margin:0 0 10px; color:var(--muted); font-size:.95rem}
 
@@ -114,17 +109,13 @@
   .footer{margin-top:10px; font-size:.9rem; color:var(--muted)}
   .toggle{display:flex; align-items:center; gap:8px}
 
-  /* Lucy’s translucency */
-  .lucy .panel, .lucy .card, .lucy table,
-  .lucy input, .lucy select, .lucy textarea {
+  /* Lucy keeps light UI but translucent */
+  html.lucy .panel, html.lucy .card, html.lucy table,
+  html.lucy input, html.lucy select, html.lucy textarea {
     background: rgba(255,255,255,0.20) !important;
     color:#1f2328 !important;
     border-color:rgba(0,0,0,.08) !important;
   }
-
-  /* Title swap per mode */
-  #titleSwap{font-family:"Cinzel", serif}
-  .lucy #titleSwap{font-family:"Cormorant Garamond", serif}
 
   /* ---------- Quote (under title) ---------- */
   .quote-wrap{margin:.25rem 0 .5rem; position:relative}
@@ -144,24 +135,21 @@
   }
   .quote-glimmer.on{opacity:1; animation:glimmerFade 1200ms ease-out 1}
   @keyframes glimmerFade{ 0%{opacity:0} 15%{opacity:1} 100%{opacity:0} }
+  html.lucy .quote-main{font-weight:560}
+  html.lucy .quote-sub{color:#5d6472}
 
-  /* ---------- Top art (inside panel, shows above quote) ---------- */
-  .top-art{
-    position:relative;
-    margin:6px 0 14px;
-    border-radius:12px;
-    overflow:hidden;
-  }
+  /* ---------- Art at the top (inside panel) ---------- */
+  .top-art{ position:relative; margin:6px 0 14px; border-radius:12px; overflow:hidden; }
   .top-art img.art{ display:block; width:100%; height:auto; opacity:.92; }
   .top-art img.art-lucy{ display:none !important; }
-  .lucy .top-art img.art-ron{ display:none !important; }
-  .lucy .top-art img.art-lucy{ display:block !important; }
-
+  html.lucy .top-art img.art-ron{ display:none !important; }
+  html.lucy .top-art img.art-lucy{ display:block !important; }
   .top-art .ron-quote-text{
     position:absolute; left:50%; top:70%; transform:translate(-50%,-50%);
     width:72%; text-align:center; color:#fff;
     font-family:'Patrick Hand','Caveat',cursive; line-height:1.25;
-    text-shadow:0 1px 0 rgba(0,0,0,.25); pointer-events:none;
+    text-shadow:0 1px 0 rgba(0,0,0,.25);
+    pointer-events:none;
   }
   #ronQuoteMain{ font-size:1.25rem; }
   #ronQuoteSub{ font-size:1rem; opacity:.85; font-style:italic; margin-top:2px }
@@ -174,12 +162,12 @@
 </style>
 </head>
 
-<body class="body-bg">
+<body>
 <div class="wrap">
   <div class="panel" role="region" aria-label="Ron Ledger">
 
     <!-- TOP art (swaps Ron/Lucy) -->
-    <div class="top-art">
+    <div class="top-art" aria-hidden="true">
       <img class="art art-ron"  src="./ron-board.png"       alt="Ron board art"  loading="lazy">
       <img class="art art-lucy" src="./Lucy-cozy-lilac.PNG" alt="Lucy cozy art" loading="lazy">
       <div class="ron-quote-text">
@@ -188,21 +176,23 @@
       </div>
     </div>
 
-    <!-- Page title -->
-    <h1 id="titleSwap">Money and Things</h1>
-
-    <!-- Rotating quote (shows under the title) -->
-    <div id="quoteWrap" class="quote-wrap" aria-live="polite">
-      <div id="quoteMain" class="quote-main"></div>
-      <div id="quoteSub"  class="quote-sub"></div>
-      <div id="quoteShimmer" class="quote-shimmer" aria-hidden="true"></div>
-      <div id="quoteGlimmer" class="quote-glimmer" aria-hidden="true"></div>
-    </div>
-
+    <!-- Title row -->
     <div class="inline" style="justify-content:space-between">
-      <span class="toggle" title="Reduce visual noise for Lucy">
-        <input id="lucyToggle" type="checkbox"> Lucy Mode
-      </span>
+      <div>
+        <h1 id="titleSwap">Money and Things</h1>
+
+        <!-- Rotating quote (visible) -->
+        <div id="quoteWrap" class="quote-wrap" aria-live="polite">
+          <div id="quoteMain" class="quote-main"></div>
+          <div id="quoteSub"  class="quote-sub"></div>
+          <div id="quoteShimmer" class="quote-shimmer" aria-hidden="true"></div>
+          <div id="quoteGlimmer" class="quote-glimmer" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <label class="toggle" title="Reduce visual noise for Lucy">
+        <input id="lucyToggle" type="checkbox" aria-label="Toggle Lucy Mode"> Lucy Mode
+      </label>
     </div>
 
     <hr class="quietline">
@@ -351,6 +341,7 @@
         </table>
     </div>
 
+    <!-- Otter nudge -->
     <p class="footer">🦦 Little Nudge: Tides come four times a year — <strong>Apr 15 • Jun 15 • Sep 15 • Jan 15</strong></p>
   </div>
 </div>
@@ -384,7 +375,7 @@
   const multiToggle = $('#multiToggle'), multiFields = $('#multiFields'), multiChoice = $('#multiChoice');
   const monthLabel = $('#monthLabel'), countMonth = $('#countMonth'), grossMonth = $('#grossMonth'), expMonth = $('#expMonth'),
         reserveMonth = $('#reserveMonth'), netMonth = $('#netMonth'), paidBar = $('#paidBar');
-  const countAll = $('#countAll'), totalAll = $('#totalAll'), expAll = $('#expAll'), netAll = $('#netAll'), reserveAll = $('#reserveAll']);
+  const countAll = $('#countAll'), totalAll = $('#totalAll'), expAll = $('#expAll'), netAll = $('#netAll'), reserveAll = $('#reserveAll');
   const totalFoot = $('#totalFoot'), totalReserveFoot = $('#totalReserveFoot'), totalNetFoot = $('#totalNetFoot');
   const quoteMain = document.getElementById('quoteMain'), quoteSub = document.getElementById('quoteSub'),
         quoteShimmer = document.getElementById('quoteShimmer'), quoteGlimmer = document.getElementById('quoteGlimmer');
@@ -475,9 +466,6 @@
   })();
 
   // Multi-day toggle
-  const multiToggle = document.getElementById('multiToggle');
-  const multiFields = document.getElementById('multiFields');
-  const multiChoice = document.getElementById('multiChoice');
   multiToggle.addEventListener('change', ()=>{
     const on = multiToggle.checked;
     multiFields.style.display = on ? '' : 'none';
@@ -500,7 +488,7 @@
     const out = Array.from({length:n}, ()=> base); for(let i=0;i<rem;i++) out[i]+=1; return out.map(c=>c/100);
   }
 
-  /* Month key for ranges/children */
+  /* Month math fix: child rows count in their own month */
   function entryMonthKey(e){
     const iso = e.isExpandedChild ? e.date : (e.startDate || e.date);
     if(!iso || iso.length < 7) return '';
@@ -529,6 +517,7 @@
   // ---------- Render ----------
   function render(){
     rows.innerHTML = entries.map(e=>{
+      /* Stable history: prefer stored reserve/net when present */
       const reserve = (typeof e.reserve === 'number') ? e.reserve : calcReserve(e.amount);
       const net     = (typeof e.net     === 'number') ? e.net     : (e.amount - reserve);
       const dateCell = e.startDate ? `${e.startDate} – ${e.endDate}` : e.date;
@@ -560,8 +549,8 @@
     countAll.textContent = entries.length;
     totalAll.textContent = fmtMoney(grossAll);
     expAll.textContent   = fmtMoney(expAllVal);
-    document.getElementById('reserveAll').textContent = fmtMoney(reserveAll);
-    document.getElementById('netAll').textContent = fmtMoney(netDisplay);
+    reserveAll.textContent = fmtMoney(reserveAll);
+    netAll.textContent   = fmtMoney(netDisplay);
 
     totalFoot.textContent        = fmtMoney(grossAll);
     totalReserveFoot.textContent = fmtMoney(reserveAll);
@@ -578,14 +567,14 @@
     const netM = (grossM - expM) - reserveM;
 
     monthLabel.textContent = new Date().toLocaleString(undefined,{month:'long', year:'numeric'});
-    document.getElementById('countMonth').textContent = monthEntries.length;
-    document.getElementById('grossMonth').textContent = fmtMoney(grossM);
-    document.getElementById('expMonth').textContent   = fmtMoney(expM);
-    document.getElementById('reserveMonth').textContent = fmtMoney(reserveM);
-    document.getElementById('netMonth').textContent   = fmtMoney(netM);
+    countMonth.textContent = fmtMoney(monthEntries.length);
+    grossMonth.textContent = fmtMoney(grossM);
+    expMonth.textContent   = fmtMoney(expM);
+    reserveMonth.textContent = fmtMoney(reserveM);
+    netMonth.textContent   = fmtMoney(netM);
 
     const paidM = sum(monthEntries, e=> (e.paid && (e.category||'Income')==='Income') ? e.amount : 0);
-    document.getElementById('paidBar').style.width = (grossM>0 ? ((paidM/grossM)*100) : 0).toFixed(0) + '%';
+    paidBar.style.width = (grossM>0 ? ((paidM/grossM)*100) : 0).toFixed(0) + '%';
   }
 
   // ---------- Submit ----------
@@ -633,25 +622,12 @@
         push({...base, startDate, endDate, days, isRange:true});
         Storage.save(entries);
       }else{
-        function isoAddDays(iso, i){ const d = new Date(iso+"T00:00:00"); d.setUTCDate(d.getUTCDate()+i); return d.toISOString().slice(0,10); }
-        function splitEven(amount, n){
-          const cents = Math.round(Number(amount)*100);
-          const basec = Math.floor(cents / n); let rem = cents - basec*n;
-          const out = Array.from({length:n}, ()=> basec); for(let i=0;i<rem;i++) out[i]+=1; return out.map(c=>c/100);
-        }
-        if(split){
-          const parts = splitEven(base.amount, days);
-          for(let i=0;i<days;i++){
-            const dISO = isoAddDays(startDate, i);
-            const amt = parts[i];
-            push({...base, id:crypto.randomUUID(), date:dISO, amount:Number(amt.toFixed(2)), startDate, endDate, days, isExpandedChild:true});
-          }
-        }else{
-          for(let i=0;i<days;i++){
-            const dISO = isoAddDays(startDate, i);
-            const amt = (i===0) ? base.amount : 0;
-            push({...base, id:crypto.randomUUID(), date:dISO, amount:Number(amt.toFixed(2)), startDate, endDate, days, isExpandedChild:true});
-          }
+        const cents = Math.round(Number(base.amount)*100);
+        const baseC = Math.floor(cents / days); let rem=cents - baseC*days;
+        for(let i=0;i<days;i++){
+          const dISO = new Date(new Date(startDate).getTime()+i*86400000).toISOString().slice(0,10);
+          const amtC = (split ? baseC + (i<rem?1:0) : (i===0?cents:0));
+          push({...base, id:crypto.randomUUID(), date:dISO, amount:Number((amtC/100).toFixed(2)), startDate, endDate, days, isExpandedChild:true});
         }
         Storage.save(entries);
       }
@@ -660,8 +636,10 @@
     render();
     showQuote(lucyToggle.checked ? 'lucy' : 'ron');
 
-    const r = document.getElementById('logBtn').getBoundingClientRect();
-    sparkleBurst(r.left + r.width/2, r.top + r.height/2 + window.scrollY, lucyToggle.checked ? 'lucy' : 'ron');
+    // Sparkles (center of button)
+    const r = logBtn.getBoundingClientRect();
+    const y = r.top + r.height/2 + window.scrollY;
+    sparkleBurst(r.left + r.width/2, y, lucyToggle.checked ? 'lucy' : 'ron');
 
     savedMsg.style.display='block';
     setTimeout(()=> savedMsg.style.display='none', 1400);
@@ -674,7 +652,7 @@
   // ---------- Init ----------
   (function init(){
     document.getElementById('reservePct').value = Settings.load().reservePct;
-    showQuote(localStorage.getItem('sparksoil_income_lucy_v1')==='1' ? 'lucy' : 'ron');
+    showQuote(localStorage.getItem(LUCY_KEY)==='1' ? 'lucy' : 'ron');
     render();
   })();
 })();
