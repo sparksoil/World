@@ -42,6 +42,7 @@
   html,body{height:100%}
 
   /* ---------- PAGE BACKGROUNDS ---------- */
+  /* Ron (default): image with solid color beneath for when it ends */
   body{
     margin:0; color:var(--ink); font-family:var(--font); line-height:1.45;
     background: var(--bg-url) var(--bg-position)/var(--bg-size) no-repeat fixed,
@@ -49,15 +50,16 @@
     background-repeat: var(--bg-repeat);
   }
 
-  /* Lucy Mode — correct bokeh, tiled down */
+  /* Lucy Mode — use the long bokeh file, tile down */
   .lucy{
-    --bg-url: url("./Lucy-bokeh.png");
+    --bg-url: url("./Lucy-bokeh.png"); /* exact filename & case */
     --bg-size: 900px auto;
     --bg-position: left 10% top 0;
-    --bg-repeat: repeat-y;
-    background-color:#D8D1D5;
+    --bg-repeat: repeat-y;             /* tile vertically */
+    background-color:#D8D1D5;          /* soft page color behind tiles */
   }
 
+  /* iOS background-attachment guard */
   @media (max-width: 800px){
     body{ background-attachment: scroll; }
     .lucy{ --bg-size: 820px auto; }
@@ -133,7 +135,6 @@
   .quote-glimmer{
     position:absolute; inset:auto 0 -6px 0; height:6px; pointer-events:none; opacity:0;
     background:radial-gradient(ellipse at center, rgba(188,164,255,.55), rgba(188,164,255,0) 70%);
-    filter:blur(1px);
   }
   .quote-glimmer.on{opacity:1; animation:glimmerFade 1200ms ease-out 1}
   @keyframes glimmerFade{ 0%{opacity:0} 15%{opacity:1} 100%{opacity:0} }
@@ -151,7 +152,7 @@
     display:block;
     width:100%;
     height:auto;
-    opacity:.92;             /* gentle transparency in the box */
+    opacity:.92; /* soft transparency in the box */
   }
   /* default = Ron shows, Lucy hidden */
   .top-art img.art-lucy{ display:none !important; }
@@ -159,7 +160,7 @@
   .lucy .top-art img.art-ron{  display:none !important; }
   .lucy .top-art img.art-lucy{ display:block !important; }
 
-  /* Optional quote overlay on the art */
+  /* Quote overlay on the art */
   .top-art .ron-quote-text{
     position:absolute; left:50%; top:70%; transform:translate(-50%,-50%);
     width:72%; text-align:center; color:#fff;
@@ -631,7 +632,6 @@
       const mode = (fd.get('expandMode')||'summary');
       if(!startDate || !endDate){ alert('Start and End are needed.'); return; }
 
-      // inclusive day count helper
       const days = daysBetweenInclusive(startDate, endDate);
       if(days<=0){ alert('End date must be same or after start.'); return; }
 
