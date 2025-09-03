@@ -29,7 +29,7 @@
     --bg-size: cover;
     --bg-position: center top;
     --bg-repeat: no-repeat;
-    --bg-attach: fixed;     /* critical: Ron uses fixed; Lucy will override */
+    --bg-attach: fixed;     /* Ron (default) uses fixed; Lucy overrides to scroll */
   }
 
   @media (prefers-color-scheme: dark){
@@ -56,11 +56,11 @@
 
   /* Lucy Mode — bokeh file, scroll + repeat-y so it runs the whole page */
   html.lucy{
-    --bg-url: url("./Lucy-bokeh.png");    /* your repo file */
+    --bg-url: url("./Lucy-bokeh.png");
     --bg-size: 900px auto;
     --bg-position: left 10% top 0;
     --bg-repeat: repeat-y;
-    --bg-attach: scroll;                  /* iOS fix: do NOT use fixed */
+    --bg-attach: scroll;  /* iOS fix: do NOT use fixed for Lucy */
   }
 
   /* Slight phone tweak to image size only */
@@ -77,7 +77,7 @@
   th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
   tfoot td{font-weight:600; border-top:2px solid var(--line)}
 
-  h1{margin:0 0 6px; font-size:1.55rem; font-weight:700; font-family:"Cinzel", serif}
+  h1{margin:0 0 6px; font-size:1.65rem; font-weight:700; font-family:"Cinzel", serif}
   html.lucy h1{font-family:"Cormorant Garamond", serif}
   h2{margin:0 0 8px; font-size:1.05rem; font-weight:650}
   p.muted{margin:0 0 10px; color:var(--muted); font-size:.95rem}
@@ -139,13 +139,13 @@
   html.lucy .quote-sub{color:#5d6472}
 
   /* ---------- Art at the top (inside panel) ---------- */
-  .top-art{ position:relative; margin:6px 0 14px; border-radius:12px; overflow:hidden; }
+  .top-art{
+    position:relative; margin:6px 0 14px; border-radius:12px; overflow:hidden;
+    /* make it ~35% smaller with a max-height cap */
+    max-height: 260px;
+  }
   .top-art img.art{
-    display:block;
-    width:65%;          /* smaller (was 100%) */
-    margin:0 auto;      /* center the image */
-    height:auto;
-    opacity:.92;
+    display:block; width:100%; height:auto; opacity:.92;
   }
   .top-art img.art-lucy{ display:none !important; }
   html.lucy .top-art img.art-ron{ display:none !important; }
@@ -369,31 +369,63 @@
     save(entries){ localStorage.setItem(KEY, JSON.stringify(entries)) }
   };
   const Settings = {
-    load(){ const def={reservePct:25}; try{ return {...def, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY))||{})} }catch{ return def } },
+    load(){
+      const def={reservePct:25};
+      try{ return {...def, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY))||{})} }catch{ return def }
+    },
     save(s){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) }
   };
 
   // ---------- DOM ----------
   const $ = s=>document.querySelector(s);
-  const form = $('#entryForm'), rows = $('#rows'), savedMsg = $('#savedMsg');
-  const reservePctInput = $('#reservePct'), saveSettingsBtn = $('#saveSettings');
-  const lucyToggle = $('#lucyToggle'), titleSwap = $('#titleSwap'), titleRight = $('#titleRight');
-  const multiToggle = $('#multiToggle'), multiFields = $('#multiFields'), multiChoice = $('#multiChoice');
-  const monthLabel = $('#monthLabel'), countMonth = $('#countMonth'), grossMonth = $('#grossMonth'), expMonth = $('#expMonth'),
-        reserveMonth = $('#reserveMonth'), netMonth = $('#netMonth'), paidBar = $('#paidBar']);
-  const countAll = $('#countAll'), totalAll = $('#totalAll'), expAll = $('#expAll'), netAll = $('#netAll'), reserveAll = $('#reserveAll');
-  const totalFoot = $('#totalFoot'), totalReserveFoot = $('#totalReserveFoot'), totalNetFoot = $('#totalNetFoot');
-  const quoteMain = document.getElementById('quoteMain'), quoteSub = document.getElementById('quoteSub'),
-        quoteShimmer = document.getElementById('quoteShimmer'), quoteGlimmer = document.getElementById('quoteGlimmer');
-  const ronBoardMain = document.getElementById('ronQuoteMain'), ronBoardSub = document.getElementById('ronQuoteSub');
+  const form = $('#entryForm');
+  const rows = $('#rows');
+  const savedMsg = $('#savedMsg');
+  const reservePctInput = $('#reservePct');
+  const saveSettingsBtn = $('#saveSettings');
+  const lucyToggle = $('#lucyToggle');
+  const titleSwap = $('#titleSwap');
+  const titleRight = $('#titleRight');
+  const multiToggle = $('#multiToggle');
+  const multiFields = $('#multiFields');
+  const multiChoice = $('#multiChoice');
+
+  const monthLabel = $('#monthLabel');
+  const countMonth = $('#countMonth');
+  const grossMonth = $('#grossMonth');
+  const expMonth = $('#expMonth');
+  const reserveMonth = $('#reserveMonth');
+  const netMonth = $('#netMonth');
+  const paidBar = $('#paidBar');
+
+  const countAll = $('#countAll');
+  const totalAll = $('#totalAll');
+  const expAll = $('#expAll');
+  const netAll = $('#netAll');
+  const reserveAll = $('#reserveAll');
+
+  const totalFoot = $('#totalFoot');
+  const totalReserveFoot = $('#totalReserveFoot');
+  const totalNetFoot = $('#totalNetFoot');
+
+  const quoteMain = document.getElementById('quoteMain');
+  const quoteSub = document.getElementById('quoteSub');
+  const quoteShimmer = document.getElementById('quoteShimmer');
+  const quoteGlimmer = document.getElementById('quoteGlimmer');
+
+  const ronBoardMain = document.getElementById('ronQuoteMain');
+  const ronBoardSub = document.getElementById('ronQuoteSub');
   const sparkles = document.getElementById('sparkles');
   const logBtn = document.getElementById('logBtn');
 
   const fmtMoney = n => (Number(n||0)).toFixed(2);
   const todayISO = () => new Date().toISOString().slice(0,10);
-  form.date.value = todayISO();
 
-  function escapeHtml(s=''){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
+  if(form && form.elements.date){ form.elements.date.value = todayISO(); }
+
+  function escapeHtml(s=''){
+    return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
 
   // ---------- Quotes ----------
   const RON_QUOTES = [
@@ -422,88 +454,78 @@
     "Logged. Quiet is fine.",
     "The mountain remembers."
   ];
-  function getCount(){ return Number(localStorage.getItem(QUOTE_COUNT_KEY)||0); }
-  function bumpCount(){ localStorage.setItem(QUOTE_COUNT_KEY, String(getCount()+1)); }
-  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+
+  const getCount = () => Number(localStorage.getItem(QUOTE_COUNT_KEY)||0);
+  const bumpCount = () => localStorage.setItem(QUOTE_COUNT_KEY, String(getCount()+1));
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+
   function showQuote(mode){
+    if(!quoteMain || !quoteSub) return; // guard so a missing node never crashes
     const n = getCount();
     const crossover = (n % 4 === 3);
     let main="", sub="", shimmer=false, glimmer=false;
     if(mode==='lucy'){ main = pick(LUCY_QUOTES); if(crossover){ sub = pick(RON_UNDERS); glimmer=true; } }
     else { main = pick(RON_QUOTES); if(crossover){ sub = pick(LUCY_UNDERS); shimmer=true; } }
     quoteMain.textContent = main; quoteSub.textContent = sub;
-    ronBoardMain.textContent = main; ronBoardSub.textContent = sub;
+    if(ronBoardMain) ronBoardMain.textContent = main;
+    if(ronBoardSub)  ronBoardSub.textContent  = sub;
 
-    quoteShimmer.classList.remove('on'); quoteGlimmer.classList.remove('on');
-    if(shimmer){ void quoteShimmer.offsetWidth; quoteShimmer.classList.add('on'); }
-    if(glimmer){ void quoteGlimmer.offsetWidth; quoteGlimmer.classList.add('on'); }
+    if(quoteShimmer) quoteShimmer.classList.remove('on');
+    if(quoteGlimmer) quoteGlimmer.classList.remove('on');
+    if(shimmer && quoteShimmer){ void quoteShimmer.offsetWidth; quoteShimmer.classList.add('on'); }
+    if(glimmer && quoteGlimmer){ void quoteGlimmer.offsetWidth; quoteGlimmer.classList.add('on'); }
     bumpCount();
   }
 
   // ---------- State ----------
   let entries = Storage.load().map(e=>({...e, amount:Number(e.amount)||0, paid:!!e.paid}));
   let settings = Settings.load();
-  reservePctInput.value = settings.reservePct;
+  if(reservePctInput) reservePctInput.value = settings.reservePct;
 
-  saveSettingsBtn.addEventListener('click', ()=> {
-    const pct = Number(reservePctInput.value);
+  if(saveSettingsBtn) saveSettingsBtn.addEventListener('click', ()=> {
+    const pct = Number(reservePctInput?.value);
     settings.reservePct = isNaN(pct)||pct<0 ? 0 : Math.min(100,pct);
     Settings.save(settings);
     render();
   });
 
-  // Lucy mode (persisted)
+  // Lucy mode (persisted) — apply class to <html> (document.documentElement)
   (function initLucy(){
+    if(!lucyToggle) return;
     const on = localStorage.getItem(LUCY_KEY)==='1';
-    lucyToggle.checked = on;
     document.documentElement.classList.toggle('lucy', on);
-    titleSwap.textContent = on ? "Pebbles and Things" : "Money and Things";
-    titleRight.textContent = on ? "The River’s Ledger" : "The Mountain’s Record";
+    lucyToggle.checked = on;
+    if(titleSwap)  titleSwap.textContent  = on ? "Pebbles and Things" : "Money and Things";
+    if(titleRight) titleRight.textContent = on ? "The River’s Ledger" : "The Mountain’s Record";
     showQuote(on ? 'lucy' : 'ron');
 
     lucyToggle.addEventListener('change', ()=>{
       const val = lucyToggle.checked;
       document.documentElement.classList.toggle('lucy', val);
       localStorage.setItem(LUCY_KEY, val ? '1' : '0');
-      titleSwap.textContent = val ? "Pebbles and Things" : "Money and Things";
-      titleRight.textContent = val ? "The River’s Ledger" : "The Mountain’s Record";
+      if(titleSwap)  titleSwap.textContent  = val ? "Pebbles and Things" : "Money and Things";
+      if(titleRight) titleRight.textContent = val ? "The River’s Ledger" : "The Mountain’s Record";
       showQuote(val ? 'lucy' : 'ron');
     });
   })();
 
   // Multi-day toggle
-  multiToggle.addEventListener('change', ()=>{
-    const on = multiToggle.checked;
-    multiFields.style.display = on ? '' : 'none';
-    multiChoice.style.display = on ? '' : 'none';
-  });
+  if(multiToggle){
+    multiToggle.addEventListener('change', ()=>{
+      const on = multiToggle.checked;
+      if(multiFields) multiFields.style.display = on ? '' : 'none';
+      if(multiChoice) multiChoice.style.display = on ? '' : 'none';
+    });
+  }
 
   // Helpers
   const monthKey = d => `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}`;
   const currentMonthKey = () => monthKey(new Date());
   const calcReserve = amt => (amt * (settings.reservePct/100));
-  const calcNet = amt => (amt - calcReserve(amt));
-  function daysBetweenInclusive(startISO, endISO){
-    const start = new Date(startISO+"T00:00:00"); const end = new Date(endISO+"T00:00:00");
-    const ms = end - start; if(ms < 0) return 0; return Math.floor(ms/86400000) + 1;
-  }
-  function isoAddDays(iso, i){ const d = new Date(iso+"T00:00:00"); d.setUTCDate(d.getUTCDate()+i); return d.toISOString().slice(0,10); }
-  function splitEven(amount, n){
-    const cents = Math.round(Number(amount)*100);
-    const base = Math.floor(cents / n); let rem = cents - base*n;
-    const out = Array.from({length:n}, ()=> base); for(let i=0;i<rem;i++) out[i]+=1; return out.map(c=>c/100);
-  }
-
-  /* Month math fix: child rows count in their own month */
-  function entryMonthKey(e){
-    const iso = e.isExpandedChild ? e.date : (e.startDate || e.date);
-    if(!iso || iso.length < 7) return '';
-    const d = new Date(iso + "T00:00:00");
-    return monthKey(d);
-  }
 
   // Sparkles
   function sparkleBurst(x, y, mode){
+    if(!sparkles) return;
     const palette = mode==='lucy'
       ? ['#c8bfff','#b8e0ff','#e6e6ff','#bcd7ff','#cfd2ff']
       : ['#f6d365','#fda085','#ffd166','#f4a261','#e9c46a'];
@@ -522,8 +544,9 @@
 
   // ---------- Render ----------
   function render(){
+    if(!rows) return;
+
     rows.innerHTML = entries.map(e=>{
-      /* Stable history: prefer stored reserve/net when present */
       const reserve = (typeof e.reserve === 'number') ? e.reserve : calcReserve(e.amount);
       const net     = (typeof e.net     === 'number') ? e.net     : (e.amount - reserve);
       const dateCell = e.startDate ? `${e.startDate} – ${e.endDate}` : e.date;
@@ -534,7 +557,7 @@
         <td>${escapeHtml(e.service||'')}</td>
         <td>${escapeHtml(e.platform||'Direct')}</td>
         <td>${escapeHtml(e.method||'')}</td>
-        <td class="right">${e.amount.toFixed(2)}</td>
+        <td class="right">${(e.amount||0).toFixed(2)}</td>
         <td class="right">${reserve.toFixed(2)}</td>
         <td class="right">${net.toFixed(2)}</td>
         <td>${e.paid ? 'Yes' : 'No'}</td>
@@ -544,26 +567,31 @@
 
     const sum = (list, pick) => list.reduce((s,e)=> s + pick(e), 0);
 
-    const grossAll   = sum(entries, e=> (e.category||'Income')==='Income'  ? e.amount : 0);
-    const expAllVal  = sum(entries, e=> (e.category||'Income')==='Expense' ? e.amount : 0);
-    const reserveAll = sum(entries, e=>{
+    const grossAllVal = sum(entries, e=> (e.category||'Income')==='Income'  ? e.amount : 0);
+    const expAllVal   = sum(entries, e=> (e.category||'Income')==='Expense' ? e.amount : 0);
+    const reserveAllVal = sum(entries, e=>{
       if((e.category||'Income')!=='Income') return 0;
       return (typeof e.reserve==='number') ? e.reserve : calcReserve(e.amount);
     });
-    const netDisplay = (grossAll - expAllVal) - reserveAll;
+    const netDisplay = (grossAllVal - expAllVal) - reserveAllVal;
 
-    countAll.textContent = entries.length;
-    totalAll.textContent = fmtMoney(grossAll);
-    expAll.textContent   = fmtMoney(expAllVal);
-    reserveAll.textContent = fmtMoney(reserveAll);
-    netAll.textContent   = fmtMoney(netDisplay);
+    if(countAll) countAll.textContent = entries.length;
+    if(totalAll) totalAll.textContent = fmtMoney(grossAllVal);
+    if(expAll)   expAll.textContent   = fmtMoney(expAllVal);
+    if(reserveAll) reserveAll.textContent = fmtMoney(reserveAllVal);
+    if(netAll)   netAll.textContent   = fmtMoney(netDisplay);
 
-    totalFoot.textContent        = fmtMoney(grossAll);
-    totalReserveFoot.textContent = fmtMoney(reserveAll);
-    totalNetFoot.textContent     = fmtMoney(netDisplay);
+    if(totalFoot)        totalFoot.textContent        = fmtMoney(grossAllVal);
+    if(totalReserveFoot) totalReserveFoot.textContent = fmtMoney(reserveAllVal);
+    if(totalNetFoot)     totalNetFoot.textContent     = fmtMoney(netDisplay);
 
     const cmk = currentMonthKey();
-    const monthEntries = entries.filter(e=> entryMonthKey(e) === cmk);
+    const monthEntries = entries.filter(e=>{
+      const iso = e.isExpandedChild ? e.date : (e.startDate || e.date);
+      if(!iso || iso.length < 7) return false;
+      const d = new Date(iso + "T00:00:00");
+      return monthKey(d) === cmk;
+    });
     const grossM   = sum(monthEntries, e=> (e.category||'Income')==='Income'  ? e.amount : 0);
     const expM     = sum(monthEntries, e=> (e.category||'Income')==='Expense' ? e.amount : 0);
     const reserveM = sum(monthEntries, e=>{
@@ -572,93 +600,103 @@
     });
     const netM = (grossM - expM) - reserveM;
 
-    monthLabel.textContent = new Date().toLocaleString(undefined,{month:'long', year:'numeric'});
-    countMonth.textContent = fmtMoney(monthEntries.length);
-    grossMonth.textContent = fmtMoney(grossM);
-    expMonth.textContent   = fmtMoney(expM);
-    reserveMonth.textContent = fmtMoney(reserveM);
-    netMonth.textContent   = fmtMoney(netM);
+    if(monthLabel)  monthLabel.textContent = new Date().toLocaleString(undefined,{month:'long', year:'numeric'});
+    if(countMonth)  countMonth.textContent = String(monthEntries.length);
+    if(grossMonth)  grossMonth.textContent = fmtMoney(grossM);
+    if(expMonth)    expMonth.textContent   = fmtMoney(expM);
+    if(reserveMonth)reserveMonth.textContent = fmtMoney(reserveM);
+    if(netMonth)    netMonth.textContent   = fmtMoney(netM);
 
-    const paidM = sum(monthEntries, e=> (e.paid && (e.category||'Income')==='Income') ? e.amount : 0);
-    paidBar.style.width = (grossM>0 ? ((paidM/grossM)*100) : 0).toFixed(0) + '%';
+    if(paidBar){
+      const paidM = sum(monthEntries, e=> (e.paid && (e.category||'Income')==='Income') ? e.amount : 0);
+      paidBar.style.width = (grossM>0 ? ((paidM/grossM)*100) : 0).toFixed(0) + '%';
+    }
   }
 
   // ---------- Submit ----------
-  form.addEventListener('submit', ev=>{
-    ev.preventDefault();
-    const fd = new FormData(form);
-    const multiday = !!fd.get('multiday');
+  if(form){
+    form.addEventListener('submit', ev=>{
+      ev.preventDefault();
+      const fd = new FormData(form);
+      const multiday = !!fd.get('multiday');
 
-    const base = {
-      id: crypto.randomUUID(),
-      date: fd.get('date') || todayISO(),
-      client: (fd.get('client')||'').trim(),
-      category: 'Income',
-      platform: 'Direct',
-      service: (fd.get('service')||'').trim(),
-      amount: Number(fd.get('amount')||0),
-      method: fd.get('method') || 'Other',
-      paid: !!fd.get('paid'),
-      notes: (fd.get('notes')||'').trim(),
-      reservePct: Settings.load().reservePct,
-    };
+      const base = {
+        id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()),
+        date: fd.get('date') || todayISO(),
+        client: (fd.get('client')||'').trim(),
+        category: 'Income',
+        platform: 'Direct',
+        service: (fd.get('service')||'').trim(),
+        amount: Number(fd.get('amount')||0),
+        method: fd.get('method') || 'Other',
+        paid: !!fd.get('paid'),
+        notes: (fd.get('notes')||'').trim(),
+        reservePct: Settings.load().reservePct,
+      };
 
-    if(!base.client){ alert('Name the client so the log can stand.'); return; }
+      if(!base.client){ alert('Name the client so the log can stand.'); return; }
 
-    function push(e){
-      e.reserve = Number((e.amount * (Settings.load().reservePct/100)).toFixed(2));
-      e.net = Number((e.amount - e.reserve).toFixed(2));
-      entries.push(e);
-    }
+      function push(e){
+        e.reserve = Number((e.amount * (Settings.load().reservePct/100)).toFixed(2));
+        e.net = Number((e.amount - e.reserve).toFixed(2));
+        entries.push(e);
+      }
 
-    if(!multiday){
-      if(!base.date){ alert('Fill the date.'); return; }
-      push(base);
-      Storage.save(entries);
-    }else{
-      const startDate = fd.get('startDate'), endDate = fd.get('endDate');
-      const split = (fd.get('splitEvenly')||'yes')==='yes';
-      const mode = (fd.get('expandMode')||'summary');
-      if(!startDate || !endDate){ alert('Start and End are needed.'); return; }
-
-      const days = (new Date(endDate) - new Date(startDate)) / 86400000 + 1;
-      if(days<=0){ alert('End date must be same or after start.'); return; }
-
-      if(mode==='summary'){
-        push({...base, startDate, endDate, days, isRange:true});
+      if(!multiday){
+        if(!base.date){ alert('Fill the date.'); return; }
+        push(base);
         Storage.save(entries);
       }else{
-        const cents = Math.round(Number(base.amount)*100);
-        const baseC = Math.floor(cents / days); let rem=cents - baseC*days;
-        for(let i=0;i<days;i++){
-          const dISO = new Date(new Date(startDate).getTime()+i*86400000).toISOString().slice(0,10);
-          const amtC = (split ? baseC + (i<rem?1:0) : (i===0?cents:0));
-          push({...base, id:crypto.randomUUID(), date:dISO, amount:Number((amtC/100).toFixed(2)), startDate, endDate, days, isExpandedChild:true});
+        const startDate = fd.get('startDate'), endDate = fd.get('endDate');
+        const split = (fd.get('splitEvenly')||'yes')==='yes';
+        const mode = (fd.get('expandMode')||'summary');
+        if(!startDate || !endDate){ alert('Start and End are needed.'); return; }
+
+        const days = (new Date(endDate) - new Date(startDate)) / 86400000 + 1;
+        if(days<=0){ alert('End date must be same or after start.'); return; }
+
+        if(mode==='summary'){
+          push({...base, startDate, endDate, days, isRange:true});
+          Storage.save(entries);
+        }else{
+          const cents = Math.round(Number(base.amount)*100);
+          const baseC = Math.floor(cents / days); let rem=cents - baseC*days;
+          for(let i=0;i<days;i++){
+            const dISO = new Date(new Date(startDate).getTime()+i*86400000).toISOString().slice(0,10);
+            const amtC = (split ? baseC + (i<rem?1:0) : (i===0?cents:0));
+            push({...base, id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()), date:dISO, amount:Number((amtC/100).toFixed(2)), startDate, endDate, days, isExpandedChild:true});
+          }
+          Storage.save(entries);
         }
-        Storage.save(entries);
       }
-    }
 
-    render();
-    showQuote(lucyToggle.checked ? 'lucy' : 'ron');
+      render();
+      showQuote(lucyToggle && lucyToggle.checked ? 'lucy' : 'ron');
 
-    // Sparkles (center of button)
-    const r = logBtn.getBoundingClientRect();
-    const y = r.top + r.height/2 + window.scrollY;
-    sparkleBurst(r.left + r.width/2, y, lucyToggle.checked ? 'lucy' : 'ron');
+      // Sparkles (center of button)
+      if(logBtn){
+        const r = logBtn.getBoundingClientRect();
+        const y = r.top + r.height/2 + window.scrollY;
+        sparkleBurst(r.left + r.width/2, y, lucyToggle && lucyToggle.checked ? 'lucy' : 'ron');
+      }
 
-    savedMsg.style.display='block';
-    setTimeout(()=> savedMsg.style.display='none', 1400);
-    form.reset(); form.date.value = todayISO();
-    multiFields.style.display='none'; multiChoice.style.display='none'; document.getElementById('multiToggle').checked = false;
-  });
+      if(savedMsg){ savedMsg.style.display='block'; setTimeout(()=> savedMsg.style.display='none', 1400); }
+      form.reset(); if(form.elements.date){ form.elements.date.value = todayISO(); }
+      if(multiFields) multiFields.style.display='none';
+      if(multiChoice) multiChoice.style.display='none';
+      const t = document.getElementById('multiToggle'); if(t) t.checked = false;
+    });
+  }
 
-  document.getElementById('clearBtn').addEventListener('click', ()=> form.reset());
+  const clearBtn = document.getElementById('clearBtn');
+  if(clearBtn && form){ clearBtn.addEventListener('click', ()=> form.reset()); }
 
   // ---------- Init ----------
   (function init(){
-    document.getElementById('reservePct').value = Settings.load().reservePct;
-    showQuote(localStorage.getItem(LUCY_KEY)==='1' ? 'lucy' : 'ron');
+    const pct = Settings.load().reservePct;
+    const pctEl = document.getElementById('reservePct'); if(pctEl) pctEl.value = pct;
+    const lucyOn = localStorage.getItem(LUCY_KEY)==='1';
+    showQuote(lucyOn ? 'lucy' : 'ron');
     render();
   })();
 })();
