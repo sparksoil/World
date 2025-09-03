@@ -29,9 +29,12 @@ body{
   margin:0; background:var(--stone); color:var(--ink); font-family:var(--font); line-height:1.45;
 
   /* Ron default: Bob Ross */
-  background:
-    linear-gradient(var(--stone), var(--stone)),
-    url("notebook/bobross-bg.jpeg") center/cover fixed no-repeat;
+  body{
+  margin:0; background:var(--stone); color:var(--ink); font-family:var(--font); line-height:1.45;
+
+  /* Ron default: Bob Ross */
+  background: url("notebook/bobross-bg.jpeg") center/cover fixed no-repeat;
+}
   background-blend-mode: multiply;
 }
   .wrap{max-width:980px; margin:24px auto; padding:0 16px}
@@ -112,13 +115,12 @@ body{
   .lucy .spark.gold2{background:#93c5fd; box-shadow:0 0 12px 3px #93c5fd55}
   .lucy .spark.gold3{background:#e5e7eb; box-shadow:0 0 12px 3px #e5e7eb77}
 
-  /* Lucy Mode background (no heavy veil) */
-  .lucy body, .lucy .wrap{letter-spacing:.2px}
-  .lucy h1, .lucy h2{font-weight:560}
+ /* Lucy Mode background (no heavy veil) */
+.lucy body, .lucy .wrap{letter-spacing:.2px}
+.lucy h1, .lucy h2{font-weight:560}
+
 .lucy body{
-  background:#f7f6fb url("notebook/Lucy-bokeh.png") center/cover fixed no-repeat;
-  background-blend-mode:normal;
-}
+  background: url("notebook/Lucy-bokeh.png") center/cover fixed no-repeat;
   }
 </style>
 </head>
