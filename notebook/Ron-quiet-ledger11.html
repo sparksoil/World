@@ -22,33 +22,34 @@
       --success-bg:#0f1a14; --success-bd:#1b3b28;
     }
   }
- *{box-sizing:border-box}
-html,body{height:100%}
 
-body{
-  margin:0; background:var(--stone); color:var(--ink); font-family:var(--font); line-height:1.45;
+  *{box-sizing:border-box}
+  html,body{height:100%}
 
-  /* Ron default: Bob Ross */
+  /* Ron (default) background — no veil */
   body{
-  margin:0; background:var(--stone); color:var(--ink); font-family:var(--font); line-height:1.45;
+    margin:0; color:var(--ink); font-family:var(--font); line-height:1.45;
+    background: url("notebook/bobross-bg.jpeg") center/cover fixed no-repeat;
+  }
 
-  /* Ron default: Bob Ross */
-  background: url("notebook/bobross-bg.jpeg") center/cover fixed no-repeat;
-}
-  background-blend-mode: multiply;
-}
   .wrap{max-width:980px; margin:24px auto; padding:0 16px}
+
   .panel{position:relative; background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px}
   .card{ background:#fff0; border:1px solid var(--line); border-radius:14px; padding:16px; }
   h1{margin:0 0 6px; font-size:1.25rem; font-weight:700}
   h2{margin:0 0 8px; font-size:1.05rem; font-weight:650}
   p.muted{margin:0 0 10px; color:#6b7280; font-size:.93rem}
+
   .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
   .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
   .row-4{display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:12px}
   @media (max-width:760px){ .row,.row-3,.row-4{grid-template-columns:1fr} }
+
   label{display:grid; gap:6px; font-size:.95rem}
-  input,select,textarea,button{font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink)}
+
+  input,select,textarea,button{
+    font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink)
+  }
   input[type="date"]{padding:8px 10px}
   textarea{min-height:70px; resize:vertical}
   button.primary{background:var(--cedar); color:#fff; border:none; border-radius:12px; padding:12px 16px; cursor:pointer}
@@ -59,11 +60,14 @@ body{
   .inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
   .right{text-align:right}
   .success{background:var(--success-bg); color:var(--moss); border:1px solid var(--success-bd); padding:8px 10px; border-radius:10px; display:none}
+
   .bar{height:8px; border-radius:6px; background:var(--grain); overflow:hidden}
   .fill{height:100%; background:var(--moss)}
+
   table{width:100%; border-collapse:collapse; background:#fff}
   th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
   tfoot td{font-weight:600; border-top:2px solid var(--line)}
+
   details.settings{margin:8px 0 0}
   details.settings summary{cursor:pointer; user-select:none}
   .quietline{border:none; height:1px; background:var(--line); opacity:.6; margin:6px 0 12px}
@@ -115,12 +119,11 @@ body{
   .lucy .spark.gold2{background:#93c5fd; box-shadow:0 0 12px 3px #93c5fd55}
   .lucy .spark.gold3{background:#e5e7eb; box-shadow:0 0 12px 3px #e5e7eb77}
 
- /* Lucy Mode background (no heavy veil) */
-.lucy body, .lucy .wrap{letter-spacing:.2px}
-.lucy h1, .lucy h2{font-weight:560}
-
-.lucy body{
-  background: url("notebook/Lucy-bokeh.png") center/cover fixed no-repeat;
+  /* Lucy Mode background — no veil */
+  .lucy body, .lucy .wrap{letter-spacing:.2px}
+  .lucy h1, .lucy h2{font-weight:560}
+  .lucy body{
+    background: url("notebook/Lucy-bokeh.png") center/cover fixed no-repeat;
   }
 </style>
 </head>
