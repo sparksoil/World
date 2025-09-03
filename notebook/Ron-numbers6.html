@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ron — Pet Job Income Ledger</title>
+
+<!-- Handwritten + title fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Cormorant+Garamond:wght@600&family=Cinzel:wght@600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+
+    /* Ron palette (parchment + mountain) */
+    --ink:#1f2328;
+    --muted:#5f6670;
+    --panel-rgb:246,239,227;
+    --grain-rgb:231,223,209;
+    --line:#d5cbbb;
+    --cedar:#2d3748;
+    --moss:#365a3c;
+
+    --success-bg:#e7f5ec;
+    --success-bd:#b6e2c7;
+
+    /* Background defaults (Ron) */
+    --bg-url: url("bobross-bg.jpeg");
+    --bg-size: cover;
+    --bg-position: center top;
+    --bg-repeat: no-repeat;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e7e7ea; --muted:#aab1b9;
+      --line:#2a323b; --cedar:#374151; --moss:#99caa6;
+    }
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+
+  /* ---------- PAGE BACKGROUNDS ---------- */
+  body{
+    margin:0; color:var(--ink); font-family:var(--font); line-height:1.45;
+    background: var(--bg-url) var(--bg-position)/var(--bg-size) no-repeat fixed,
+                #635B3A; /* Ron grounding color */
+    background-repeat: var(--bg-repeat);
+  }
+
+  /* Lucy Mode — correct bokeh, tiled down */
+  .lucy{
+    --bg-url: url("./Lucy-bokeh.jpeg");
+    --bg-size: 900px auto;
+    --bg-position: left 10% top 0;
+    --bg-repeat: repeat-y;
+    background-color:#ffffff;
+  }
+
+  @media (max-width: 800px){
+    body{ background-attachment: scroll; }
+    .lucy{ --bg-size: 820px auto; }
+  }
+  @supports (-webkit-touch-callout: none){
+    body{ background-attachment: scroll; }
+  }
+
+  .wrap{max-width:980px; margin:24px auto; padding:0 16px}
+
+  /* ---------- Translucent panels ---------- */
+  .panel,.card,table{ background: rgba(var(--panel-rgb),0.45); }
+  .panel,.card{border:1px solid var(--line); border-radius:14px; padding:16px}
+  table{width:100%; border-collapse:collapse}
+  th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
+  tfoot td{font-weight:600; border-top:2px solid var(--line)}
+
+  h1{margin:0 0 6px; font-size:1.35rem; font-weight:700; font-family:"Cinzel", serif}
+  .lucy h1{font-family:"Cormorant Garamond", serif}
+
+  /* ---------- Footer art swap ---------- */
+  .footer-art{ position:relative; margin:20px auto 6px; max-width:900px; pointer-events:none; }
+  .footer-art img.art{ display:block; width:100%; height:auto; border-radius:12px; opacity:.95; }
+  .footer-art img.art-lucy{ display:none !important; }
+  .lucy .footer-art img.art-ron{ display:none !important; }
+  .lucy .footer-art img.art-lucy{ display:block !important; }
+
+  .footer-art .ron-quote-text{
+    position:absolute; left:50%; top:70%; transform:translate(-50%,-50%);
+    width:72%; text-align:center; color:#fff;
+    font-family:'Patrick Hand','Caveat',cursive; line-height:1.25;
+    text-shadow:0 1px 0 rgba(0,0,0,.25);
+  }
+
+  /* ---------- Sparkles ---------- */
+  .sparkles{ position:fixed; inset:0; pointer-events:none; z-index:99 }
+  .sparkle{ position:absolute; width:6px; height:6px; border-radius:50%; opacity:0; transform:scale(.6); }
+  .sparkle.show{ animation:pop 800ms ease-out forwards }
+  @keyframes pop{0%{opacity:0;transform:translate(0,0)scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy))scale(1)}}
+</style>
+</head>
+
+<body class="body-bg">
+<div class="wrap">
+  <div class="panel" role="region" aria-label="Ron Ledger">
+    <div class="inline" style="justify-content:space-between">
+      <div>
+        <h1 id="titleSwap">The Mountain’s Ledger</h1>
+        <p class="muted">Straight lines. Quiet totals. Set aside what needs setting aside.</p>
+
+        <div id="quoteWrap" class="quote-wrap" aria-live="polite">
+          <div id="quoteMain" class="quote-main"></div>
+          <div id="quoteSub"  class="quote-sub"></div>
+          <div id="quoteShimmer" class="quote-shimmer" aria-hidden="true"></div>
+          <div id="quoteGlimmer" class="quote-glimmer" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <label class="toggle"><input id="lucyToggle" type="checkbox"> Lucy Mode</label>
+    </div>
+
+    <hr class="quietline">
+
+    <!-- … form, table, etc. stays exactly the same … -->
+
+    <footer class="footer-art">
+      <img class="art art-ron"  src="./ron-board.png" alt="Ron board art" loading="lazy">
+      <img class="art art-lucy" src="./Lucy-cozy-lilac.PNG" alt="Lucy cozy art" loading="lazy">
+      <div class="ron-quote-text">
+        <div id="ronQuoteMain"></div>
+        <div id="ronQuoteSub"></div>
+      </div>
+    </footer>
+
+    <p class="footer">🦦 Little Nudge: Tides come four times a year — <strong>Apr 15 • Jun 15 • Sep 15 • Jan 15</strong></p>
+  </div>
+</div>
+
+<div class="sparkles" id="sparkles"></div>
+
+<script>
+(() => {
+  const $ = s=>document.querySelector(s);
+  const form=$('#entryForm'), rows=$('#rows'), savedMsg=$('#savedMsg');
+  const lucyToggle=$('#lucyToggle'), titleSwap=$('#titleSwap'), titleRight=$('#titleRight');
+  const ronBoardMain=document.getElementById('ronQuoteMain'), ronBoardSub=document.getElementById('ronQuoteSub');
+  const sparkles=document.getElementById('sparkles');
+  const logBtn=document.getElementById('logBtn');
+  // … rest of your JS stays unchanged …
+})();
+</script>
+</body>
+</html>
