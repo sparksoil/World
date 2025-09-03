@@ -11,52 +11,80 @@
 <style>
   :root{
     --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-    --ink:#1c1c1c;              /* darker for readability */
+
+    /* Ron palette (parchment + mountain) */
+    --ink:#1f2328;              /* dark charcoal (not pure black) */
     --muted:#5f6670;
-    --stone:#f3efe8;            /* warm parchment */
-    --grain:#e6e2db;
-    --line:#d6d0c7;
-    --cedar:#2d3748;            /* deep slate button */
-    --moss:#365a3c;             /* accent */
+    --stone:#efe9dd;            /* background veil, very light parchment */
+    --panel:#f6efe3;            /* panels/inputs (parchment tan) */
+    --grain:#e7dfd1;            /* chips/pills */
+    --line:#d5cbbb;             /* borders */
+    --cedar:#2d3748;            /* primary button */
+    --moss:#365a3c;             /* positive accent */
+
+    --income:#164e63;           /* income tint */
+    --expense:#7b341e;          /* expense tint */
+
     --success-bg:#e7f5ec;
     --success-bd:#b6e2c7;
-    --income:#164e63;           /* deep teal for income tags/accents */
-    --expense:#7b341e;          /* muted copper for expenses */
   }
   @media (prefers-color-scheme: dark){
     :root{
       --ink:#e7e7ea; --muted:#aab1b9;
-      --stone:#0f1216; --grain:#15191e; --line:#2a323b;
+      --stone:#0f1216; --panel:#14191f; --grain:#1b2128; --line:#2a323b;
       --cedar:#374151; --moss:#99caa6;
       --income:#7dd3fc; --expense:#f6ad55;
       --success-bg:#0f1a14; --success-bd:#1b3b28;
     }
   }
+
   *{box-sizing:border-box}
   html,body{height:100%}
+
+  /* ---------- PAGE BACKGROUNDS ---------- */
   body{
     margin:0; color:var(--ink); font-family:var(--font); line-height:1.45;
+
+    /* Bob Ross–style painting background (update filename if needed) */
     background:
-      linear-gradient(var(--stone),var(--stone)),
-      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"><path d="M0 70c30-25 60-25 90 0s60 25 90 0" fill="none" stroke="%23d6d0c7" stroke-opacity=".25" stroke-width="2"/></svg>');
+      linear-gradient(rgba(239,233,221,.92),rgba(239,233,221,.92)),
+      url("bob-ross-bg.jpg") center/cover fixed no-repeat;
     background-blend-mode:multiply;
   }
+
+  /* Lucy Mode swaps to her lilac page — still no heavy white veil */
+  .lucy body, .lucy .body-bg{
+    background: linear-gradient(rgba(255,255,255,.88),rgba(255,255,255,.88)),
+                url("Lucy-swirl.png") center/cover fixed no-repeat !important;
+    background-blend-mode:normal !important;
+  }
+
   .wrap{max-width:980px; margin:24px auto; padding:0 16px}
-  .panel{background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px}
-  .card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px}
+
+  /* Parchment panels & controls */
+  .panel,.card,table{background:var(--panel)}
+  .panel,.card{border:1px solid var(--line); border-radius:14px; padding:16px}
+  table{width:100%; border-collapse:collapse}
+  th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
+  tfoot td{font-weight:600; border-top:2px solid var(--line)}
+
   h1{margin:0 0 6px; font-size:1.35rem; font-weight:700; font-family:"Cinzel", serif}
   .lucy h1{font-family:"Cormorant Garamond", serif}
   h2{margin:0 0 8px; font-size:1.05rem; font-weight:650}
   p.muted{margin:0 0 10px; color:var(--muted); font-size:.95rem}
+
   .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
   .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
   @media (max-width:760px){ .row,.row-3{grid-template-columns:1fr} }
   label{display:grid; gap:6px; font-size:.95rem}
+
   input,select,textarea,button{
-    font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);
+    font:inherit; padding:10px 12px; border:1px solid var(--line);
+    border-radius:10px; background:var(--panel); color:var(--ink);
   }
   input[type="date"]{padding:8px 10px}
   textarea{min-height:70px; resize:vertical}
+
   button.primary{background:var(--cedar); color:#fff; border:none; border-radius:12px; padding:12px 16px; cursor:pointer}
   button.secondary{background:var(--grain)}
   .actions{display:flex; gap:10px}
@@ -67,30 +95,15 @@
   .success{background:var(--success-bg); color:var(--moss); border:1px solid var(--success-bd); padding:8px 10px; border-radius:10px; display:none}
   .bar{height:8px; border-radius:6px; background:var(--grain); overflow:hidden}
   .fill{height:100%; background:var(--moss)}
-  table{width:100%; border-collapse:collapse; background:#fff}
-  th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
-  tfoot td{font-weight:600; border-top:2px solid var(--line)}
   .quietline{border:none; height:1px; background:var(--line); opacity:.7; margin:6px 0 12px}
   .footer{margin-top:10px; font-size:.9rem; color:var(--muted)}
   .toggle{display:flex; align-items:center; gap:8px}
 
-  /* Lucy Mode — swap background, no veil */
-  .lucy body{}
-  .lucy{
-    /* class is on <html>; target body background directly */
-  }
-  .lucy body, .lucy .body-bg{
-    background: #f7f6fb url('Lucy-swirl.png') center/cover fixed no-repeat !important;
-    background-blend-mode:normal !important;
-  }
-  .lucy .panel, .lucy .card, .lucy table{
-    background: rgba(255,255,255,0.98); /* readable, but no “veil” over page */
-    border-color: rgba(0,0,0,0.10);
-  }
-  .lucy .divider, .lucy .quietline { background: rgba(0,0,0,0.10); }
-  .lucy button.primary{ background:#4b5563 }
+  /* Title swap per mode */
+  #titleSwap{font-family:"Cinzel", serif}
+  .lucy #titleSwap{font-family:"Cormorant Garamond", serif}
 
-  /* Quote block (top, right under subtitle) */
+  /* ---------- Quote (under subtitle) ---------- */
   .quote-wrap{margin:.25rem 0 .5rem; position:relative}
   .quote-main{font-size:1.05rem; font-weight:620; color:var(--ink)}
   .quote-sub{font-size:.95rem; color:var(--muted); font-style:italic; margin-top:2px}
@@ -108,11 +121,10 @@
   }
   .quote-glimmer.on{opacity:1; animation:glimmerFade 1200ms ease-out 1}
   @keyframes glimmerFade{ 0%{opacity:0} 15%{opacity:1} 100%{opacity:0} }
-
   .lucy .quote-main{font-weight:560}
   .lucy .quote-sub{color:#5d6472}
 
-  /* Ron image as quote board (bottom) */
+  /* ---------- Ron image as quote board (bottom) ---------- */
   .ron-quote-area{ position:relative; max-width:520px; margin:20px auto 6px }
   .ron-img{ width:100%; height:auto; display:block }
   .ron-quote-text{
@@ -124,7 +136,7 @@
   #ronQuoteMain{ font-size:1.25rem; }
   #ronQuoteSub{ font-size:1rem; opacity:.85; font-style:italic; margin-top:2px }
 
-  /* Sparkle burst on save */
+  /* ---------- Sparkles ---------- */
   .sparkles{ position:fixed; inset:0; pointer-events:none; z-index:99 }
   .sparkle{ position:absolute; width:6px; height:6px; border-radius:50%; opacity:0; transform:scale(.6); }
   .sparkle.show{ animation:pop 800ms ease-out forwards }
@@ -133,12 +145,9 @@
     20%{opacity:1}
     100%{opacity:0; transform:translate(var(--dx),var(--dy)) scale(1)}
   }
-
-  /* Title swap per mode */
-  #titleSwap{font-family:"Cinzel", serif}
-  .lucy #titleSwap{font-family:"Cormorant Garamond", serif}
 </style>
 </head>
+
 <body class="body-bg">
 <div class="wrap">
   <div class="panel" role="region" aria-label="Ron Ledger">
@@ -309,7 +318,7 @@
       </div>
     </div>
 
-    <!-- Ron image quote board -->
+    <!-- Ron image quote board (stays at bottom) -->
     <div class="ron-quote-area">
       <img src="ron-board.PNG" alt="Ron holding board" class="ron-img">
       <div class="ron-quote-text">
@@ -535,14 +544,13 @@
     reserveMonth.textContent = fmtMoney(reserveM);
     netMonth.textContent = fmtMoney(netM);
 
-    // Paid progress this month (simple placeholder)
     const paidM = monthEntries.filter(e=>e.paid && (e.category||'Income')==='Income').reduce((s,e)=>s+e.amount,0);
     const pctPaid = grossM>0 ? Math.max(0,Math.min(100,(paidM/grossM)*100)) : 0;
     paidBar.style.width = pctPaid.toFixed(0)+'%';
   }
 
   // ---------- Submit ----------
-  form.addEventListener('submit', async ev=>{
+  form.addEventListener('submit', ev=>{
     ev.preventDefault();
     const fd = new FormData(form);
     const multiday = !!fd.get('multiday');
@@ -558,49 +566,44 @@
       method: fd.get('method') || 'Other',
       paid: !!fd.get('paid'),
       notes: (fd.get('notes')||'').trim(),
-      reservePct: settings.reservePct,
+      reservePct: Settings.load().reservePct,
     };
 
     if(!base.client){ alert('Name the client so the log can stand.'); return; }
 
+    function push(e){ e.reserve = Number((e.amount * (Settings.load().reservePct/100)).toFixed(2));
+                      e.net = Number((e.amount - e.reserve).toFixed(2));
+                      entries.push(e); }
+
     if(!multiday){
       if(!base.date){ alert('Fill the date.'); return; }
-      base.reserve = Number((base.amount * (settings.reservePct/100)).toFixed(2));
-      base.net = Number((base.amount - base.reserve).toFixed(2));
-      entries.push(base);
+      push(base);
       Storage.save(entries);
     }else{
       const startDate = fd.get('startDate'), endDate = fd.get('endDate');
       const split = (fd.get('splitEvenly')||'yes')==='yes';
       const mode = (fd.get('expandMode')||'summary');
       if(!startDate || !endDate){ alert('Start and End are needed.'); return; }
-      const days = daysBetweenInclusive(startDate, endDate);
+      const days = (new Date(endDate) - new Date(startDate))/86400000 + 1;
       if(days<=0){ alert('End date must be same or after start.'); return; }
 
       if(mode==='summary'){
-        const entry = {...base, startDate, endDate, days, isRange:true};
-        entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
-        entry.net = Number((entry.amount - entry.reserve).toFixed(2));
-        entries.push(entry);
+        push({...base, startDate, endDate, days, isRange:true});
         Storage.save(entries);
       }else{
         if(split){
-          const parts = splitEven(base.amount, days);
+          const cents = Math.round(Number(base.amount)*100);
+          const baseC = Math.floor(cents/days); let rem = cents - baseC*days;
           for(let i=0;i<days;i++){
-            const dISO = isoAddDays(startDate,i);
-            const entry = {...base, id:crypto.randomUUID(), date:dISO, amount:Number(parts[i].toFixed(2)), startDate, endDate, days, isExpandedChild:true};
-            entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
-            entry.net = Number((entry.amount - entry.reserve).toFixed(2));
-            entries.push(entry);
+            const dISO = new Date(startDate); dISO.setUTCDate(dISO.getUTCDate()+i);
+            const amtC = baseC + (i<rem?1:0);
+            push({...base, id:crypto.randomUUID(), date:dISO.toISOString().slice(0,10), amount:amtC/100, startDate, endDate, days, isExpandedChild:true});
           }
         }else{
           for(let i=0;i<days;i++){
-            const dISO = isoAddDays(startDate,i);
+            const dISO = new Date(startDate); dISO.setUTCDate(dISO.getUTCDate()+i);
             const amt = (i===0) ? base.amount : 0;
-            const entry = {...base, id:crypto.randomUUID(), date:dISO, amount:Number(amt.toFixed(2)), startDate, endDate, days, isExpandedChild:true};
-            entry.reserve = Number((entry.amount * (settings.reservePct/100)).toFixed(2));
-            entry.net = Number((entry.amount - entry.reserve).toFixed(2));
-            entries.push(entry);
+            push({...base, id:crypto.randomUUID(), date:dISO.toISOString().slice(0,10), amount:amt, startDate, endDate, days, isExpandedChild:true});
           }
         }
         Storage.save(entries);
@@ -610,7 +613,7 @@
     render();
     showQuote(lucyToggle.checked ? 'lucy' : 'ron'); // fresh quote on save
 
-    // Sparkles (click position center of button)
+    // Sparkles (center of button)
     const r = logBtn.getBoundingClientRect();
     sparkleBurst(r.left + r.width/2, r.top + r.height/2 + window.scrollY, lucyToggle.checked ? 'lucy' : 'ron');
 
@@ -620,8 +623,14 @@
     multiFields.style.display='none'; multiChoice.style.display='none'; document.getElementById('multiToggle').checked = false;
   });
 
-  $('#clearBtn').addEventListener('click', ()=> form.reset());
-  render();
+  document.getElementById('clearBtn').addEventListener('click', ()=> form.reset());
+
+  // ---------- Init ----------
+  (function init(){
+    document.getElementById('reservePct').value = Settings.load().reservePct;
+    showQuote(localStorage.getItem('sparksoil_income_lucy_v1')==='1' ? 'lucy' : 'ron');
+    render();
+  })();
 })();
 </script>
 </body>
