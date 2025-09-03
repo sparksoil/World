@@ -124,7 +124,48 @@
   .lucy h1, .lucy h2{font-weight:560}
   .lucy body{
     background: url("notebook/Lucy-bokeh.png") center/cover fixed no-repeat;
-  }
+  }/* =======================
+   DEBUG OVERRIDES (TEMP)
+   Strip UI color so only page backgrounds show
+   Paste at END of your <style> block
+   ======================= */
+
+html { background: transparent !important; }
+body{
+  /* Show ONLY the background image (Ron default) */
+  background: url("notebook/bobross-bg.jpeg") center/cover fixed no-repeat !important;
+  color: #111 !important;
+  min-height: 100vh !important;
+}
+
+/* When Lucy mode is on, show her background */
+.lucy body{
+  background: url("notebook/Lucy-bokeh.png") center/cover fixed no-repeat !important;
+}
+
+/* Make all main surfaces transparent so the page bg is visible */
+.panel,
+.card,
+table,
+thead, tbody, tfoot,
+tr, th, td,
+.wrap,
+input, select, textarea, button,
+details, summary {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Keep borders faint so layout still reads while debugging */
+.panel, .card, table, th, td, input, select, textarea, button {
+  border-color: rgba(0,0,0,.18) !important;
+}
+
+/* Remove any leftover gradient/veil effects anywhere */
+* {
+  background-image: none !important;
+  background-blend-mode: normal !important;
+}
 </style>
 </head>
 <body>
