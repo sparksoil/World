@@ -33,17 +33,16 @@
   html,body{height:100%}
 
   /* ---------- PAGE BACKGROUNDS ---------- */
+  /* Ron (default): Bob Ross scene with a light veil so text stays readable */
   body.body-bg{
     margin:0; color:var(--ink); font-family:var(--font); line-height:1.45;
-
-    /* Bob Ross–style painting background (lighter veil) */
     background:
       linear-gradient(rgba(239,233,221,.28),rgba(239,233,221,.28)),
       url("notebook/bobross-bg.jpeg") center/cover fixed no-repeat;
     background-blend-mode:multiply;
   }
 
-  /* Lucy: no veil at all — just her background */
+  /* Lucy: NO veil — just her background image */
   .lucy body.body-bg{
     background: url("notebook/Lucy-bokeh.png") center/cover fixed no-repeat !important;
     background-blend-mode:normal !important;
@@ -51,14 +50,14 @@
 
   .wrap{max-width:980px; margin:24px auto; padding:0 16px}
 
-  /* Parchment panels & controls */
+  /* Parchment panels & controls (Ron) */
   .panel,.card,table{background:var(--panel)}
   .panel,.card{border:1px solid var(--line); border-radius:14px; padding:16px}
   table{width:100%; border-collapse:collapse}
   th,td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:left; font-size:.95rem}
   tfoot td{font-weight:600; border-top:2px solid var(--line)}
 
-  /* Lucy stays light with readable white panels on top of the image */
+  /* Lucy stays light with clean panels on top of the image (no page-wide veil) */
   .lucy .panel,.lucy .card,.lucy table{
     background:rgba(255,255,255,.94) !important;
     border-color:rgba(0,0,0,.10) !important;
@@ -78,6 +77,7 @@
     font:inherit; padding:10px 12px; border:1px solid var(--line);
     border-radius:10px; background:var(--panel); color:var(--ink);
   }
+  /* Lucy inputs are crisp white (still no page veil) */
   .lucy input,.lucy select,.lucy textarea{
     background:#fff !important;
     border-color:rgba(0,0,0,.12) !important;
@@ -445,6 +445,9 @@
   })();
 
   // Multi-day toggle
+  const multiToggle = document.getElementById('multiToggle');
+  const multiFields = document.getElementById('multiFields');
+  const multiChoice = document.getElementById('multiChoice');
   multiToggle.addEventListener('change', ()=>{
     const on = multiToggle.checked;
     multiFields.style.display = on ? '' : 'none';
@@ -455,20 +458,11 @@
   const monthKey = d => `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}`;
   const currentMonthKey = () => monthKey(new Date());
   const calcReserve = amt => (amt * (settings.reservePct/100));
-  const calcNet = amt => (amt - calcReserve(amt));
-  function daysBetweenInclusive(startISO, endISO){
-    const start = new Date(startISO+"T00:00:00"); const end = new Date(endISO+"T00:00:00");
-    const ms = end - start; if(ms < 0) return 0; return Math.floor(ms/86400000) + 1;
-  }
-  function isoAddDays(iso, i){ const d = new Date(iso+"T00:00:00"); d.setUTCDate(d.getUTCDate()+i); return d.toISOString().slice(0,10); }
-  function splitEven(amount, n){
-    const cents = Math.round(Number(amount)*100);
-    const base = Math.floor(cents / n); let rem = cents - base*n;
-    const out = Array.from({length:n}, ()=> base); for(let i=0;i<rem;i++) out[i]+=1; return out.map(c=>c/100);
-  }
   function entryMonthKey(e){ const iso = e.startDate ? e.startDate : e.date; if(!iso||iso.length<7) return ''; const d=new Date(iso+"T00:00:00"); return monthKey(d); }
 
   // Sparkles
+  const sparkles = document.getElementById('sparkles');
+  const logBtn = document.getElementById('logBtn');
   function sparkleBurst(x, y, mode){
     const palette = mode==='lucy'
       ? ['#c8bfff','#b8e0ff','#e6e6ff','#bcd7ff','#cfd2ff']
@@ -487,6 +481,27 @@
   }
 
   // ---------- Render ----------
+  const rows = document.getElementById('rows');
+  const monthLabel = document.getElementById('monthLabel');
+  const countMonth = document.getElementById('countMonth');
+  const grossMonth = document.getElementById('grossMonth');
+  const expMonth = document.getElementById('expMonth');
+  const reserveMonth = document.getElementById('reserveMonth');
+  const netMonth = document.getElementById('netMonth');
+  const paidBar = document.getElementById('paidBar');
+
+  const countAll = document.getElementById('countAll');
+  const totalAll = document.getElementById('totalAll');
+  const expAll = document.getElementById('expAll');
+  const netAll = document.getElementById('netAll');
+  const reserveAll = document.getElementById('reserveAll');
+
+  const totalFoot = document.getElementById('totalFoot');
+  const totalReserveFoot = document.getElementById('totalReserveFoot');
+  const totalNetFoot = document.getElementById('totalNetFoot');
+
+  function fmtMoney(n){ return (Number(n||0)).toFixed(2); }
+
   function render(){
     rows.innerHTML = entries.map(e=>{
       const reserve = calcReserve(e.amount);
@@ -507,21 +522,20 @@
       </tr>`;
     }).join('');
 
-    const grossAll = entries.filter(e=> (e.category||'Income')==='Income').reduce((s,e)=>s+e.amount,0);
-    const expAllVal = entries.filter(e=> (e.category||'Income')==='Expense').reduce((s,e)=>s+e.amount,0);
-    const taxableBase = grossAll - expAllVal;
-    const reserveAllVal = entries.filter(e=> (e.category||'Income')==='Income').reduce((s,e)=>s+calcReserve(e.amount),0);
-    const netAllVal = taxableBase - reserveAllVal;
+    const grossAllV = entries.filter(e=> (e.category||'Income')==='Income').reduce((s,e)=>s+e.amount,0);
+    const expAllV = entries.filter(e=> (e.category||'Income')==='Expense').reduce((s,e)=>s+e.amount,0);
+    const reserveAllV = entries.filter(e=> (e.category||'Income')==='Income').reduce((s,e)=>s+calcReserve(e.amount),0);
+    const netAllV = (grossAllV - expAllV) - reserveAllV;
 
     countAll.textContent = entries.length;
-    totalAll.textContent = fmtMoney(grossAll);
-    expAll.textContent = fmtMoney(expAllVal);
-    netAll.textContent = fmtMoney(netAllVal);
-    reserveAll.textContent = fmtMoney(reserveAllVal);
+    totalAll.textContent = fmtMoney(grossAllV);
+    expAll.textContent = fmtMoney(expAllV);
+    netAll.textContent = fmtMoney(netAllV);
+    reserveAll.textContent = fmtMoney(reserveAllV);
 
-    totalFoot.textContent = fmtMoney(grossAll);
-    totalReserveFoot.textContent = fmtMoney(reserveAllVal);
-    totalNetFoot.textContent = fmtMoney(netAllVal);
+    totalFoot.textContent = fmtMoney(grossAllV);
+    totalReserveFoot.textContent = fmtMoney(reserveAllV);
+    totalNetFoot.textContent = fmtMoney(netAllV);
 
     const cmk = currentMonthKey();
     const monthEntries = entries.filter(e=> entryMonthKey(e) === cmk);
@@ -543,6 +557,26 @@
   }
 
   // ---------- Submit ----------
+  const form = document.getElementById('entryForm');
+  const savedMsg = document.getElementById('savedMsg');
+  const logBtnEl = document.getElementById('logBtn');
+  const reservePctInputEl = document.getElementById('reservePct');
+
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+  form.date.value = todayISO();
+
+  let entries = Storage.load().map(e=>({...e, amount:Number(e.amount)||0, paid:!!e.paid}));
+
+  let settings = Settings.load();
+  reservePctInputEl.value = settings.reservePct;
+
+  document.getElementById('saveSettings').addEventListener('click', ()=> {
+    const pct = Number(reservePctInputEl.value);
+    settings.reservePct = isNaN(pct)||pct<0 ? 0 : Math.min(100,pct);
+    Settings.save(settings);
+    render();
+  });
+
   form.addEventListener('submit', ev=>{
     ev.preventDefault();
     const fd = new FormData(form);
@@ -559,13 +593,13 @@
       method: fd.get('method') || 'Other',
       paid: !!fd.get('paid'),
       notes: (fd.get('notes')||'').trim(),
-      reservePct: Settings.load().reservePct,
     };
 
     if(!base.client){ alert('Name the client so the log can stand.'); return; }
 
     function push(e){
-      e.reserve = Number((e.amount * (Settings.load().reservePct/100)).toFixed(2));
+      const pct = Settings.load().reservePct ?? 25;
+      e.reserve = Number((e.amount * (pct/100)).toFixed(2));
       e.net = Number((e.amount - e.reserve).toFixed(2));
       entries.push(e);
     }
@@ -609,7 +643,7 @@
     showQuote(lucyToggle.checked ? 'lucy' : 'ron');
 
     // Sparkles (center of button)
-    const r = logBtn.getBoundingClientRect();
+    const r = logBtnEl.getBoundingClientRect();
     sparkleBurst(r.left + r.width/2, r.top + r.height/2 + window.scrollY, lucyToggle.checked ? 'lucy' : 'ron');
 
     savedMsg.style.display='block';
@@ -618,14 +652,32 @@
     multiFields.style.display='none'; multiChoice.style.display='none'; document.getElementById('multiToggle').checked = false;
   });
 
-  document.getElementById('clearBtn').addEventListener('click', ()=> form.reset());
+  document.getElementById('clearBtn')?.addEventListener('click', ()=> form.reset());
 
   // ---------- Init ----------
+  const lucyToggle = document.getElementById('lucyToggle');
+  const titleSwap = document.getElementById('titleSwap');
+  const titleRight = document.getElementById('titleRight');
+
   (function init(){
-    document.getElementById('reservePct').value = Settings.load().reservePct;
-    showQuote(localStorage.getItem('sparksoil_income_lucy_v1')==='1' ? 'lucy' : 'ron');
+    reservePctInputEl.value = Settings.load().reservePct;
+    const on = localStorage.getItem('sparksoil_income_lucy_v1')==='1';
+    lucyToggle.checked = on;
+    document.documentElement.classList.toggle('lucy', on);
+    titleSwap.textContent = on ? "The River’s Flow" : "The Mountain’s Ledger";
+    titleRight.textContent = on ? "The River’s Ledger" : "The Mountain’s Record";
     render();
+    showQuote(on ? 'lucy' : 'ron');
   })();
+
+  lucyToggle.addEventListener('change', ()=>{
+    const val = lucyToggle.checked;
+    document.documentElement.classList.toggle('lucy', val);
+    localStorage.setItem('sparksoil_income_lucy_v1', val ? '1' : '0');
+    titleSwap.textContent = val ? "The River’s Flow" : "The Mountain’s Ledger";
+    titleRight.textContent = val ? "The River’s Ledger" : "The Mountain’s Record";
+    showQuote(val ? 'lucy' : 'ron');
+  });
 })();
 </script>
 </body>
