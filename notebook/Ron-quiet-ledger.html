@@ -22,13 +22,18 @@
       --success-bg:#0f1a14; --success-bd:#1b3b28;
     }
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; background:var(--stone); color:var(--ink); font-family:var(--font); line-height:1.45;
-    background-image: linear-gradient(var(--stone),var(--stone)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"><path d="M0 70c30-25 60-25 90 0s60 25 90 0" fill="none" stroke="%23d6d3d1" stroke-opacity=".12" stroke-width="2"/></svg>');
-    background-blend-mode:multiply;
-  }
+ *{box-sizing:border-box}
+html,body{height:100%}
+
+body{
+  margin:0; background:var(--stone); color:var(--ink); font-family:var(--font); line-height:1.45;
+
+  /* Ron default: Bob Ross */
+  background:
+    linear-gradient(var(--stone), var(--stone)),
+    url("notebook/bobross-bg.jpeg") center/cover fixed no-repeat;
+  background-blend-mode: multiply;
+}
   .wrap{max-width:980px; margin:24px auto; padding:0 16px}
   .panel{position:relative; background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px}
   .card{ background:#fff0; border:1px solid var(--line); border-radius:14px; padding:16px; }
@@ -111,8 +116,9 @@
   .lucy body, .lucy .wrap{letter-spacing:.2px}
   .lucy h1, .lucy h2{font-weight:560}
   .lucy body{
-    background:#f7f6fb url('Lucy-swirl.png') center/cover fixed no-repeat;
-    background-blend-mode:normal;
+  background:#f7f6fb url("notebook/Lucy-bokeh.png") center/cover fixed no-repeat;
+  background-blend-mode:normal;
+}
   }
 </style>
 </head>
